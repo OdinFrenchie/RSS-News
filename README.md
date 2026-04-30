@@ -1,7 +1,7 @@
-# OdinHub
+# OdinWire
 
-A fast, lightweight, static multi-page site built for Cloudflare Pages.  
-Includes RSS-powered news pages, simple tools, and a clean, mobile-first design.
+A fast, lightweight, RSS-powered multi-page news site built for Cloudflare Pages.  
+Designed for speed, clarity, and zero-maintenance automatic updates.
 
 ## News System (v0.2.0)
 

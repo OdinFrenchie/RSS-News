@@ -20,6 +20,7 @@ and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Updated project structure to support multi-page expansion.
 - Improved layout consistency across future pages.
+- Updated branding from OdinHub to OdinWire across templates and metadata.
 
 ### Notes
 
