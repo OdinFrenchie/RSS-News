@@ -1,7 +1,7 @@
 /* ============================================================
    FILE: /js/rss-loader.js
    PURPOSE: Fetch and display multiple RSS feeds on any news page
-   AUTHOR: OdinHub
+   AUTHOR: OdinWire
    ============================================================ */
 
 async function loadRSS(feeds = []) {
@@ -35,23 +35,21 @@ async function loadRSS(feeds = []) {
 }
 
 /* ============================================================
-   Fetch and parse a single RSS feed
+   Fetch and parse a single RSS feed using rss2json
    ============================================================ */
 async function fetchFeed(url) {
     try {
-        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        const apiURL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+        const response = await fetch(apiURL);
         const data = await response.json();
 
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "text/xml");
+        if (!data.items) return [];
 
-        const items = [...xml.querySelectorAll("item")];
-
-        return items.map(item => ({
-            title: item.querySelector("title")?.textContent || "No title",
-            link: item.querySelector("link")?.textContent || "#",
-            pubDate: item.querySelector("pubDate")?.textContent || new Date().toISOString(),
-            description: item.querySelector("description")?.textContent || ""
+        return data.items.map(item => ({
+            title: item.title,
+            link: item.link,
+            pubDate: item.pubDate,
+            description: item.description
         }));
 
     } catch (error) {
