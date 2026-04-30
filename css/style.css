@@ -1,0 +1,160 @@
+/* ============================================================
+   FILE: /css/style.css
+   PURPOSE: Global styling for OdinHub RSS News pages
+   AUTHOR: OdinHub
+   ============================================================ */
+
+/* ------------------------------
+   GLOBAL RESET & BASE STYLES
+--------------------------------*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+    line-height: 1.6;
+    padding-bottom: 80px; /* space for bottom ad */
+}
+
+/* ------------------------------
+   HEADER
+--------------------------------*/
+.site-header {
+    background: #111;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+.site-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* ------------------------------
+   NAVIGATION BAR
+--------------------------------*/
+.nav-bar {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    background: #222;
+    padding: 12px 0;
+}
+
+.nav-bar a {
+    color: #ddd;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+.nav-bar a:hover,
+.nav-bar a.active {
+    background: #fff;
+    color: #000;
+}
+
+/* ------------------------------
+   MAIN CONTENT AREA
+--------------------------------*/
+.content {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+/* ------------------------------
+   RSS ARTICLE CARDS
+--------------------------------*/
+.rss-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.news-item {
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+.news-item h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.news-item h2 a {
+    text-decoration: none;
+    color: #0077cc;
+}
+
+.news-item h2 a:hover {
+    text-decoration: underline;
+}
+
+.news-date {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.news-desc {
+    font-size: 1rem;
+    color: #333;
+}
+
+/* ------------------------------
+   BOTTOM AD CONTAINER
+--------------------------------*/
+.ad-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #111;
+    padding: 10px 0;
+    text-align: center;
+    z-index: 999;
+}
+
+.ad-slot {
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+/* ------------------------------
+   FOOTER
+--------------------------------*/
+.site-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* ------------------------------
+   RESPONSIVE DESIGN
+--------------------------------*/
+@media (max-width: 600px) {
+    .nav-bar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .news-item {
+        padding: 15px;
+    }
+
+    .site-header h1 {
+        font-size: 1.5rem;
+    }
+}

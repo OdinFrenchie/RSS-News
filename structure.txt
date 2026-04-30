@@ -1,0 +1,19 @@
+/news/
+    template.html
+    world.html
+    uk.html
+    tech.html
+    sports.html
+    entertainment.html
+
+/css/
+    style.css
+
+/js/
+    rss-loader.js
+
+index.html
+about.html
+contact.html
+privacy.html
+terms.html

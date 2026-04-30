@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PAGE TITLE (each page will override this) -->
+    <title>NEWS_CATEGORY_TITLE</title>
+
+    <!-- SEO DESCRIPTION -->
+    <meta name="description" content="Latest NEWS_CATEGORY_TITLE updates, auto-refreshed via RSS feeds.">
+
+    <!-- GLOBAL STYLESHEET -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <h1 id="page-title">NEWS_CATEGORY_TITLE</h1>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="nav-bar">
+        <a href="/news/world.html">World</a>
+        <a href="/news/uk.html">UK</a>
+        <a href="/news/tech.html">Tech</a>
+        <a href="/news/sports.html">Sports</a>
+        <a href="/news/entertainment.html">Entertainment</a>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+        <div id="rss-container" class="rss-container">
+            <!-- RSS articles will be injected here by /js/rss-loader.js -->
+        </div>
+    </main>
+
+    <!-- BOTTOM AD CONTAINER -->
+    <div class="ad-container">
+        <div class="ad-slot" id="ad-slot-bottom">
+            Loading ads...
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>© 2026 OdinHub News</p>
+    </footer>
+
+    <!-- RSS LOADER SCRIPT -->
+    <script src="/js/rss-loader.js"></script>
+
+    <!-- PAGE-SPECIFIC FEED URL -->
+    <script>
+        loadRSS("RSS_FEED_URL_HERE");
+    </script>
+
+</body>
+</html>

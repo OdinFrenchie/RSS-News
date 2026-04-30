@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PAGE TITLE -->
+    <title>World News | OdinHub</title>
+
+    <!-- SEO DESCRIPTION -->
+    <meta name="description" content="Latest World News updates from BBC, Reuters, and AP — auto-refreshed via RSS feeds.">
+
+    <!-- GLOBAL STYLESHEET -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <h1 id="page-title">World News</h1>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="nav-bar">
+        <a href="/news/world.html" class="active">World</a>
+        <a href="/news/uk.html">UK</a>
+        <a href="/news/tech.html">Tech</a>
+        <a href="/news/sports.html">Sports</a>
+        <a href="/news/entertainment.html">Entertainment</a>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+        <div id="rss-container" class="rss-container">
+            <!-- RSS articles will be injected here -->
+        </div>
+    </main>
+
+    <!-- BOTTOM AD CONTAINER -->
+    <div class="ad-container">
+        <div class="ad-slot" id="ad-slot-bottom">
+            Loading ads...
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>© 2026 OdinHub News</p>
+    </footer>
+
+    <!-- RSS LOADER SCRIPT -->
+    <script src="/js/rss-loader.js"></script>
+
+    <!-- PAGE-SPECIFIC FEEDS -->
+    <script>
+        loadRSS([
+            "https://feeds.bbci.co.uk/news/world/rss.xml",
+            "https://www.reutersagency.com/feed/?best-topics=world",
+            "https://apnews.com/rss/apf-intlnews"
+        ]);
+    </script>
+
+</body>
+</html>
