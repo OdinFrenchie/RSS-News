@@ -43,7 +43,7 @@ async function fetchFeed(url) {
         const data = await response.json();
 
         const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "text/xml");
+        const xml = parser.parseFromString(data, "text/xml");
 
         const items = [...xml.querySelectorAll("item")];
 
