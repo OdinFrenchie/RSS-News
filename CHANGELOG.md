@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2026-05-01
+
+### Added - 0.4.1
+
+- Improved World News page layout with enhanced spacing, intro header, and modernised article styling.
+- Added new CSS rules for cleaner visual hierarchy and improved readability.
+
+### Changed - 0.4.1
+
+- Updated World News HTML structure to support enhanced layout.
+
+### Notes - 0.4.1
+
+- This is a visual/UI improvement release with no functional changes to RSS loading.
+
 ## [0.4.0] - 2026-05-01
 
 ### Added - 0.4.0
