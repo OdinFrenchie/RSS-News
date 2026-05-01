@@ -10,14 +10,17 @@ All notable changes to this project will be documented in this file.
 - Top Stories rail with hybrid logic (3 newest + 2 significant).
 - Dark Mode with system detection and persistent user preference.
 - Live Refresh system with countdown and “Updated X seconds ago”.
+- Slide‑out Settings panel (right side) for per‑page controls.
 - Feed Selector with checkboxes and persistent user choices.
-- Select All / None quick actions for feed selector.
+- Select all / clear actions for feed selector.
 - Trending Keywords engine with stopword filtering and chips UI.
 - Article images (when available) with responsive layout.
 - Compact Mode toggle with persistent preference.
 - Loading indicator for feed refresh.
 - Last updated timestamp for main feed.
 - Smooth fade‑in animations for article cards.
+- Inline ad cards every 8 articles.
+- Sidebar skyscraper ad slot and bottom fixed banner ad slot.
 - Improved mobile fallback layout.
 - Enhanced Top Stories styling with bullets and hierarchy.
 - New theme variables and visual refinements across the page.
@@ -25,14 +28,14 @@ All notable changes to this project will be documented in this file.
 ### Changed – 0.6.0
 
 - Rebuilt `rss-loader.js` with modular architecture and new features.
-- Updated `world.html` structure for new layout and components.
-- Updated `style.css` with new theme variables, layout rules, and UI polish.
+- Updated `world.html` structure for new layout, settings panel, and ad slots.
+- Updated `style.css` with new theme variables, layout rules, settings panel, and ad styling.
 - Improved spacing, typography, and visual hierarchy across the page.
 
 ### Notes – 0.6.0
 
-- This release completes features A–E of the OdinWire UI upgrade plan.
-- v0.7.x will introduce search, filters, and interaction upgrades.
+- This release completes features A–E of the OdinWire UI upgrade plan plus additional polish.
+- v0.7.x will focus on search, filters, and interaction upgrades.
 
 ## [0.5.0-design] - 2026-05-01
 

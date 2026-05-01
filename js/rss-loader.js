@@ -65,15 +65,30 @@ function formatDate(dateString) {
         month: "short",
         year: "numeric",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
+        second: "2-digit"
     });
 }
 
-/* RENDER ARTICLES */
+/* RENDER ARTICLES (WITH INLINE ADS EVERY 8 ITEMS) */
 function renderArticles(articles) {
     const container = document.getElementById("rss-container");
     container.innerHTML = "";
-    articles.forEach(article => {
+
+    articles.forEach((article, index) => {
+        // Inline ad every 8 articles
+        if (index > 0 && index % 8 === 0) {
+            const adDiv = document.createElement("div");
+            adDiv.className = "news-item ad-card";
+            adDiv.innerHTML = `
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-inline-slot">
+                    <!-- Inline ad slot -->
+                </div>
+            `;
+            container.appendChild(adDiv);
+        }
+
         const div = document.createElement("div");
         div.className = "news-item";
 
@@ -174,6 +189,7 @@ async function loadRSS() {
         const container = document.getElementById("rss-container");
         container.innerHTML = "<p>No sources selected.</p>";
         if (loadingEl) loadingEl.classList.remove("visible");
+        if (mainUpdatedEl) mainUpdatedEl.textContent = "Last updated: —";
         return;
     }
 
