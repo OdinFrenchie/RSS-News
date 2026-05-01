@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2026-05-01
+
+### Added – 0.6.0
+
+- Introduced full OdinWire desktop layout system with two‑column feed.
+- Added Top Stories rail with curated hybrid logic (3 newest + 2 significant).
+- Added Dark Mode with system detection and persistent user preference.
+- Added Live Refresh indicator with real‑time “Updated X seconds ago”.
+- Added new CSS theme variables for light/dark palettes.
+- Added new layout wrapper (`layout-desktop`) for desktop‑first design.
+- Added new sidebar components (`top-stories-rail`, `live-refresh`).
+
+### Changed – 0.6.0
+
+- Rebuilt `rss-loader.js` with clean architecture and Top Stories integration.
+- Updated article card styling to use theme variables.
+- Updated navigation bar to include theme toggle button.
+- Updated global layout spacing and visual hierarchy.
+- Updated World News page HTML structure for new layout system.
+
+### Notes – 0.6.0
+
+- This release completes features A–E of the OdinWire UI upgrade plan.
+- Mobile layout will be addressed in v0.6.1+.
+
 ## [0.5.0-design] - 2026-05-01
 
 ### Added – 0.5.0-design

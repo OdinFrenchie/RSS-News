@@ -1,132 +1,119 @@
-/* ============================================================
-   OdinWire Modern Minimal Stylesheet
-   Version: 0.5.0-design
-   ============================================================ */
-
-/* ------------------------------
-   RESET & BASE
---------------------------------*/
+/* RESET */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+:root {
+    --bg: #f7f8fa;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --text: #1a1a1a;
+    --text-soft: #444;
+    --border: #e5e7eb;
+    --accent: #2A6CF0;
+}
+
+[data-theme="dark"] {
+    --bg: #0f1115;
+    --card-bg: rgba(25, 27, 32, 0.75);
+    --text: #e6e6e6;
+    --text-soft: #aaa;
+    --border: #2a2d33;
+    --accent: #5b8dff;
+}
+
+/* BASE */
 body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #f7f8fa;
-    color: #1a1a1a;
+    background: var(--bg);
+    color: var(--text);
     line-height: 1.6;
-    padding-bottom: 90px; /* space for bottom ad */
+    padding-bottom: 90px;
 }
 
-/* Fluid typography */
-h1, h2, h3 {
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-h1 {
-    font-size: clamp(1.8rem, 3vw, 2.4rem);
-}
-
-h2 {
-    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
-}
-
-p {
-    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
-}
-
-/* ------------------------------
-   HEADER
---------------------------------*/
+/* HEADER */
 .site-header {
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
     padding: 25px 20px;
     text-align: center;
 }
 
-#page-title {
-    font-size: clamp(1.8rem, 3vw, 2.3rem);
-    font-weight: 800;
-    color: #1a1a1a;
-}
-
-/* ------------------------------
-   NAVIGATION
---------------------------------*/
+/* NAV */
 .nav-bar {
     display: flex;
-    justify-content: center;
+    align-items: center;
     gap: 20px;
     padding: 14px 20px;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
 }
 
 .nav-bar a {
     text-decoration: none;
-    color: #444;
+    color: var(--text-soft);
     font-weight: 600;
-    padding-bottom: 4px;
-    transition: color 0.2s ease;
 }
 
 .nav-bar a.active {
-    color: #2A6CF0;
-    border-bottom: 2px solid #2A6CF0;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
 }
 
-/* ------------------------------
-   CONTENT WRAPPER
---------------------------------*/
+.theme-toggle {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: var(--text);
+}
+
+/* CONTENT */
 .content {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 25px 20px;
 }
 
-/* ------------------------------
-   PAGE INTRO
---------------------------------*/
-.page-intro {
-    text-align: center;
-    margin-bottom: 30px;
+/* DESKTOP LAYOUT */
+@media (min-width: 1024px) {
+    .layout-desktop {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 40px;
+    }
+
+    .top-stories-rail {
+        position: sticky;
+        top: 20px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+    }
 }
 
-.page-intro h2 {
-    font-size: clamp(1.5rem, 2.5vw, 2rem);
-    margin-bottom: 6px;
-}
-
-.intro-sub {
-    font-size: 1rem;
-    color: #666;
-}
-
-/* ------------------------------
-   NEWS ARTICLE LIST
---------------------------------*/
+/* TWO-COLUMN FEED */
 .rss-container {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
 }
 
-/* OdinWire Signature Card */
+/* ARTICLE CARD */
 .news-item {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(6px);
-    border: 1px solid #e5e7eb;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 20px 22px;
+    padding: 20px;
     position: relative;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Accent bar (OdinWire signature) */
 .news-item::before {
     content: "";
     position: absolute;
@@ -134,70 +121,47 @@ p {
     top: 12px;
     bottom: 12px;
     width: 3px;
-    background: #2A6CF0;
+    background: var(--accent);
     border-radius: 3px;
-    opacity: 0.9;
-}
-
-.news-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-}
-
-.news-item h2 {
-    margin-bottom: 8px;
-    font-size: clamp(1.1rem, 2vw, 1.35rem);
 }
 
 .news-item h2 a {
     text-decoration: none;
-    color: #1a1a1a;
-}
-
-.news-item h2 a:hover {
-    color: #2A6CF0;
+    color: var(--text);
 }
 
 .news-date {
     font-size: 0.85rem;
-    color: #777;
-    margin-bottom: 12px;
+    color: var(--text-soft);
 }
 
-.news-desc {
-    font-size: 0.95rem;
-    color: #333;
+/* TOP STORIES */
+.top-story-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
 }
 
-/* ------------------------------
-   FOOTER
---------------------------------*/
+.top-story-item:last-child {
+    border-bottom: none;
+}
+
+.top-story-item a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* LIVE REFRESH */
+.live-refresh {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: var(--text-soft);
+}
+
+/* FOOTER */
 .site-footer {
     text-align: center;
     padding: 25px;
-    background: #ffffff;
-    border-top: 1px solid #e5e7eb;
-    margin-top: 40px;
-    color: #444;
-}
-
-/* ------------------------------
-   AD CONTAINER (BOTTOM FIXED)
---------------------------------*/
-.ad-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #ffffff;
-    border-top: 1px solid #ddd;
-    padding: 12px;
-    text-align: center;
-    z-index: 9999;
-}
-
-.ad-slot {
-    min-height: 50px;
-    font-size: 0.9rem;
-    color: #555;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border);
 }

@@ -1,49 +1,10 @@
-/* ============================================================
-   FILE: /js/rss-loader.js
-   PURPOSE: Fetch and display multiple RSS feeds on any news page
-   AUTHOR: OdinWire
-   ============================================================ */
-
-async function loadRSS(feeds = []) {
-    const container = document.getElementById("rss-container");
-    container.innerHTML = "<p>Loading news...</p>";
-
-    try {
-        // Fetch all feeds in parallel
-        const feedPromises = feeds.map(url => fetchFeed(url));
-        const feedResults = await Promise.all(feedPromises);
-
-        // Flatten all articles into one array
-        let articles = feedResults.flat();
-
-        // Sort by date (newest first)
-        articles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
-        // Render articles
-        container.innerHTML = articles.map(article => `
-            <article class="news-item">
-                <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
-                <p class="news-date">${formatDate(article.pubDate)}</p>
-                <p class="news-desc">${article.description}</p>
-            </article>
-        `).join("");
-
-    } catch (error) {
-        container.innerHTML = "<p>Failed to load news. Please try again later.</p>";
-        console.error("RSS Load Error:", error);
-    }
-}
-
-/* ============================================================
-   Fetch and parse a single RSS feed using rss2json
-   ============================================================ */
 async function fetchFeed(url) {
     try {
         const apiURL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
         const response = await fetch(apiURL);
         const data = await response.json();
 
-        if (!data.items) return [];
+        if (data.status !== "ok") return [];
 
         return data.items.map(item => ({
             title: item.title,
@@ -52,15 +13,37 @@ async function fetchFeed(url) {
             description: item.description
         }));
 
-    } catch (error) {
-        console.error("Feed fetch failed:", url, error);
+    } catch {
         return [];
     }
 }
 
-/* ============================================================
-   Format date for display
-   ============================================================ */
+function generateTopStories(allArticles) {
+    const newest = [...allArticles]
+        .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
+        .slice(0, 3);
+
+    const significant = [...allArticles]
+        .sort((a, b) => b.title.length - a.title.length)
+        .slice(0, 2);
+
+    return [...new Set([...newest, ...significant])];
+}
+
+function renderTopStories(stories) {
+    const container = document.getElementById("top-stories");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    stories.forEach(story => {
+        const div = document.createElement("div");
+        div.className = "top-story-item";
+        div.innerHTML = `<a href="${story.link}" target="_blank">${story.title}</a>`;
+        container.appendChild(div);
+    });
+}
+
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleString("en-GB", {
@@ -70,4 +53,55 @@ function formatDate(dateString) {
         hour: "2-digit",
         minute: "2-digit"
     });
+}
+
+function renderArticles(articles) {
+    const container = document.getElementById("rss-container");
+    container.innerHTML = "";
+
+    articles.forEach(article => {
+        const div = document.createElement("div");
+        div.className = "news-item";
+
+        div.innerHTML = `
+            <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
+            <div class="news-date">${formatDate(article.pubDate)}</div>
+            <div class="news-desc">${article.description}</div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+function updateRefreshTime() {
+    const el = document.getElementById("refresh-time");
+    if (!el) return;
+
+    el.textContent = "just now";
+
+    let seconds = 0;
+    setInterval(() => {
+        seconds++;
+        el.textContent = seconds < 60
+            ? `${seconds} seconds ago`
+            : `${Math.floor(seconds / 60)} min ago`;
+    }, 1000);
+}
+
+async function loadRSS(feedUrls) {
+    let allArticles = [];
+
+    for (const url of feedUrls) {
+        const feedArticles = await fetchFeed(url);
+        allArticles = allArticles.concat(feedArticles);
+    }
+
+    allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+    renderArticles(allArticles);
+
+    const topStories = generateTopStories(allArticles);
+    renderTopStories(topStories);
+
+    updateRefreshTime();
 }
