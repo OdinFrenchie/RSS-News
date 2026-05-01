@@ -6,26 +6,33 @@ All notable changes to this project will be documented in this file.
 
 ### Added – 0.6.0
 
-- Introduced full OdinWire desktop layout system with two‑column feed.
-- Added Top Stories rail with curated hybrid logic (3 newest + 2 significant).
-- Added Dark Mode with system detection and persistent user preference.
-- Added Live Refresh indicator with real‑time “Updated X seconds ago”.
-- Added new CSS theme variables for light/dark palettes.
-- Added new layout wrapper (`layout-desktop`) for desktop‑first design.
-- Added new sidebar components (`top-stories-rail`, `live-refresh`).
+- Two‑column desktop layout with modern grid system.
+- Top Stories rail with hybrid logic (3 newest + 2 significant).
+- Dark Mode with system detection and persistent user preference.
+- Live Refresh system with countdown and “Updated X seconds ago”.
+- Feed Selector with checkboxes and persistent user choices.
+- Select All / None quick actions for feed selector.
+- Trending Keywords engine with stopword filtering and chips UI.
+- Article images (when available) with responsive layout.
+- Compact Mode toggle with persistent preference.
+- Loading indicator for feed refresh.
+- Last updated timestamp for main feed.
+- Smooth fade‑in animations for article cards.
+- Improved mobile fallback layout.
+- Enhanced Top Stories styling with bullets and hierarchy.
+- New theme variables and visual refinements across the page.
 
 ### Changed – 0.6.0
 
-- Rebuilt `rss-loader.js` with clean architecture and Top Stories integration.
-- Updated article card styling to use theme variables.
-- Updated navigation bar to include theme toggle button.
-- Updated global layout spacing and visual hierarchy.
-- Updated World News page HTML structure for new layout system.
+- Rebuilt `rss-loader.js` with modular architecture and new features.
+- Updated `world.html` structure for new layout and components.
+- Updated `style.css` with new theme variables, layout rules, and UI polish.
+- Improved spacing, typography, and visual hierarchy across the page.
 
 ### Notes – 0.6.0
 
 - This release completes features A–E of the OdinWire UI upgrade plan.
-- Mobile layout will be addressed in v0.6.1+.
+- v0.7.x will introduce search, filters, and interaction upgrades.
 
 ## [0.5.0-design] - 2026-05-01
 
