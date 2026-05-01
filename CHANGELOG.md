@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.1] - 2026-05-01
+
+### Added – 0.6.1
+
+- Added 12 global RSS feeds to World News
+- Added curated feed grouping in settings panel
+- Added hybrid default activation (major feeds ON, additional feeds OFF)
+
+### Changed – 0.6.1
+
+- Updated world.html with full feed list and grouping
+- Updated rss-loader.js to support expanded feed set
+- Updated style.css with feed-group-label styling
+
+### Notes – 0.6.1
+
+- World News page now provides full global coverage with structured source management
+
 ## [0.6.0] - 2026-05-01
 
 ### Added – 0.6.0

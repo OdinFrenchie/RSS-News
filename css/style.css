@@ -441,7 +441,7 @@ body.compact .news-item h2 {
     cursor: pointer;
 }
 
-/* FEED SELECTOR (INSIDE SETTINGS) */
+/* FEED SELECTOR */
 .feed-selector {
     margin-top: 6px;
 }
@@ -487,6 +487,7 @@ body.compact .news-item h2 {
     opacity: 0.9;
 }
 
+/* FEED ICONS */
 .feed-bbc::before {
     background-image: linear-gradient(135deg, #bb1919, #e60000);
 }
@@ -497,6 +498,18 @@ body.compact .news-item h2 {
 
 .feed-aljazeera::before {
     background-image: linear-gradient(135deg, #c89b3c, #f2c14f);
+}
+
+/* FEED GROUP LABELS (NEW FOR v0.6.1) */
+.feed-group-label {
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-soft);
+    opacity: 0.85;
 }
 
 /* FOOTER */

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>World News | OdinWire</title>
-    <meta name="description" content="Latest World News updates from BBC, Reuters, and Al Jazeera — auto-refreshed via RSS feeds.">
+    <meta name="description" content="Latest World News updates from global sources — auto-refreshed via RSS feeds.">
 
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -91,6 +91,7 @@
             <p class="settings-help">Choose which sources to include in this feed.</p>
 
             <div class="feed-selector">
+
                 <div class="feed-selector-header">
                     <div class="feed-selector-actions">
                         <button id="select-all-feeds" type="button">Select all</button>
@@ -98,20 +99,72 @@
                     </div>
                 </div>
 
-                <label class="feed-option feed-bbc">
+                <!-- MAJOR GLOBAL OUTLETS (default ON) -->
+                <h4 class="feed-group-label">Major Global Outlets</h4>
+
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="bbc" checked>
                     <span class="feed-label-text">BBC World</span>
                 </label>
 
-                <label class="feed-option feed-reuters">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="reuters" checked>
                     <span class="feed-label-text">Reuters World</span>
                 </label>
 
-                <label class="feed-option feed-aljazeera">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="aljazeera" checked>
                     <span class="feed-label-text">Al Jazeera Global</span>
                 </label>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="dw" checked>
+                    <span class="feed-label-text">Deutsche Welle (World)</span>
+                </label>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="euronews" checked>
+                    <span class="feed-label-text">Euronews (World)</span>
+                </label>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="france24" checked>
+                    <span class="feed-label-text">France24 (International)</span>
+                </label>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="sky" checked>
+                    <span class="feed-label-text">Sky News (World)</span>
+                </label>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="npr" checked>
+                    <span class="feed-label-text">NPR World</span>
+                </label>
+
+                <!-- ADDITIONAL GLOBAL SOURCES (default OFF) -->
+                <h4 class="feed-group-label">Additional Global Sources</h4>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="cbc">
+                    <span class="feed-label-text">CBC World</span>
+                </label>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="abc">
+                    <span class="feed-label-text">ABC Australia (World)</span>
+                </label>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="japantimes">
+                    <span class="feed-label-text">Japan Times</span>
+                </label>
+
+                <label class="feed-option">
+                    <input type="checkbox" class="feed-check" value="voa">
+                    <span class="feed-label-text">VOA News</span>
+                </label>
+
             </div>
         </section>
 
@@ -128,10 +181,10 @@
         <p>© 2026 OdinWire</p>
     </footer>
 
-    <script src="/js/rss-loader.js?v=14"></script>
+    <script src="/js/rss-loader.js?v=15"></script>
 
     <script>
-        // Theme
+        /* THEME */
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme) {
             document.documentElement.setAttribute("data-theme", savedTheme);
@@ -146,10 +199,11 @@
             themeToggle.textContent = next === "dark" ? "☀️" : "🌙";
         });
 
-        // Compact mode
+        /* COMPACT MODE */
         const compactToggle = document.getElementById("compact-toggle");
         const settingsCompactToggle = document.getElementById("settings-compact-toggle");
         const savedCompact = localStorage.getItem("compact-mode");
+
         if (savedCompact === "on") {
             document.body.classList.add("compact");
         }
@@ -171,7 +225,7 @@
         settingsCompactToggle.addEventListener("click", toggleCompact);
         syncCompactLabel();
 
-        // Settings panel
+        /* SETTINGS PANEL */
         const settingsToggle = document.getElementById("settings-toggle");
         const settingsPanel = document.getElementById("settings-panel");
         const settingsBackdrop = document.getElementById("settings-backdrop");

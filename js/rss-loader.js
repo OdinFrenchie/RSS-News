@@ -1,7 +1,22 @@
+/* OdinWire World News — rss-loader.js v0.6.1 */
+
+/* WORLD NEWS FEEDS */
 const FEEDS = {
+    /* Major Global Outlets (default ON) */
     bbc: "https://feeds.bbci.co.uk/news/world/rss.xml",
     reuters: "https://feeds.reuters.com/reuters/worldNews",
-    aljazeera: "https://www.aljazeera.com/xml/rss/all.xml"
+    aljazeera: "https://www.aljazeera.com/xml/rss/all.xml",
+    dw: "https://rss.dw.com/rdf/rss-en-world",
+    euronews: "https://www.euronews.com/rss?level=world",
+    france24: "https://www.france24.com/en/rss",
+    sky: "https://feeds.skynews.com/feeds/rss/world.xml",
+    npr: "https://feeds.npr.org/1004/rss.xml",
+
+    /* Additional Global Sources (default OFF) */
+    cbc: "https://www.cbc.ca/webfeed/rss/rss-world",
+    abc: "https://www.abc.net.au/news/feed/51120/rss.xml",
+    japantimes: "https://www.japantimes.co.jp/feed/topstories/",
+    voa: "https://www.voanews.com/rss"
 };
 
 let refreshInterval = 60;
@@ -76,15 +91,12 @@ function renderArticles(articles) {
     container.innerHTML = "";
 
     articles.forEach((article, index) => {
-        // Inline ad every 8 articles
         if (index > 0 && index % 8 === 0) {
             const adDiv = document.createElement("div");
             adDiv.className = "news-item ad-card";
             adDiv.innerHTML = `
                 <div class="ad-label">Advertisement</div>
-                <div class="ad-inline-slot">
-                    <!-- Inline ad slot -->
-                </div>
+                <div class="ad-inline-slot"></div>
             `;
             container.appendChild(adDiv);
         }
@@ -129,12 +141,10 @@ function generateTrendingKeywords(articles) {
         });
     });
 
-    const sorted = [...counts.entries()]
+    return [...counts.entries()]
         .sort((a, b) => b[1] - a[1])
         .slice(0, 6)
         .map(([word]) => word);
-
-    return sorted;
 }
 
 function renderTrendingKeywords(keywords) {
@@ -153,9 +163,7 @@ function startRefreshTimer() {
     const nextEl = document.getElementById("next-refresh");
     const updatedEl = document.getElementById("refresh-time");
 
-    if (refreshTimerId) {
-        clearInterval(refreshTimerId);
-    }
+    if (refreshTimerId) clearInterval(refreshTimerId);
 
     refreshCountdown = refreshInterval;
     nextEl.textContent = refreshCountdown;
@@ -186,8 +194,7 @@ async function loadRSS() {
         .map(cb => FEEDS[cb.value]);
 
     if (selectedFeeds.length === 0) {
-        const container = document.getElementById("rss-container");
-        container.innerHTML = "<p>No sources selected.</p>";
+        document.getElementById("rss-container").innerHTML = "<p>No sources selected.</p>";
         if (loadingEl) loadingEl.classList.remove("visible");
         if (mainUpdatedEl) mainUpdatedEl.textContent = "Last updated: —";
         return;
@@ -201,14 +208,11 @@ async function loadRSS() {
     allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
     renderArticles(allArticles);
-
-    const topStories = generateTopStories(allArticles);
-    renderTopStories(topStories);
-
-    const trending = generateTrendingKeywords(allArticles);
-    renderTrendingKeywords(trending);
+    renderTopStories(generateTopStories(allArticles));
+    renderTrendingKeywords(generateTrendingKeywords(allArticles));
 
     if (loadingEl) loadingEl.classList.remove("visible");
+
     if (mainUpdatedEl) {
         const now = new Date();
         mainUpdatedEl.textContent = "Last updated: " + now.toLocaleTimeString("en-GB", {
@@ -222,12 +226,10 @@ async function loadRSS() {
 /* FEED SELECTION PERSISTENCE */
 function restoreFeedSelection() {
     const saved = localStorage.getItem("selected-feeds");
-    const checkboxes = document.querySelectorAll(".feed-check");
-
     if (!saved) return;
 
     const selected = new Set(JSON.parse(saved));
-    checkboxes.forEach(cb => {
+    document.querySelectorAll(".feed-check").forEach(cb => {
         cb.checked = selected.has(cb.value);
     });
 }
