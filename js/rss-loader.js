@@ -125,8 +125,7 @@
                     allArticles = parsed;
                 }
             }
-        } catch (e) {
-        }
+        } catch (e) {}
 
         try {
             const cachedBookmarks = localStorage.getItem(CACHE_KEY_BOOKMARKS);
@@ -136,8 +135,7 @@
                     bookmarks = parsed;
                 }
             }
-        } catch (e) {
-        }
+        } catch (e) {}
 
         try {
             const cachedClicks = localStorage.getItem(CACHE_KEY_CLICKS);
@@ -147,29 +145,25 @@
                     clickStats = parsed;
                 }
             }
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     function saveArticlesToCache() {
         try {
             localStorage.setItem(CACHE_KEY_ARTICLES, JSON.stringify(allArticles));
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     function saveBookmarks() {
         try {
             localStorage.setItem(CACHE_KEY_BOOKMARKS, JSON.stringify(bookmarks));
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     function saveClicks() {
         try {
             localStorage.setItem(CACHE_KEY_CLICKS, JSON.stringify(clickStats));
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     function isBookmarked(id) {
@@ -313,6 +307,7 @@
         allChip.textContent = "All sources";
         allChip.dataset.sourceKey = "";
         sourceFilterChips.appendChild(allChip);
+
         Object.keys(FEEDS).forEach(key => {
             const chip = document.createElement("button");
             chip.type = "button";
@@ -321,6 +316,7 @@
             chip.dataset.sourceKey = key;
             sourceFilterChips.appendChild(chip);
         });
+
         sourceFilterChips.addEventListener("click", function (e) {
             const target = e.target;
             if (!target.classList.contains("source-filter-chip")) {
@@ -333,6 +329,7 @@
             });
             renderArticles();
         });
+
         allChip.classList.add("active");
     }
 
@@ -419,17 +416,21 @@
         const filtered = applyFilters(allArticles);
         const toShow = filtered.slice(0, visibleCount);
         rssContainer.innerHTML = "";
+
         toShow.forEach(article => {
             const card = document.createElement("article");
             card.className = "news-item";
+
             const colorBar = document.createElement("div");
             colorBar.className = "source-color-bar";
             colorBar.style.backgroundColor = article.sourceColor || "";
             card.appendChild(colorBar);
+
             const pill = document.createElement("span");
             pill.className = "source-pill";
             pill.textContent = article.sourceName;
             card.appendChild(pill);
+
             if (article.image) {
                 const img = document.createElement("img");
                 img.className = "news-image";
@@ -437,6 +438,7 @@
                 img.alt = article.title || "";
                 card.appendChild(img);
             }
+
             const h2 = document.createElement("h2");
             const link = document.createElement("a");
             link.href = article.link;
@@ -448,16 +450,20 @@
             });
             h2.appendChild(link);
             card.appendChild(h2);
+
             const date = document.createElement("div");
             date.className = "news-date";
             date.textContent = article.published ? new Date(article.published).toLocaleString() : "";
             card.appendChild(date);
+
             const desc = document.createElement("div");
             desc.className = "news-desc";
             desc.textContent = article.description || "";
             card.appendChild(desc);
+
             const actions = document.createElement("div");
             actions.className = "card-actions";
+
             const readerBtn = document.createElement("button");
             readerBtn.type = "button";
             readerBtn.className = "card-button";
@@ -465,6 +471,7 @@
             readerBtn.addEventListener("click", function () {
                 openReader(article);
             });
+
             const bookmarkBtn = document.createElement("button");
             bookmarkBtn.type = "button";
             bookmarkBtn.className = "card-button";
@@ -475,11 +482,14 @@
             bookmarkBtn.addEventListener("click", function () {
                 toggleBookmark(article);
             });
+
             actions.appendChild(readerBtn);
             actions.appendChild(bookmarkBtn);
             card.appendChild(actions);
+
             rssContainer.appendChild(card);
         });
+
         if (filtered.length <= visibleCount) {
             loadMoreButton.classList.add("disabled");
             loadMoreButton.disabled = true;
@@ -487,6 +497,7 @@
             loadMoreButton.classList.remove("disabled");
             loadMoreButton.disabled = false;
         }
+
         renderTrending(filtered);
         renderTopStories(filtered);
     }
@@ -496,12 +507,14 @@
         const xml = parser.parseFromString(xmlText, "application/xml");
         const items = Array.from(xml.querySelectorAll("item"));
         const feed = FEEDS[sourceKey];
+
         const articles = items.map((item, index) => {
             const title = item.querySelector("title") ? item.querySelector("title").textContent.trim() : "";
             const link = item.querySelector("link") ? item.querySelector("link").textContent.trim() : "";
             const description = item.querySelector("description") ? item.querySelector("description").textContent.trim() : "";
             const pubDate = item.querySelector("pubDate") ? item.querySelector("pubDate").textContent.trim() : "";
             const guid = item.querySelector("guid") ? item.querySelector("guid").textContent.trim() : link || title || `${sourceKey}-${index}`;
+
             let image = "";
             const mediaContent = item.querySelector("media\\:content, content");
             if (mediaContent && mediaContent.getAttribute("url")) {
@@ -511,6 +524,7 @@
             if (!image && enclosure && enclosure.getAttribute("url")) {
                 image = enclosure.getAttribute("url");
             }
+
             return {
                 id: `${sourceKey}-${guid}`,
                 sourceKey,
@@ -523,6 +537,7 @@
                 image
             };
         });
+
         return articles;
     }
 
@@ -545,26 +560,33 @@
 
     async function loadFeeds() {
         mainLoading.classList.add("visible");
+
         const enabledKeys = Array.from(feedCheckboxes)
             .filter(cb => cb.checked)
             .map(cb => cb.value)
             .filter(key => FEEDS[key]);
+
         const promises = enabledKeys.map(key => fetchFeed(key));
         const results = await Promise.all(promises);
+
         let combined = [];
         results.forEach(list => {
             combined = combined.concat(list);
         });
+
         combined.sort((a, b) => {
             const da = a.published ? new Date(a.published).getTime() : 0;
             const db = b.published ? new Date(b.published).getTime() : 0;
             return db - da;
         });
+
         allArticles = combined;
         visibleCount = PAGE_SIZE;
         saveArticlesToCache();
+
         mainLastUpdated.textContent = "Last updated: " + new Date().toLocaleTimeString();
         mainLoading.classList.remove("visible");
+
         renderArticles();
         renderMostRead();
         renderTopSources();
@@ -591,20 +613,24 @@
             settingsPanel.classList.add("open");
             settingsBackdrop.classList.add("visible");
         });
+
         settingsClose.addEventListener("click", function () {
             settingsPanel.classList.remove("open");
             settingsBackdrop.classList.remove("visible");
         });
+
         settingsBackdrop.addEventListener("click", function () {
             settingsPanel.classList.remove("open");
             settingsBackdrop.classList.remove("visible");
         });
+
         selectAllFeedsButton.addEventListener("click", function () {
             feedCheckboxes.forEach(cb => {
                 cb.checked = true;
             });
             loadFeeds();
         });
+
         clearAllFeedsButton.addEventListener("click", function () {
             feedCheckboxes.forEach(cb => {
                 cb.checked = false;
@@ -613,6 +639,7 @@
             visibleCount = PAGE_SIZE;
             renderArticles();
         });
+
         feedCheckboxes.forEach(cb => {
             cb.addEventListener("change", function () {
                 loadFeeds();
@@ -626,11 +653,13 @@
             compactToggle.classList.toggle("active");
             settingsCompactToggle.classList.toggle("active");
         });
+
         settingsCompactToggle.addEventListener("click", function () {
             document.body.classList.toggle("compact");
             compactToggle.classList.toggle("active");
             settingsCompactToggle.classList.toggle("active");
         });
+
         themeToggle.addEventListener("click", function () {
             const current = document.documentElement.getAttribute("data-theme");
             const next = current === "dark" ? "light" : "dark";
@@ -681,11 +710,13 @@
         navNewsToggle.addEventListener("click", function () {
             navNewsSubmenu.classList.toggle("open");
         });
+
         document.addEventListener("click", function (e) {
             if (!navNewsToggle.contains(e.target) && !navNewsSubmenu.contains(e.target)) {
                 navNewsSubmenu.classList.remove("open");
             }
         });
+
         navNewsSubmenu.addEventListener("click", function (e) {
             const btn = e.target.closest(".nav-subitem");
             if (!btn || btn === setDefaultNewsButton) {
@@ -713,11 +744,11 @@
                 window.location.href = "/news/middleeast.html";
             }
         });
+
         setDefaultNewsButton.addEventListener("click", function () {
             try {
                 localStorage.setItem(CACHE_KEY_DEFAULT_NEWS, "world");
-            } catch (e) {
-            }
+            } catch (e) {}
         });
     }
 
@@ -731,6 +762,7 @@
         initBookmarks();
         initReader();
         initNewsNav();
+
         if (allArticles.length) {
             visibleCount = PAGE_SIZE;
             renderArticles();
@@ -739,8 +771,10 @@
         } else {
             loadFeeds();
         }
+
         startRefreshTimer();
     }
 
-    document.addEventListener("DOMContentLoaded", init);
+    // IMPORTANT: call init immediately (script is at end of body, DOM is ready)
+    init();
 })();

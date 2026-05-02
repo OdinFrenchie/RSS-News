@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1] - 2026-05-02
+
+### Fixed – 0.7.1
+
+- Fixed World News initialisation so feeds load correctly when script is placed at end of body
+- Ensured Load more button operates on the loaded article set
+
 ## [0.7.0] - 2026-05-02
 
 ### Added – 0.7.0
