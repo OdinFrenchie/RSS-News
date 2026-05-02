@@ -1,6 +1,24 @@
+
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [0.7.0] - 2026-05-02
+
+### Added – 0.7.0
+
+- Sticky chrome navigation bar with blur and shadow
+- Source filter chips for per‑feed filtering
+- Search bar with title‑only live filtering
+- Clickable trending keyword chips integrated with search
+
+### Changed – 0.7.0
+
+- Updated article rendering to include data-source attributes for filtering
+- Updated RSS loader to support combined filtering logic
+
+### Notes – 0.7.0
+
+- All enhancements built on stable v0.6.1 baseline
+- No changes made to feed loading, ads, or top stories logic
 
 ## [0.6.1] - 2026-05-01
 
