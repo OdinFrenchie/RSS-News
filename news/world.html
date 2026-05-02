@@ -7,126 +7,51 @@
     <meta name="description" content="Latest World News updates from global sources — auto-refreshed via RSS feeds.">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-
 <body>
 
     <header class="site-header">
-        <h1 id="page-title">World News</h1>
+        <h1>World News</h1>
+        <p class="site-subtitle">Global headlines from curated sources</p>
     </header>
 
     <nav class="nav-bar">
         <a href="/index.html" class="brand">OdinWire</a>
-
-        <div class="nav-group">
-            <button class="nav-parent" type="button" id="nav-news-toggle">
-                News
-                <span class="nav-caret">▾</span>
-            </button>
-            <div class="nav-submenu" id="nav-news-submenu">
-                <button class="nav-subitem" data-news-region="world" type="button">World</button>
-                <button class="nav-subitem" data-news-region="uk" type="button">UK</button>
-                <button class="nav-subitem" data-news-region="europe" type="button">Europe</button>
-                <button class="nav-subitem" data-news-region="us" type="button">US</button>
-                <button class="nav-subitem" data-news-region="canada" type="button">Canada</button>
-                <button class="nav-subitem" data-news-region="aunz" type="button">Australia/NZ</button>
-                <button class="nav-subitem" data-news-region="asia" type="button">Asia</button>
-                <button class="nav-subitem" data-news-region="middleeast" type="button">Middle East</button>
-                <button class="nav-subitem nav-subitem-default" id="set-default-news" type="button">Set current as default</button>
-            </div>
-        </div>
-
-        <a href="/news/tech.html">Tech</a>
-        <a href="/news/sports.html">Sports</a>
-        <a href="/news/entertainment.html">Entertainment</a>
+        <a href="/news/world.html" class="active">World</a>
+        <a href="/news/uk.html">UK</a>
+        <a href="/news/europe.html">Europe</a>
+        <a href="/news/us.html">US</a>
+        <a href="/news/canada.html">Canada</a>
+        <a href="/news/aunz.html">Australia/NZ</a>
+        <a href="/news/asia.html">Asia</a>
+        <a href="/news/middleeast.html">Middle East</a>
 
         <button id="settings-toggle" class="settings-toggle" type="button">⚙ Settings</button>
-        <button id="compact-toggle" class="compact-toggle" type="button">Compact</button>
-        <button id="theme-toggle" class="theme-toggle" type="button">🌙</button>
     </nav>
 
-    <main class="content enhanced">
-
-        <div class="page-chrome">
-            <div class="toolbar-row">
-                <div class="toolbar-left">
-                    <div class="feed-meta">
-                        <span id="main-last-updated">Last updated: —</span>
-                        <span id="main-loading" class="loading-indicator">Loading…</span>
-                    </div>
-                    <div class="live-refresh live-refresh-animated">
-                        Auto refresh in <span id="next-refresh">60</span>s
-                    </div>
-                </div>
-                <div class="toolbar-right">
-                    <input id="article-search" class="article-search" type="search" placeholder="Search articles…">
-                </div>
-            </div>
-
-            <div class="filter-row">
-                <div id="source-filter-chips" class="source-filter-chips"></div>
-            </div>
-        </div>
-
-        <section class="bookmarks-section">
-            <div class="bookmarks-header">
-                <h2>Bookmarks</h2>
-                <button id="clear-bookmarks" type="button" class="clear-bookmarks-button">Clear bookmarks</button>
-            </div>
-            <div id="bookmarks-container" class="bookmarks-container"></div>
+    <main class="content">
+        <section class="feed-meta">
+            <span id="main-last-updated">Last updated: —</span>
+            <span id="main-loading" class="loading-indicator">Loading…</span>
         </section>
 
-        <div class="layout-desktop">
-
-            <div class="main-feed">
-
-                <div id="trending-keywords" class="trending-keywords">
-                    <span class="trending-label">Trending:</span>
-                    <span id="trending-list"></span>
-                </div>
-
-                <div id="rss-container" class="rss-container"></div>
-            </div>
-
-            <aside class="top-stories-rail">
-                <h3>Top Stories</h3>
-                <div id="top-stories"></div>
-
-                <h3 class="sidebar-heading">Most read today</h3>
-                <div id="most-read"></div>
-
-                <h3 class="sidebar-heading">Top sources</h3>
-                <div id="top-sources"></div>
-
-                <div class="sidebar-ad">
-                    <div class="ad-label">Advertisement</div>
-                    <div class="ad-slot-vertical" id="ad-vertical"></div>
-                </div>
-            </aside>
-
-        </div>
-
+        <section>
+            <div id="rss-container" class="rss-container"></div>
+        </section>
     </main>
-
-    <div class="bottom-ad-banner">
-        <div class="bottom-ad-inner">
-            <span class="ad-label">Advertisement</span>
-            <div class="ad-slot-bottom" id="ad-bottom"></div>
-        </div>
-    </div>
 
     <div id="settings-backdrop" class="settings-backdrop"></div>
     <aside id="settings-panel" class="settings-panel">
         <div class="settings-header">
-            <h2>Page Settings</h2>
+            <h2>World News Sources</h2>
             <button id="settings-close" class="settings-close" type="button">✕</button>
         </div>
 
         <section class="settings-section">
-            <h3>News Sources</h3>
-            <p class="settings-help">Choose which sources to include in this feed.</p>
+            <p class="settings-help">
+                Choose which sources to include in this World feed. Major global outlets are enabled by default.
+            </p>
 
             <div class="feed-selector">
-
                 <div class="feed-selector-header">
                     <div class="feed-selector-actions">
                         <button id="select-all-feeds" type="button">Select all</button>
@@ -134,7 +59,7 @@
                     </div>
                 </div>
 
-                <h4 class="feed-group-label">Major Global Outlets</h4>
+                <h3 class="feed-group-label">Major Global Outlets</h3>
 
                 <label class="feed-option feed-bbc">
                     <input type="checkbox" class="feed-check" value="bbc" checked>
@@ -176,7 +101,7 @@
                     <span class="feed-label-text">NPR World</span>
                 </label>
 
-                <h4 class="feed-group-label">Additional Global Sources</h4>
+                <h3 class="feed-group-label">Additional Global Sources</h3>
 
                 <label class="feed-option feed-cbc">
                     <input type="checkbox" class="feed-check" value="cbc">
@@ -197,39 +122,14 @@
                     <input type="checkbox" class="feed-check" value="voa">
                     <span class="feed-label-text">VOA News</span>
                 </label>
-
             </div>
-        </section>
-
-        <section class="settings-section">
-            <h3>Display</h3>
-            <label class="settings-toggle-row">
-                <span>Compact mode</span>
-                <button id="settings-compact-toggle" type="button" class="toggle-pill">Toggle</button>
-            </label>
         </section>
     </aside>
-
-    <div id="reader-backdrop" class="reader-backdrop"></div>
-    <div id="reader-modal" class="reader-modal">
-        <div class="reader-inner">
-            <div class="reader-header">
-                <h2 id="reader-title"></h2>
-                <button id="reader-close" type="button" class="reader-close">✕</button>
-            </div>
-            <div id="reader-meta" class="reader-meta"></div>
-            <div id="reader-body" class="reader-body"></div>
-            <div class="reader-footer">
-                <a id="reader-open-original" href="#" target="_blank" rel="noopener noreferrer" class="reader-open-link">Open original article</a>
-            </div>
-        </div>
-    </div>
 
     <footer class="site-footer">
         <p>© 2026 OdinWire</p>
     </footer>
 
-    <script src="/js/rss-loader.js?v=19"></script>
-
+    <script src="/js/rss-loader.js?v=10"></script>
 </body>
 </html>
