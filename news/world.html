@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>World News | OdinWire</title>
     <meta name="description" content="Latest World News updates from global sources — auto-refreshed via RSS feeds.">
-
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
@@ -18,8 +16,25 @@
 
     <nav class="nav-bar">
         <a href="/index.html" class="brand">OdinWire</a>
-        <a href="/news/world.html" class="active">World</a>
-        <a href="/news/uk.html">UK</a>
+
+        <div class="nav-group">
+            <button class="nav-parent" type="button" id="nav-news-toggle">
+                News
+                <span class="nav-caret">▾</span>
+            </button>
+            <div class="nav-submenu" id="nav-news-submenu">
+                <button class="nav-subitem" data-news-region="world" type="button">World</button>
+                <button class="nav-subitem" data-news-region="uk" type="button">UK</button>
+                <button class="nav-subitem" data-news-region="europe" type="button">Europe</button>
+                <button class="nav-subitem" data-news-region="us" type="button">US</button>
+                <button class="nav-subitem" data-news-region="canada" type="button">Canada</button>
+                <button class="nav-subitem" data-news-region="aunz" type="button">Australia/NZ</button>
+                <button class="nav-subitem" data-news-region="asia" type="button">Asia</button>
+                <button class="nav-subitem" data-news-region="middleeast" type="button">Middle East</button>
+                <button class="nav-subitem nav-subitem-default" id="set-default-news" type="button">Set current as default</button>
+            </div>
+        </div>
+
         <a href="/news/tech.html">Tech</a>
         <a href="/news/sports.html">Sports</a>
         <a href="/news/entertainment.html">Entertainment</a>
@@ -31,14 +46,28 @@
 
     <main class="content enhanced">
 
-        <div class="layout-desktop">
-
-            <div class="main-feed">
-
+        <div class="toolbar-row">
+            <div class="toolbar-left">
                 <div class="feed-meta">
                     <span id="main-last-updated">Last updated: —</span>
                     <span id="main-loading" class="loading-indicator">Loading…</span>
                 </div>
+                <div class="live-refresh live-refresh-animated">
+                    Auto refresh in <span id="next-refresh">60</span>s
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <input id="article-search" class="article-search" type="search" placeholder="Search articles…">
+            </div>
+        </div>
+
+        <div class="filter-row">
+            <div id="source-filter-chips" class="source-filter-chips"></div>
+        </div>
+
+        <div class="layout-desktop">
+
+            <div class="main-feed">
 
                 <div id="trending-keywords" class="trending-keywords">
                     <span class="trending-label">Trending:</span>
@@ -46,39 +75,47 @@
                 </div>
 
                 <div id="rss-container" class="rss-container"></div>
+
+                <div class="load-more-row">
+                    <button id="load-more" type="button" class="load-more-button">Load more</button>
+                </div>
             </div>
 
             <aside class="top-stories-rail">
                 <h3>Top Stories</h3>
                 <div id="top-stories"></div>
 
-                <div class="live-refresh">
-                    Updated <span id="refresh-time">just now</span><br>
-                    Next refresh in <span id="next-refresh">60</span>s
-                </div>
+                <h3 class="sidebar-heading">Most read today</h3>
+                <div id="most-read"></div>
+
+                <h3 class="sidebar-heading">Top sources</h3>
+                <div id="top-sources"></div>
 
                 <div class="sidebar-ad">
                     <div class="ad-label">Advertisement</div>
-                    <div class="ad-slot-vertical" id="ad-vertical">
-                        <!-- 300x600 / responsive skyscraper ad slot -->
-                    </div>
+                    <div class="ad-slot-vertical" id="ad-vertical"></div>
                 </div>
             </aside>
 
         </div>
+
+        <section class="bookmarks-section">
+            <div class="bookmarks-header">
+                <h2>Bookmarks</h2>
+                <button id="clear-bookmarks" type="button" class="clear-bookmarks-button">Clear bookmarks</button>
+            </div>
+            <div id="bookmarks-container" class="bookmarks-container"></div>
+        </section>
 
     </main>
 
     <div class="bottom-ad-banner">
         <div class="bottom-ad-inner">
             <span class="ad-label">Advertisement</span>
-            <div class="ad-slot-bottom" id="ad-bottom">
-                <!-- Bottom banner ad slot -->
-            </div>
+            <div class="ad-slot-bottom" id="ad-bottom"></div>
         </div>
     </div>
 
-    <!-- SETTINGS PANEL -->
     <div id="settings-backdrop" class="settings-backdrop"></div>
     <aside id="settings-panel" class="settings-panel">
         <div class="settings-header">
@@ -99,68 +136,66 @@
                     </div>
                 </div>
 
-                <!-- MAJOR GLOBAL OUTLETS (default ON) -->
                 <h4 class="feed-group-label">Major Global Outlets</h4>
 
-                <label class="feed-option">
+                <label class="feed-option feed-bbc">
                     <input type="checkbox" class="feed-check" value="bbc" checked>
                     <span class="feed-label-text">BBC World</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-reuters">
                     <input type="checkbox" class="feed-check" value="reuters" checked>
                     <span class="feed-label-text">Reuters World</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-aljazeera">
                     <input type="checkbox" class="feed-check" value="aljazeera" checked>
                     <span class="feed-label-text">Al Jazeera Global</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-dw">
                     <input type="checkbox" class="feed-check" value="dw" checked>
                     <span class="feed-label-text">Deutsche Welle (World)</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-euronews">
                     <input type="checkbox" class="feed-check" value="euronews" checked>
                     <span class="feed-label-text">Euronews (World)</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-france24">
                     <input type="checkbox" class="feed-check" value="france24" checked>
                     <span class="feed-label-text">France24 (International)</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-sky">
                     <input type="checkbox" class="feed-check" value="sky" checked>
                     <span class="feed-label-text">Sky News (World)</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-npr">
                     <input type="checkbox" class="feed-check" value="npr" checked>
                     <span class="feed-label-text">NPR World</span>
                 </label>
 
-                <!-- ADDITIONAL GLOBAL SOURCES (default OFF) -->
                 <h4 class="feed-group-label">Additional Global Sources</h4>
 
-                <label class="feed-option">
+                <label class="feed-option feed-cbc">
                     <input type="checkbox" class="feed-check" value="cbc">
                     <span class="feed-label-text">CBC World</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-abc">
                     <input type="checkbox" class="feed-check" value="abc">
                     <span class="feed-label-text">ABC Australia (World)</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-japantimes">
                     <input type="checkbox" class="feed-check" value="japantimes">
                     <span class="feed-label-text">Japan Times</span>
                 </label>
 
-                <label class="feed-option">
+                <label class="feed-option feed-voa">
                     <input type="checkbox" class="feed-check" value="voa">
                     <span class="feed-label-text">VOA News</span>
                 </label>
@@ -177,74 +212,26 @@
         </section>
     </aside>
 
+    <div id="reader-backdrop" class="reader-backdrop"></div>
+    <div id="reader-modal" class="reader-modal">
+        <div class="reader-inner">
+            <div class="reader-header">
+                <h2 id="reader-title"></h2>
+                <button id="reader-close" type="button" class="reader-close">✕</button>
+            </div>
+            <div id="reader-meta" class="reader-meta"></div>
+            <div id="reader-body" class="reader-body"></div>
+            <div class="reader-footer">
+                <a id="reader-open-original" href="#" target="_blank" rel="noopener noreferrer" class="reader-open-link">Open original article</a>
+            </div>
+        </div>
+    </div>
+
     <footer class="site-footer">
         <p>© 2026 OdinWire</p>
     </footer>
 
-    <script src="/js/rss-loader.js?v=15"></script>
-
-    <script>
-        /* THEME */
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme) {
-            document.documentElement.setAttribute("data-theme", savedTheme);
-        }
-
-        const themeToggle = document.getElementById("theme-toggle");
-        themeToggle.addEventListener("click", () => {
-            const current = document.documentElement.getAttribute("data-theme");
-            const next = current === "dark" ? "light" : "dark";
-            document.documentElement.setAttribute("data-theme", next);
-            localStorage.setItem("theme", next);
-            themeToggle.textContent = next === "dark" ? "☀️" : "🌙";
-        });
-
-        /* COMPACT MODE */
-        const compactToggle = document.getElementById("compact-toggle");
-        const settingsCompactToggle = document.getElementById("settings-compact-toggle");
-        const savedCompact = localStorage.getItem("compact-mode");
-
-        if (savedCompact === "on") {
-            document.body.classList.add("compact");
-        }
-
-        function syncCompactLabel() {
-            const isOn = document.body.classList.contains("compact");
-            compactToggle.classList.toggle("active", isOn);
-            settingsCompactToggle.classList.toggle("active", isOn);
-        }
-
-        function toggleCompact() {
-            document.body.classList.toggle("compact");
-            const isOn = document.body.classList.contains("compact");
-            localStorage.setItem("compact-mode", isOn ? "on" : "off");
-            syncCompactLabel();
-        }
-
-        compactToggle.addEventListener("click", toggleCompact);
-        settingsCompactToggle.addEventListener("click", toggleCompact);
-        syncCompactLabel();
-
-        /* SETTINGS PANEL */
-        const settingsToggle = document.getElementById("settings-toggle");
-        const settingsPanel = document.getElementById("settings-panel");
-        const settingsBackdrop = document.getElementById("settings-backdrop");
-        const settingsClose = document.getElementById("settings-close");
-
-        function openSettings() {
-            settingsPanel.classList.add("open");
-            settingsBackdrop.classList.add("visible");
-        }
-
-        function closeSettings() {
-            settingsPanel.classList.remove("open");
-            settingsBackdrop.classList.remove("visible");
-        }
-
-        settingsToggle.addEventListener("click", openSettings);
-        settingsClose.addEventListener("click", closeSettings);
-        settingsBackdrop.addEventListener("click", closeSettings);
-    </script>
+    <script src="/js/rss-loader.js?v=17"></script>
 
 </body>
 </html>
