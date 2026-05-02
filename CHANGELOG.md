@@ -1,55 +1,6 @@
 # Changelog
 
-## [0.7.3] - 2026-05-02
-
-### Changed – 0.7.3
-
-- Removed Load more pagination from World News and reverted to full-feed rendering
-- Kept source filters, search, bookmarks, reader mode, analytics, and sticky chrome intact
-
-## [0.7.2] - 2026-05-02
-
-### Added – 0.7.2
-
-- Made toolbar, last-updated bar, and source filters sticky at the top of the page
-- Moved bookmarks section to the top of the World News page for faster access
-
-### Fixed – 0.7.2
-
-- Hardened article rendering so cards always display when feed data is present
-
-## [0.7.1] - 2026-05-02
-
-### Fixed – 0.7.1
-
-- Fixed World News initialisation so feeds load correctly when script is placed at end of body
-- Ensured Load more button operates on the loaded article set
-
-## [0.7.0] - 2026-05-02
-
-### Added – 0.7.0
-
-- Added source filter chips above the World News feed
-- Added article search bar for live filtering
-- Added local caching of articles for faster reloads
-- Added smooth fade-in animations for news cards
-- Added Top Sources analytics sidebar section
-- Added Most read today sidebar section based on local click tracking
-- Added auto refresh countdown indicator with animated status dot
-- Added News parent navigation with foldable region dropdown
-- Added bookmarking system with local storage and bookmarks section
-- Added reader mode overlay for focused article reading
-
-### Changed – 0.7.0
-
-- Updated world.html layout to include toolbar, filters, bookmarks, and reader modal
-- Updated style.css with new toolbar, chips, bookmarks, reader, and analytics styling
-- Updated rss-loader.js to support filters, search, caching, analytics, bookmarks, and reader mode
-
-### Notes – 0.7.0
-
-- All enhancements are local-only and do not track users across sessions beyond this browser
-- World News remains the default region; default region selection is stored locally for future expansion
+All notable changes to this project will be documented in this file.
 
 ## [0.6.1] - 2026-05-01
 

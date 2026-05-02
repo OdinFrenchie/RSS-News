@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Proxy Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        textarea { width: 100%; height: 400px; }
+    </style>
+</head>
+<body>
+
+<h2>Proxy Test</h2>
+<p>Testing: <code>/proxy?url=https://feeds.bbci.co.uk/news/world/rss.xml</code></p>
+
+<button id="run">Run Test</button>
+
+<h3>Response:</h3>
+<textarea id="output"></textarea>
+
+<script>
+document.getElementById("run").onclick = async () => {
+    const out = document.getElementById("output");
+    out.value = "Loading…";
+
+    try {
+        const res = await fetch("/proxy?url=" + encodeURIComponent("https://feeds.bbci.co.uk/news/world/rss.xml"));
+        const text = await res.text();
+        out.value = text;
+    } catch (e) {
+        out.value = "ERROR:\n" + e.toString();
+    }
+};
+</script>
+
+</body>
+</html>

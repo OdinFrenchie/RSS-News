@@ -3,55 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>World News | OdinWire</title>
     <meta name="description" content="Latest World News updates from global sources — auto-refreshed via RSS feeds.">
+
     <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body>
 
     <header class="site-header">
-        <h1>World News</h1>
-        <p class="site-subtitle">Global headlines from curated sources</p>
+        <h1 id="page-title">World News</h1>
     </header>
 
     <nav class="nav-bar">
         <a href="/index.html" class="brand">OdinWire</a>
         <a href="/news/world.html" class="active">World</a>
         <a href="/news/uk.html">UK</a>
-        <a href="/news/europe.html">Europe</a>
-        <a href="/news/us.html">US</a>
-        <a href="/news/canada.html">Canada</a>
-        <a href="/news/aunz.html">Australia/NZ</a>
-        <a href="/news/asia.html">Asia</a>
-        <a href="/news/middleeast.html">Middle East</a>
+        <a href="/news/tech.html">Tech</a>
+        <a href="/news/sports.html">Sports</a>
+        <a href="/news/entertainment.html">Entertainment</a>
 
         <button id="settings-toggle" class="settings-toggle" type="button">⚙ Settings</button>
+        <button id="compact-toggle" class="compact-toggle" type="button">Compact</button>
+        <button id="theme-toggle" class="theme-toggle" type="button">🌙</button>
     </nav>
 
-    <main class="content">
-        <section class="feed-meta">
-            <span id="main-last-updated">Last updated: —</span>
-            <span id="main-loading" class="loading-indicator">Loading…</span>
-        </section>
+    <main class="content enhanced">
 
-        <section>
-            <div id="rss-container" class="rss-container"></div>
-        </section>
+        <div class="layout-desktop">
+
+            <div class="main-feed">
+
+                <div class="feed-meta">
+                    <span id="main-last-updated">Last updated: —</span>
+                    <span id="main-loading" class="loading-indicator">Loading…</span>
+                </div>
+
+                <div id="trending-keywords" class="trending-keywords">
+                    <span class="trending-label">Trending:</span>
+                    <span id="trending-list"></span>
+                </div>
+
+                <div id="rss-container" class="rss-container"></div>
+            </div>
+
+            <aside class="top-stories-rail">
+                <h3>Top Stories</h3>
+                <div id="top-stories"></div>
+
+                <div class="live-refresh">
+                    Updated <span id="refresh-time">just now</span><br>
+                    Next refresh in <span id="next-refresh">60</span>s
+                </div>
+
+                <div class="sidebar-ad">
+                    <div class="ad-label">Advertisement</div>
+                    <div class="ad-slot-vertical" id="ad-vertical">
+                        <!-- 300x600 / responsive skyscraper ad slot -->
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+
     </main>
 
+    <div class="bottom-ad-banner">
+        <div class="bottom-ad-inner">
+            <span class="ad-label">Advertisement</span>
+            <div class="ad-slot-bottom" id="ad-bottom">
+                <!-- Bottom banner ad slot -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
     <div id="settings-backdrop" class="settings-backdrop"></div>
     <aside id="settings-panel" class="settings-panel">
         <div class="settings-header">
-            <h2>World News Sources</h2>
+            <h2>Page Settings</h2>
             <button id="settings-close" class="settings-close" type="button">✕</button>
         </div>
 
         <section class="settings-section">
-            <p class="settings-help">
-                Choose which sources to include in this World feed. Major global outlets are enabled by default.
-            </p>
+            <h3>News Sources</h3>
+            <p class="settings-help">Choose which sources to include in this feed.</p>
 
             <div class="feed-selector">
+
                 <div class="feed-selector-header">
                     <div class="feed-selector-actions">
                         <button id="select-all-feeds" type="button">Select all</button>
@@ -59,70 +99,81 @@
                     </div>
                 </div>
 
-                <h3 class="feed-group-label">Major Global Outlets</h3>
+                <!-- MAJOR GLOBAL OUTLETS (default ON) -->
+                <h4 class="feed-group-label">Major Global Outlets</h4>
 
-                <label class="feed-option feed-bbc">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="bbc" checked>
                     <span class="feed-label-text">BBC World</span>
                 </label>
 
-                <label class="feed-option feed-reuters">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="reuters" checked>
                     <span class="feed-label-text">Reuters World</span>
                 </label>
 
-                <label class="feed-option feed-aljazeera">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="aljazeera" checked>
                     <span class="feed-label-text">Al Jazeera Global</span>
                 </label>
 
-                <label class="feed-option feed-dw">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="dw" checked>
                     <span class="feed-label-text">Deutsche Welle (World)</span>
                 </label>
 
-                <label class="feed-option feed-euronews">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="euronews" checked>
                     <span class="feed-label-text">Euronews (World)</span>
                 </label>
 
-                <label class="feed-option feed-france24">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="france24" checked>
                     <span class="feed-label-text">France24 (International)</span>
                 </label>
 
-                <label class="feed-option feed-sky">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="sky" checked>
                     <span class="feed-label-text">Sky News (World)</span>
                 </label>
 
-                <label class="feed-option feed-npr">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="npr" checked>
                     <span class="feed-label-text">NPR World</span>
                 </label>
 
-                <h3 class="feed-group-label">Additional Global Sources</h3>
+                <!-- ADDITIONAL GLOBAL SOURCES (default OFF) -->
+                <h4 class="feed-group-label">Additional Global Sources</h4>
 
-                <label class="feed-option feed-cbc">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="cbc">
                     <span class="feed-label-text">CBC World</span>
                 </label>
 
-                <label class="feed-option feed-abc">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="abc">
                     <span class="feed-label-text">ABC Australia (World)</span>
                 </label>
 
-                <label class="feed-option feed-japantimes">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="japantimes">
                     <span class="feed-label-text">Japan Times</span>
                 </label>
 
-                <label class="feed-option feed-voa">
+                <label class="feed-option">
                     <input type="checkbox" class="feed-check" value="voa">
                     <span class="feed-label-text">VOA News</span>
                 </label>
+
             </div>
+        </section>
+
+        <section class="settings-section">
+            <h3>Display</h3>
+            <label class="settings-toggle-row">
+                <span>Compact mode</span>
+                <button id="settings-compact-toggle" type="button" class="toggle-pill">Toggle</button>
+            </label>
         </section>
     </aside>
 
@@ -130,6 +181,70 @@
         <p>© 2026 OdinWire</p>
     </footer>
 
-    <script src="/js/rss-loader.js?v=10"></script>
+    <script src="/js/rss-loader.js?v=15"></script>
+
+    <script>
+        /* THEME */
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            document.documentElement.setAttribute("data-theme", savedTheme);
+        }
+
+        const themeToggle = document.getElementById("theme-toggle");
+        themeToggle.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-theme");
+            const next = current === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            themeToggle.textContent = next === "dark" ? "☀️" : "🌙";
+        });
+
+        /* COMPACT MODE */
+        const compactToggle = document.getElementById("compact-toggle");
+        const settingsCompactToggle = document.getElementById("settings-compact-toggle");
+        const savedCompact = localStorage.getItem("compact-mode");
+
+        if (savedCompact === "on") {
+            document.body.classList.add("compact");
+        }
+
+        function syncCompactLabel() {
+            const isOn = document.body.classList.contains("compact");
+            compactToggle.classList.toggle("active", isOn);
+            settingsCompactToggle.classList.toggle("active", isOn);
+        }
+
+        function toggleCompact() {
+            document.body.classList.toggle("compact");
+            const isOn = document.body.classList.contains("compact");
+            localStorage.setItem("compact-mode", isOn ? "on" : "off");
+            syncCompactLabel();
+        }
+
+        compactToggle.addEventListener("click", toggleCompact);
+        settingsCompactToggle.addEventListener("click", toggleCompact);
+        syncCompactLabel();
+
+        /* SETTINGS PANEL */
+        const settingsToggle = document.getElementById("settings-toggle");
+        const settingsPanel = document.getElementById("settings-panel");
+        const settingsBackdrop = document.getElementById("settings-backdrop");
+        const settingsClose = document.getElementById("settings-close");
+
+        function openSettings() {
+            settingsPanel.classList.add("open");
+            settingsBackdrop.classList.add("visible");
+        }
+
+        function closeSettings() {
+            settingsPanel.classList.remove("open");
+            settingsBackdrop.classList.remove("visible");
+        }
+
+        settingsToggle.addEventListener("click", openSettings);
+        settingsClose.addEventListener("click", closeSettings);
+        settingsBackdrop.addEventListener("click", closeSettings);
+    </script>
+
 </body>
 </html>

@@ -1,240 +1,276 @@
-(function () {
-    const FEEDS = {
-        bbc: {
-            name: "BBC World",
-            url: "https://feeds.bbci.co.uk/news/world/rss.xml"
-        },
-        reuters: {
-            name: "Reuters World",
-            url: "https://feeds.reuters.com/Reuters/worldNews"
-        },
-        aljazeera: {
-            name: "Al Jazeera Global",
-            url: "https://www.aljazeera.com/xml/rss/all.xml"
-        },
-        dw: {
-            name: "Deutsche Welle (World)",
-            url: "https://rss.dw.com/rdf/rss-en-world"
-        },
-        euronews: {
-            name: "Euronews (World)",
-            url: "https://www.euronews.com/rss?level=theme&name=news"
-        },
-        france24: {
-            name: "France24 (International)",
-            url: "https://www.france24.com/en/rss"
-        },
-        sky: {
-            name: "Sky News (World)",
-            url: "https://feeds.skynews.com/feeds/rss/world.xml"
-        },
-        npr: {
-            name: "NPR World",
-            url: "https://feeds.npr.org/1004/rss.xml"
-        },
-        cbc: {
-            name: "CBC World",
-            url: "https://www.cbc.ca/cmlink/rss-world"
-        },
-        abc: {
-            name: "ABC Australia (World)",
-            url: "https://www.abc.net.au/news/feed/51120/rss.xml"
-        },
-        japantimes: {
-            name: "Japan Times",
-            url: "https://www.japantimes.co.jp/feed/"
-        },
-        voa: {
-            name: "VOA News",
-            url: "https://www.voanews.com/rss"
+/* OdinWire World News — rss-loader.js v0.6.1 */
+
+/* WORLD NEWS FEEDS */
+const FEEDS = {
+    /* Major Global Outlets (default ON) */
+    bbc: "https://feeds.bbci.co.uk/news/world/rss.xml",
+    reuters: "https://feeds.reuters.com/reuters/worldNews",
+    aljazeera: "https://www.aljazeera.com/xml/rss/all.xml",
+    dw: "https://rss.dw.com/rdf/rss-en-world",
+    euronews: "https://www.euronews.com/rss?level=world",
+    france24: "https://www.france24.com/en/rss",
+    sky: "https://feeds.skynews.com/feeds/rss/world.xml",
+    npr: "https://feeds.npr.org/1004/rss.xml",
+
+    /* Additional Global Sources (default OFF) */
+    cbc: "https://www.cbc.ca/webfeed/rss/rss-world",
+    abc: "https://www.abc.net.au/news/feed/51120/rss.xml",
+    japantimes: "https://www.japantimes.co.jp/feed/topstories/",
+    voa: "https://www.voanews.com/rss"
+};
+
+let refreshInterval = 60;
+let refreshCountdown = refreshInterval;
+let refreshTimerId = null;
+
+/* FETCH FEED */
+async function fetchFeed(url) {
+    try {
+        const apiURL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+        const response = await fetch(apiURL);
+        const data = await response.json();
+        if (data.status !== "ok") return [];
+        return data.items.map(item => ({
+            title: item.title,
+            link: item.link,
+            pubDate: item.pubDate,
+            description: item.description,
+            thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
+        }));
+    } catch {
+        return [];
+    }
+}
+
+/* TOP STORIES */
+function generateTopStories(allArticles) {
+    const newest = [...allArticles]
+        .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
+        .slice(0, 3);
+
+    const significant = [...allArticles]
+        .sort((a, b) => b.title.length - a.title.length)
+        .slice(0, 2);
+
+    return [...new Set([...newest, ...significant])];
+}
+
+function renderTopStories(stories) {
+    const container = document.getElementById("top-stories");
+    container.innerHTML = "";
+    stories.forEach(story => {
+        const div = document.createElement("div");
+        div.className = "top-story-item";
+        div.innerHTML = `
+            <div class="top-story-bullet"></div>
+            <div class="top-story-content">
+                <a href="${story.link}" target="_blank" rel="noopener noreferrer">${story.title}</a>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+/* FORMAT DATE */
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "";
+    return date.toLocaleString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+}
+
+/* RENDER ARTICLES (WITH INLINE ADS EVERY 8 ITEMS) */
+function renderArticles(articles) {
+    const container = document.getElementById("rss-container");
+    container.innerHTML = "";
+
+    articles.forEach((article, index) => {
+        if (index > 0 && index % 8 === 0) {
+            const adDiv = document.createElement("div");
+            adDiv.className = "news-item ad-card";
+            adDiv.innerHTML = `
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-inline-slot"></div>
+            `;
+            container.appendChild(adDiv);
         }
-    };
 
-    const rssContainer = document.getElementById("rss-container");
-    const mainLastUpdated = document.getElementById("main-last-updated");
-    const mainLoading = document.getElementById("main-loading");
+        const div = document.createElement("div");
+        div.className = "news-item";
 
-    const settingsToggle = document.getElementById("settings-toggle");
-    const settingsPanel = document.getElementById("settings-panel");
-    const settingsBackdrop = document.getElementById("settings-backdrop");
-    const settingsClose = document.getElementById("settings-close");
-    const selectAllFeedsButton = document.getElementById("select-all-feeds");
-    const clearAllFeedsButton = document.getElementById("clear-all-feeds");
-    const feedCheckboxes = document.querySelectorAll(".feed-check");
+        const imageHtml = article.thumbnail
+            ? `<img src="${article.thumbnail}" alt="" class="news-image">`
+            : "";
+
+        div.innerHTML = `
+            ${imageHtml}
+            <h2><a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a></h2>
+            <div class="news-date">${formatDate(article.pubDate)}</div>
+            <div class="news-desc">${article.description}</div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+/* TRENDING KEYWORDS */
+function generateTrendingKeywords(articles) {
+    const stopwords = new Set([
+        "the","a","an","of","in","on","for","to","and","or","with","at","by","from",
+        "as","is","are","was","were","be","this","that","it","its","after","over",
+        "into","their","his","her","they","he","she","you","we","our","us"
+    ]);
+
+    const counts = new Map();
+
+    articles.forEach(article => {
+        const words = article.title
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, "")
+            .split(/\s+/)
+            .filter(w => w && !stopwords.has(w) && w.length > 2);
+
+        words.forEach(w => {
+            counts.set(w, (counts.get(w) || 0) + 1);
+        });
+    });
+
+    return [...counts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6)
+        .map(([word]) => word);
+}
+
+function renderTrendingKeywords(keywords) {
+    const container = document.getElementById("trending-list");
+    container.innerHTML = "";
+    keywords.forEach(kw => {
+        const span = document.createElement("span");
+        span.className = "trending-chip";
+        span.textContent = kw;
+        container.appendChild(span);
+    });
+}
+
+/* REFRESH TIMER */
+function startRefreshTimer() {
+    const nextEl = document.getElementById("next-refresh");
+    const updatedEl = document.getElementById("refresh-time");
+
+    if (refreshTimerId) clearInterval(refreshTimerId);
+
+    refreshCountdown = refreshInterval;
+    nextEl.textContent = refreshCountdown;
+
+    refreshTimerId = setInterval(() => {
+        refreshCountdown--;
+        nextEl.textContent = refreshCountdown;
+
+        if (refreshCountdown <= 0) {
+            loadRSS();
+            refreshCountdown = refreshInterval;
+            updatedEl.textContent = "just now";
+        }
+    }, 1000);
+}
+
+/* LOAD RSS */
+async function loadRSS() {
+    const loadingEl = document.getElementById("main-loading");
+    const mainUpdatedEl = document.getElementById("main-last-updated");
+
+    if (loadingEl) loadingEl.classList.add("visible");
 
     let allArticles = [];
 
-    function parseRSS(xmlText, sourceKey) {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlText, "application/xml");
-        const items = Array.from(xml.querySelectorAll("item"));
-        const feed = FEEDS[sourceKey];
+    const selectedFeeds = Array.from(document.querySelectorAll(".feed-check"))
+        .filter(cb => cb.checked)
+        .map(cb => FEEDS[cb.value]);
 
-        return items.map((item, index) => {
-            const titleNode = item.querySelector("title");
-            const linkNode = item.querySelector("link");
-            const descNode = item.querySelector("description");
-            const dateNode = item.querySelector("pubDate");
-            const guidNode = item.querySelector("guid");
+    if (selectedFeeds.length === 0) {
+        document.getElementById("rss-container").innerHTML = "<p>No sources selected.</p>";
+        if (loadingEl) loadingEl.classList.remove("visible");
+        if (mainUpdatedEl) mainUpdatedEl.textContent = "Last updated: —";
+        return;
+    }
 
-            const title = titleNode ? titleNode.textContent.trim() : "";
-            const link = linkNode ? linkNode.textContent.trim() : "";
-            const description = descNode ? descNode.textContent.trim() : "";
-            const pubDate = dateNode ? dateNode.textContent.trim() : "";
-            const guid = guidNode ? guidNode.textContent.trim() : link || title || (sourceKey + "-" + index);
+    for (const url of selectedFeeds) {
+        const feedArticles = await fetchFeed(url);
+        allArticles = allArticles.concat(feedArticles);
+    }
 
-            let image = "";
-            const mediaContent = item.querySelector("media\\:content, content");
-            if (mediaContent && mediaContent.getAttribute("url")) {
-                image = mediaContent.getAttribute("url");
-            }
-            const enclosure = item.querySelector("enclosure");
-            if (!image && enclosure && enclosure.getAttribute("url")) {
-                image = enclosure.getAttribute("url");
-            }
+    allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-            return {
-                id: sourceKey + "-" + guid,
-                sourceKey,
-                sourceName: feed.name,
-                title,
-                link,
-                description,
-                published: pubDate ? new Date(pubDate).toISOString() : null,
-                image
-            };
+    renderArticles(allArticles);
+    renderTopStories(generateTopStories(allArticles));
+    renderTrendingKeywords(generateTrendingKeywords(allArticles));
+
+    if (loadingEl) loadingEl.classList.remove("visible");
+
+    if (mainUpdatedEl) {
+        const now = new Date();
+        mainUpdatedEl.textContent = "Last updated: " + now.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+    }
+}
+
+/* FEED SELECTION PERSISTENCE */
+function restoreFeedSelection() {
+    const saved = localStorage.getItem("selected-feeds");
+    if (!saved) return;
+
+    const selected = new Set(JSON.parse(saved));
+    document.querySelectorAll(".feed-check").forEach(cb => {
+        cb.checked = selected.has(cb.value);
+    });
+}
+
+function saveFeedSelection() {
+    const selected = Array.from(document.querySelectorAll(".feed-check"))
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+    localStorage.setItem("selected-feeds", JSON.stringify(selected));
+}
+
+/* INIT */
+document.addEventListener("DOMContentLoaded", () => {
+    restoreFeedSelection();
+
+    document.querySelectorAll(".feed-check").forEach(cb => {
+        cb.addEventListener("change", () => {
+            saveFeedSelection();
+            loadRSS();
+        });
+    });
+
+    const selectAllBtn = document.getElementById("select-all-feeds");
+    const clearAllBtn = document.getElementById("clear-all-feeds");
+
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener("click", () => {
+            document.querySelectorAll(".feed-check").forEach(cb => cb.checked = true);
+            saveFeedSelection();
+            loadRSS();
         });
     }
 
-    async function fetchFeed(sourceKey) {
-        const feed = FEEDS[sourceKey];
-        if (!feed) return [];
-        try {
-            const response = await fetch("/proxy?url=" + encodeURIComponent(feed.url));
-            if (!response.ok) return [];
-            const text = await response.text();
-            return parseRSS(text, sourceKey);
-        } catch (e) {
-            return [];
-        }
-    }
-
-    function renderArticles() {
-        if (!rssContainer) return;
-        rssContainer.innerHTML = "";
-
-        allArticles.forEach(article => {
-            const card = document.createElement("article");
-            card.className = "news-item";
-
-            const pill = document.createElement("span");
-            pill.className = "source-pill";
-            pill.textContent = article.sourceName;
-            card.appendChild(pill);
-
-            if (article.image) {
-                const img = document.createElement("img");
-                img.className = "news-image";
-                img.src = article.image;
-                img.alt = article.title || "";
-                card.appendChild(img);
-            }
-
-            const h2 = document.createElement("h2");
-            const link = document.createElement("a");
-            link.href = article.link;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = article.title;
-            h2.appendChild(link);
-            card.appendChild(h2);
-
-            const date = document.createElement("div");
-            date.className = "news-date";
-            date.textContent = article.published ? new Date(article.published).toLocaleString() : "";
-            card.appendChild(date);
-
-            const desc = document.createElement("div");
-            desc.className = "news-desc";
-            desc.textContent = article.description || "";
-            card.appendChild(desc);
-
-            rssContainer.appendChild(card);
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener("click", () => {
+            document.querySelectorAll(".feed-check").forEach(cb => cb.checked = false);
+            saveFeedSelection();
+            loadRSS();
         });
     }
 
-    async function loadFeeds() {
-        mainLoading.classList.add("visible");
-
-        const enabledKeys = Array.from(feedCheckboxes)
-            .filter(cb => cb.checked)
-            .map(cb => cb.value)
-            .filter(key => FEEDS[key]);
-
-        const promises = enabledKeys.map(key => fetchFeed(key));
-        const results = await Promise.all(promises);
-
-        let combined = [];
-        results.forEach(list => {
-            combined = combined.concat(list);
-        });
-
-        combined.sort((a, b) => {
-            const da = a.published ? new Date(a.published).getTime() : 0;
-            const db = b.published ? new Date(b.published).getTime() : 0;
-            return db - da;
-        });
-
-        allArticles = combined;
-
-        mainLastUpdated.textContent = "Last updated: " + new Date().toLocaleTimeString();
-        mainLoading.classList.remove("visible");
-
-        renderArticles();
-    }
-
-    function initSettingsPanel() {
-        settingsToggle.addEventListener("click", function () {
-            settingsPanel.classList.add("open");
-            settingsBackdrop.classList.add("visible");
-        });
-
-        settingsClose.addEventListener("click", function () {
-            settingsPanel.classList.remove("open");
-            settingsBackdrop.classList.remove("visible");
-        });
-
-        settingsBackdrop.addEventListener("click", function () {
-            settingsPanel.classList.remove("open");
-            settingsBackdrop.classList.remove("visible");
-        });
-
-        selectAllFeedsButton.addEventListener("click", function () {
-            feedCheckboxes.forEach(cb => {
-                cb.checked = true;
-            });
-            loadFeeds();
-        });
-
-        clearAllFeedsButton.addEventListener("click", function () {
-            feedCheckboxes.forEach(cb => {
-                cb.checked = false;
-            });
-            allArticles = [];
-            renderArticles();
-        });
-
-        feedCheckboxes.forEach(cb => {
-            cb.addEventListener("change", function () {
-                loadFeeds();
-            });
-        });
-    }
-
-    function init() {
-        initSettingsPanel();
-        loadFeeds();
-    }
-
-    init();
-})();
+    loadRSS();
+    startRefreshTimer();
+});
