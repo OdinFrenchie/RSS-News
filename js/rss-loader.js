@@ -27,7 +27,6 @@
     const mainLastUpdated = document.getElementById("main-last-updated");
     const mainLoading = document.getElementById("main-loading");
     const nextRefreshSpan = document.getElementById("next-refresh");
-    const loadMoreButton = document.getElementById("load-more");
     const sourceFilterChips = document.getElementById("source-filter-chips");
     const articleSearchInput = document.getElementById("article-search");
     const bookmarksContainer = document.getElementById("bookmarks-container");
@@ -58,8 +57,6 @@
     const readerClose = document.getElementById("reader-close");
 
     let allArticles = [];
-    let visibleCount = 20;
-    const PAGE_SIZE = 20;
     let refreshIntervalSeconds = 60;
     let refreshCountdown = refreshIntervalSeconds;
     let refreshTimerId = null;
@@ -268,15 +265,12 @@
 
         sourceFilterChips.addEventListener("click", function (e) {
             const target = e.target;
-            if (!target.classList.contains("source-filter-chip")) {
-                return;
-            }
+            if (!target.classList.contains("source-filter-chip")) return;
             const key = target.dataset.sourceKey || null;
             currentSourceFilter = key || null;
             Array.from(sourceFilterChips.children).forEach(ch => {
                 ch.classList.toggle("active", ch === target);
             });
-            visibleCount = PAGE_SIZE;
             renderArticles();
         });
 
@@ -364,16 +358,9 @@
         if (!rssContainer) return;
 
         const filtered = applyFilters(allArticles);
-
-        // defensive: if we somehow have data but visibleCount is 0, show at least one page
-        if (filtered.length && visibleCount <= 0) {
-            visibleCount = PAGE_SIZE;
-        }
-
-        const toShow = filtered.slice(0, visibleCount);
         rssContainer.innerHTML = "";
 
-        toShow.forEach(article => {
+        filtered.forEach(article => {
             const card = document.createElement("article");
             card.className = "news-item";
 
@@ -445,14 +432,6 @@
 
             rssContainer.appendChild(card);
         });
-
-        if (filtered.length <= visibleCount) {
-            loadMoreButton.classList.add("disabled");
-            loadMoreButton.disabled = true;
-        } else {
-            loadMoreButton.classList.remove("disabled");
-            loadMoreButton.disabled = false;
-        }
 
         renderTrending(filtered);
         renderTopStories(filtered);
@@ -533,7 +512,6 @@
         });
 
         allArticles = combined;
-        visibleCount = PAGE_SIZE;
         saveArticlesToCache();
 
         mainLastUpdated.textContent = "Last updated: " + new Date().toLocaleTimeString();
@@ -588,7 +566,6 @@
                 cb.checked = false;
             });
             allArticles = [];
-            visibleCount = PAGE_SIZE;
             renderArticles();
         });
 
@@ -619,18 +596,9 @@
         });
     }
 
-    function initLoadMore() {
-        loadMoreButton.addEventListener("click", function () {
-            if (loadMoreButton.disabled) return;
-            visibleCount += PAGE_SIZE;
-            renderArticles();
-        });
-    }
-
     function initSearch() {
         articleSearchInput.addEventListener("input", function () {
             currentSearchQuery = articleSearchInput.value.trim();
-            visibleCount = PAGE_SIZE;
             renderArticles();
         });
     }
@@ -694,14 +662,12 @@
         buildSourceChips();
         initSettingsPanel();
         initCompactAndTheme();
-        initLoadMore();
         initSearch();
         initBookmarks();
         initReader();
         initNewsNav();
 
         if (allArticles.length) {
-            visibleCount = PAGE_SIZE;
             renderArticles();
             renderMostRead();
             renderTopSources();

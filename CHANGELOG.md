@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.3] - 2026-05-02
+
+### Changed – 0.7.3
+
+- Removed Load more pagination from World News and reverted to full-feed rendering
+- Kept source filters, search, bookmarks, reader mode, analytics, and sticky chrome intact
+
 ## [0.7.2] - 2026-05-02
 
 ### Added – 0.7.2

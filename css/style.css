@@ -172,7 +172,7 @@ body.compact .news-item h2 {
     padding: 25px 20px 40px;
 }
 
-/* frozen chrome (toolbar + filters) */
+/* frozen chrome */
 
 .page-chrome {
     position: sticky;
@@ -458,31 +458,6 @@ body.compact .news-item h2 {
     color: var(--accent);
 }
 
-.load-more-row {
-    margin-top: 18px;
-    text-align: center;
-}
-
-.load-more-button {
-    padding: 8px 18px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--card-bg);
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--text-soft);
-}
-
-.load-more-button:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.load-more-button.disabled {
-    opacity: 0.5;
-    cursor: default;
-}
-
 .top-stories-rail h3 {
     font-size: 1rem;
     margin-bottom: 10px;
@@ -582,7 +557,7 @@ body.compact .news-item h2 {
     min-height: 40px;
 }
 
-/* bookmarks at top */
+/* bookmarks */
 
 .bookmarks-section {
     margin-top: 16px;
@@ -646,7 +621,7 @@ body.compact .news-item h2 {
     background: rgba(220, 38, 38, 0.08);
 }
 
-/* settings panel + reader unchanged from before */
+/* settings + reader */
 
 .settings-backdrop {
     position: fixed;
