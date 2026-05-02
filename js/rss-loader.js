@@ -1,65 +1,17 @@
 (function () {
     const FEEDS = {
-        bbc: {
-            name: "BBC World",
-            url: "https://feeds.bbci.co.uk/news/world/rss.xml",
-            color: "#bb1919"
-        },
-        reuters: {
-            name: "Reuters World",
-            url: "https://feeds.reuters.com/Reuters/worldNews",
-            color: "#ff7a00"
-        },
-        aljazeera: {
-            name: "Al Jazeera Global",
-            url: "https://www.aljazeera.com/xml/rss/all.xml",
-            color: "#c89b3c"
-        },
-        dw: {
-            name: "Deutsche Welle (World)",
-            url: "https://rss.dw.com/rdf/rss-en-world",
-            color: "#0a4ea3"
-        },
-        euronews: {
-            name: "Euronews (World)",
-            url: "https://www.euronews.com/rss?level=theme&name=news",
-            color: "#003399"
-        },
-        france24: {
-            name: "France24 (International)",
-            url: "https://www.france24.com/en/rss",
-            color: "#0099ff"
-        },
-        sky: {
-            name: "Sky News (World)",
-            url: "https://feeds.skynews.com/feeds/rss/world.xml",
-            color: "#d60000"
-        },
-        npr: {
-            name: "NPR World",
-            url: "https://feeds.npr.org/1004/rss.xml",
-            color: "#d62021"
-        },
-        cbc: {
-            name: "CBC World",
-            url: "https://www.cbc.ca/cmlink/rss-world",
-            color: "#e63946"
-        },
-        abc: {
-            name: "ABC Australia (World)",
-            url: "https://www.abc.net.au/news/feed/51120/rss.xml",
-            color: "#1976d2"
-        },
-        japantimes: {
-            name: "Japan Times",
-            url: "https://www.japantimes.co.jp/feed/",
-            color: "#333333"
-        },
-        voa: {
-            name: "VOA News",
-            url: "https://www.voanews.com/rss",
-            color: "#2563eb"
-        }
+        bbc: { name: "BBC World", url: "https://feeds.bbci.co.uk/news/world/rss.xml", color: "#bb1919" },
+        reuters: { name: "Reuters World", url: "https://feeds.reuters.com/Reuters/worldNews", color: "#ff7a00" },
+        aljazeera: { name: "Al Jazeera Global", url: "https://www.aljazeera.com/xml/rss/all.xml", color: "#c89b3c" },
+        dw: { name: "Deutsche Welle (World)", url: "https://rss.dw.com/rdf/rss-en-world", color: "#0a4ea3" },
+        euronews: { name: "Euronews (World)", url: "https://www.euronews.com/rss?level=theme&name=news", color: "#003399" },
+        france24: { name: "France24 (International)", url: "https://www.france24.com/en/rss", color: "#0099ff" },
+        sky: { name: "Sky News (World)", url: "https://feeds.skynews.com/feeds/rss/world.xml", color: "#d60000" },
+        npr: { name: "NPR World", url: "https://feeds.npr.org/1004/rss.xml", color: "#d62021" },
+        cbc: { name: "CBC World", url: "https://www.cbc.ca/cmlink/rss-world", color: "#e63946" },
+        abc: { name: "ABC Australia (World)", url: "https://www.abc.net.au/news/feed/51120/rss.xml", color: "#1976d2" },
+        japantimes: { name: "Japan Times", url: "https://www.japantimes.co.jp/feed/", color: "#333333" },
+        voa: { name: "VOA News", url: "https://www.voanews.com/rss", color: "#2563eb" }
     };
 
     const CACHE_KEY_ARTICLES = "odinwire_world_articles_v1";
@@ -199,10 +151,7 @@
     function recordClick(article) {
         const todayKey = new Date().toISOString().slice(0, 10);
         if (!clickStats[todayKey]) {
-            clickStats[todayKey] = {
-                articles: {},
-                sources: {}
-            };
+            clickStats[todayKey] = { articles: {}, sources: {} };
         }
         const dayStats = clickStats[todayKey];
         const articleKey = article.id;
@@ -327,6 +276,7 @@
             Array.from(sourceFilterChips.children).forEach(ch => {
                 ch.classList.toggle("active", ch === target);
             });
+            visibleCount = PAGE_SIZE;
             renderArticles();
         });
 
@@ -355,9 +305,7 @@
             const title = a.title || "";
             title.split(/\s+/).forEach(w => {
                 const clean = w.replace(/[^a-z0-9]/gi, "").toLowerCase();
-                if (clean.length < 4) {
-                    return;
-                }
+                if (clean.length < 4) return;
                 words[clean] = (words[clean] || 0) + 1;
             });
         });
@@ -413,7 +361,15 @@
     }
 
     function renderArticles() {
+        if (!rssContainer) return;
+
         const filtered = applyFilters(allArticles);
+
+        // defensive: if we somehow have data but visibleCount is 0, show at least one page
+        if (filtered.length && visibleCount <= 0) {
+            visibleCount = PAGE_SIZE;
+        }
+
         const toShow = filtered.slice(0, visibleCount);
         rssContainer.innerHTML = "";
 
@@ -543,14 +499,10 @@
 
     async function fetchFeed(sourceKey) {
         const feed = FEEDS[sourceKey];
-        if (!feed) {
-            return [];
-        }
+        if (!feed) return [];
         try {
             const response = await fetch(`/proxy?url=${encodeURIComponent(feed.url)}`);
-            if (!response.ok) {
-                return [];
-            }
+            if (!response.ok) return [];
             const text = await response.text();
             return parseRSS(text, sourceKey);
         } catch (e) {
@@ -669,9 +621,7 @@
 
     function initLoadMore() {
         loadMoreButton.addEventListener("click", function () {
-            if (loadMoreButton.disabled) {
-                return;
-            }
+            if (loadMoreButton.disabled) return;
             visibleCount += PAGE_SIZE;
             renderArticles();
         });
@@ -719,30 +669,17 @@
 
         navNewsSubmenu.addEventListener("click", function (e) {
             const btn = e.target.closest(".nav-subitem");
-            if (!btn || btn === setDefaultNewsButton) {
-                return;
-            }
+            if (!btn || btn === setDefaultNewsButton) return;
             const region = btn.dataset.newsRegion;
-            if (!region) {
-                return;
-            }
-            if (region === "world") {
-                window.location.href = "/news/world.html";
-            } else if (region === "uk") {
-                window.location.href = "/news/uk.html";
-            } else if (region === "europe") {
-                window.location.href = "/news/europe.html";
-            } else if (region === "us") {
-                window.location.href = "/news/us.html";
-            } else if (region === "canada") {
-                window.location.href = "/news/canada.html";
-            } else if (region === "aunz") {
-                window.location.href = "/news/aunz.html";
-            } else if (region === "asia") {
-                window.location.href = "/news/asia.html";
-            } else if (region === "middleeast") {
-                window.location.href = "/news/middleeast.html";
-            }
+            if (!region) return;
+            if (region === "world") window.location.href = "/news/world.html";
+            else if (region === "uk") window.location.href = "/news/uk.html";
+            else if (region === "europe") window.location.href = "/news/europe.html";
+            else if (region === "us") window.location.href = "/news/us.html";
+            else if (region === "canada") window.location.href = "/news/canada.html";
+            else if (region === "aunz") window.location.href = "/news/aunz.html";
+            else if (region === "asia") window.location.href = "/news/asia.html";
+            else if (region === "middleeast") window.location.href = "/news/middleeast.html";
         });
 
         setDefaultNewsButton.addEventListener("click", function () {
@@ -775,6 +712,5 @@
         startRefreshTimer();
     }
 
-    // IMPORTANT: call init immediately (script is at end of body, DOM is ready)
     init();
 })();

@@ -46,24 +46,34 @@
 
     <main class="content enhanced">
 
-        <div class="toolbar-row">
-            <div class="toolbar-left">
-                <div class="feed-meta">
-                    <span id="main-last-updated">Last updated: —</span>
-                    <span id="main-loading" class="loading-indicator">Loading…</span>
+        <div class="page-chrome">
+            <div class="toolbar-row">
+                <div class="toolbar-left">
+                    <div class="feed-meta">
+                        <span id="main-last-updated">Last updated: —</span>
+                        <span id="main-loading" class="loading-indicator">Loading…</span>
+                    </div>
+                    <div class="live-refresh live-refresh-animated">
+                        Auto refresh in <span id="next-refresh">60</span>s
+                    </div>
                 </div>
-                <div class="live-refresh live-refresh-animated">
-                    Auto refresh in <span id="next-refresh">60</span>s
+                <div class="toolbar-right">
+                    <input id="article-search" class="article-search" type="search" placeholder="Search articles…">
                 </div>
             </div>
-            <div class="toolbar-right">
-                <input id="article-search" class="article-search" type="search" placeholder="Search articles…">
+
+            <div class="filter-row">
+                <div id="source-filter-chips" class="source-filter-chips"></div>
             </div>
         </div>
 
-        <div class="filter-row">
-            <div id="source-filter-chips" class="source-filter-chips"></div>
-        </div>
+        <section class="bookmarks-section">
+            <div class="bookmarks-header">
+                <h2>Bookmarks</h2>
+                <button id="clear-bookmarks" type="button" class="clear-bookmarks-button">Clear bookmarks</button>
+            </div>
+            <div id="bookmarks-container" class="bookmarks-container"></div>
+        </section>
 
         <div class="layout-desktop">
 
@@ -98,14 +108,6 @@
             </aside>
 
         </div>
-
-        <section class="bookmarks-section">
-            <div class="bookmarks-header">
-                <h2>Bookmarks</h2>
-                <button id="clear-bookmarks" type="button" class="clear-bookmarks-button">Clear bookmarks</button>
-            </div>
-            <div id="bookmarks-container" class="bookmarks-container"></div>
-        </section>
 
     </main>
 
@@ -231,7 +233,7 @@
         <p>© 2026 OdinWire</p>
     </footer>
 
-    <script src="/js/rss-loader.js?v=17"></script>
+    <script src="/js/rss-loader.js?v=18"></script>
 
 </body>
 </html>

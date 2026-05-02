@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.2] - 2026-05-02
+
+### Added – 0.7.2
+
+- Made toolbar, last-updated bar, and source filters sticky at the top of the page
+- Moved bookmarks section to the top of the World News page for faster access
+
+### Fixed – 0.7.2
+
+- Hardened article rendering so cards always display when feed data is present
+
 ## [0.7.1] - 2026-05-02
 
 ### Fixed – 0.7.1
