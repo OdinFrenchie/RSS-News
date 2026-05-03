@@ -1,8 +1,7 @@
-/* OdinWire World News — rss-loader.js v0.7.0 */
+/* OdinWire World News — rss-loader.js v0.8.0 */
 
 /* WORLD NEWS FEEDS */
 const FEEDS = {
-  /* Major Global Outlets (default ON) */
   bbc: "https://feeds.bbci.co.uk/news/world/rss.xml",
   reuters: "https://feeds.reuters.com/reuters/worldNews",
   aljazeera: "https://www.aljazeera.com/xml/rss/all.xml",
@@ -12,21 +11,56 @@ const FEEDS = {
   sky: "https://feeds.skynews.com/feeds/rss/world.xml",
   npr: "https://feeds.npr.org/1004/rss.xml",
 
-  /* Additional Global Sources (default OFF) */
   cbc: "https://www.cbc.ca/webfeed/rss/rss-world",
   abc: "https://www.abc.net.au/news/feed/51120/rss.xml",
   japantimes: "https://www.japantimes.co.jp/feed/topstories/",
   voa: "https://www.voanews.com/rss"
 };
 
+/* GLOBAL STATE */
+let allArticles = [];
+let currentSourceFilter = "all";
+let currentSearchTerm = "";
+
+/* REFRESH TIMER */
 let refreshInterval = 60;
 let refreshCountdown = refreshInterval;
 let refreshTimerId = null;
 
-/* Global article + filter state */
-let allArticles = [];
-let currentSourceFilter = "all";
-let currentSearchTerm = "";
+/* ANALYTICS STORAGE */
+const ANALYTICS_KEY = "ow-world-analytics";
+const TODAY = new Date().toISOString().slice(0, 10);
+
+/* Load or initialize analytics */
+function loadAnalytics() {
+  const saved = localStorage.getItem(ANALYTICS_KEY);
+  if (!saved) {
+    return { date: TODAY, clicks: {}, sources: {} };
+  }
+
+  const parsed = JSON.parse(saved);
+
+  /* Reset if date changed */
+  if (parsed.date !== TODAY) {
+    return { date: TODAY, clicks: {}, sources: {} };
+  }
+
+  return parsed;
+}
+
+let analytics = loadAnalytics();
+
+/* Save analytics */
+function saveAnalytics() {
+  localStorage.setItem(ANALYTICS_KEY, JSON.stringify(analytics));
+}
+
+/* Track article click */
+function trackArticleClick(link, source) {
+  analytics.clicks[link] = (analytics.clicks[link] || 0) + 1;
+  analytics.sources[source] = (analytics.sources[source] || 0) + 1;
+  saveAnalytics();
+}
 
 /* FETCH FEED */
 async function fetchFeed(url) {
@@ -35,6 +69,7 @@ async function fetchFeed(url) {
     const response = await fetch(apiURL);
     const data = await response.json();
     if (data.status !== "ok") return [];
+
     return data.items.map(item => ({
       title: item.title,
       link: item.link,
@@ -47,17 +82,32 @@ async function fetchFeed(url) {
   }
 }
 
-/* TOP STORIES */
-function generateTopStories(allArticles) {
-  const newest = [...allArticles]
+/* FORMAT DATE */
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "";
+  return date.toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+/* TOP STORIES — Enhanced Logic */
+function generateTopStories(articles) {
+  const newest = [...articles]
     .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
     .slice(0, 3);
 
-  const significant = [...allArticles]
+  const longest = [...articles]
     .sort((a, b) => b.title.length - a.title.length)
     .slice(0, 2);
 
-  return [...new Set([...newest, ...significant])];
+  const mixed = [...new Set([...newest, ...longest])];
+  return mixed.slice(0, 5);
 }
 
 function renderTopStories(stories) {
@@ -77,53 +127,55 @@ function renderTopStories(stories) {
   });
 }
 
-/* FORMAT DATE */
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return "";
-  return date.toLocaleString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
+/* MOST READ TODAY */
+function renderMostReadToday() {
+  const container = document.getElementById("most-read-today");
+  container.innerHTML = "";
+
+  const entries = Object.entries(analytics.clicks)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  if (entries.length === 0) {
+    container.innerHTML = `<p class="empty-analytics">No data yet.</p>`;
+    return;
+  }
+
+  entries.forEach(([link, count]) => {
+    const article = allArticles.find(a => a.link === link);
+    if (!article) return;
+
+    const div = document.createElement("div");
+    div.className = "most-read-item";
+    div.innerHTML = `
+      <a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a>
+      <span class="analytics-count">(${count})</span>
+    `;
+    container.appendChild(div);
   });
 }
 
-/* RENDER ARTICLES (WITH INLINE ADS EVERY 8 ITEMS) */
-function renderArticles(articles) {
-  const container = document.getElementById("rss-container");
+/* TOP SOURCES */
+function renderTopSources() {
+  const container = document.getElementById("top-sources");
   container.innerHTML = "";
 
-  articles.forEach((article, index) => {
-    if (index > 0 && index % 8 === 0) {
-      const adDiv = document.createElement("div");
-      adDiv.className = "news-item ad-card";
-      adDiv.innerHTML = `
-        <div class="ad-label">Advertisement</div>
-        <div class="ad-inline-slot"></div>
-      `;
-      container.appendChild(adDiv);
-    }
+  const entries = Object.entries(analytics.sources)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
 
+  if (entries.length === 0) {
+    container.innerHTML = `<p class="empty-analytics">No data yet.</p>`;
+    return;
+  }
+
+  entries.forEach(([source, count]) => {
     const div = document.createElement("div");
-    div.className = "news-item";
-    if (article.source) {
-      div.dataset.source = article.source;
-    }
-
-    const imageHtml = article.thumbnail
-      ? `<img src="${article.thumbnail}" alt="" class="news-image">`
-      : "";
-
+    div.className = "top-source-item";
     div.innerHTML = `
-      ${imageHtml}
-      <h2><a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a></h2>
-      <div class="news-date">${formatDate(article.pubDate)}</div>
-      <div class="news-desc">${article.description}</div>
+      <span class="top-source-label">${source.toUpperCase()}</span>
+      <span class="top-source-count">${count}</span>
     `;
-
     container.appendChild(div);
   });
 }
@@ -168,15 +220,81 @@ function renderTrendingKeywords(keywords) {
     span.textContent = kw;
 
     span.addEventListener("click", () => {
-      if (searchInput) {
-        searchInput.value = kw;
-      }
+      if (searchInput) searchInput.value = kw;
       currentSearchTerm = kw.toLowerCase();
       applyFilters();
     });
 
     container.appendChild(span);
   });
+}
+
+/* RENDER ARTICLES (WITH READER MODE ICON + ADS) */
+function renderArticles(articles) {
+  const container = document.getElementById("rss-container");
+  container.innerHTML = "";
+
+  articles.forEach((article, index) => {
+    if (index > 0 && index % 8 === 0) {
+      const adDiv = document.createElement("div");
+      adDiv.className = "news-item ad-card";
+      adDiv.innerHTML = `
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-inline-slot"></div>
+      `;
+      container.appendChild(adDiv);
+    }
+
+    const div = document.createElement("div");
+    div.className = "news-item";
+    div.dataset.source = article.source;
+
+    const imageHtml = article.thumbnail
+      ? `<img src="${article.thumbnail}" alt="" class="news-image">`
+      : "";
+
+    div.innerHTML = `
+      ${imageHtml}
+      <h2>
+        <a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a>
+        <span class="reader-icon" data-link="${article.link}" data-title="${article.title}" data-desc="${article.description}" data-source="${article.source}">📰</span>
+      </h2>
+      <div class="news-date">${formatDate(article.pubDate)}</div>
+      <div class="news-desc">${article.description}</div>
+    `;
+
+    /* Track clicks */
+    div.querySelector("a").addEventListener("click", () => {
+      trackArticleClick(article.link, article.source);
+      renderMostReadToday();
+      renderTopSources();
+    });
+
+    /* Reader Mode icon */
+    div.querySelector(".reader-icon").addEventListener("click", (e) => {
+      e.stopPropagation();
+      openReaderMode(article);
+    });
+
+    container.appendChild(div);
+  });
+}
+/* READER MODE */
+function openReaderMode(article) {
+  const modal = document.getElementById("reader-modal");
+  const titleEl = document.getElementById("reader-title");
+  const bodyEl = document.getElementById("reader-body");
+  const linkEl = document.getElementById("reader-original-link");
+
+  titleEl.textContent = article.title;
+  bodyEl.innerHTML = article.description;
+  linkEl.href = article.link;
+
+  modal.classList.add("open");
+}
+
+function closeReaderMode() {
+  document.getElementById("reader-modal").classList.remove("open");
 }
 
 /* FILTERING */
@@ -249,12 +367,12 @@ async function loadRSS() {
 
   allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-  // Initial render with filters applied
   applyFilters();
 
-  // Top stories + trending always based on full set
   renderTopStories(generateTopStories(allArticles));
   renderTrendingKeywords(generateTrendingKeywords(allArticles));
+  renderMostReadToday();
+  renderTopSources();
 
   if (loadingEl) loadingEl.classList.remove("visible");
 
@@ -335,7 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* Search input (title-only) */
+  /* Search input */
   const searchInput = document.getElementById("search-input");
   if (searchInput) {
     let searchTimeout = null;
@@ -348,6 +466,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 150);
     });
   }
+
+  /* Reader Mode close */
+  document.getElementById("reader-close").addEventListener("click", closeReaderMode);
+  document.getElementById("reader-modal").addEventListener("click", (e) => {
+    if (e.target.id === "reader-modal") closeReaderMode();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeReaderMode();
+  });
 
   loadRSS();
   startRefreshTimer();

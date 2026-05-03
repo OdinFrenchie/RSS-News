@@ -1,5 +1,26 @@
-
 # Changelog
+
+## [0.8.0] - 2026-05-03
+
+### Added – 0.8.0
+
+- Enhanced Top Stories rail with improved selection logic
+- Most Read Today analytics (local click tracking)
+- Top Sources analytics (local source click tracking)
+- Reader Mode modal with clean typography and overlay
+- Reader Mode icon added to all article cards
+
+### Changed – 0.8.0
+
+- Updated article rendering to include Reader Mode metadata
+- Integrated analytics updates into click handlers
+- Improved trending keyword generation
+
+### Notes – 0.8.0
+
+- All analytics stored locally; no backend required
+- Reader Mode opens via icon next to title (title still opens original link)
+- Built on stable v0.7.0 baseline
 
 ## [0.7.0] - 2026-05-02
 
@@ -116,9 +137,9 @@
 ### Added – 0.4.0
 
 - Updated World News RSS feed list with working sources:
-  - BBC World
-  - Reuters World (correct XML feed)
-  - Al Jazeera Global RSS
+- BBC World
+- Reuters World (correct XML feed)
+- Al Jazeera Global RSS
 
 ### Fixed – 0.4.0
 
@@ -155,10 +176,10 @@
 ### Added – 0.3.0
 
 - Added standalone pages:
-  - privacy.html
-  - terms.html
-  - about.html
-  - contact.html
+- privacy.html
+- terms.html
+- about.html
+- contact.html
 
 ### Changed – 0.3.0
 
@@ -169,7 +190,7 @@
 ### Added – 0.2.0
 
 - Initial multi-category news structure:
-  - World, UK, Tech, Sports, Entertainment
+- World, UK, Tech, Sports, Entertainment
 - Base HTML template and global stylesheet.
 
 ## [0.1.1] - 2026-04-29

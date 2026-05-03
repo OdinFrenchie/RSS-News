@@ -15,6 +15,9 @@
   --accent: #2A6CF0;
   --accent-soft: rgba(42, 108, 240, 0.12);
   --ad-bg: #f3f4f6;
+
+  --reader-bg: #ffffff;
+  --reader-text: #1a1a1a;
 }
 
 [data-theme="dark"] {
@@ -26,6 +29,9 @@
   --accent: #5b8dff;
   --accent-soft: rgba(91, 141, 255, 0.2);
   --ad-bg: #111827;
+
+  --reader-bg: #1a1d24;
+  --reader-text: #e5e7eb;
 }
 
 /* BASE */
@@ -289,6 +295,9 @@ body.compact .news-item h2 {
 .news-item h2 {
   font-size: 1.05rem;
   margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .news-item h2 a {
@@ -298,6 +307,20 @@ body.compact .news-item h2 {
 
 .news-item h2 a:hover {
   text-decoration: underline;
+}
+
+/* READER MODE ICON */
+.reader-icon {
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--accent);
+  opacity: 0.8;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.reader-icon:hover {
+  opacity: 1;
+  transform: translateY(-1px);
 }
 
 .news-date {
@@ -373,6 +396,66 @@ body.compact .news-item h2 {
 
 .top-story-content a:hover {
   text-decoration: underline;
+}
+
+/* ANALYTICS HEADERS */
+.analytics-header {
+  margin-top: 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* MOST READ TODAY */
+#most-read-today {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.most-read-item {
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.85rem;
+}
+
+.most-read-item:last-child {
+  border-bottom: none;
+}
+
+.most-read-item a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+.most-read-item a:hover {
+  text-decoration: underline;
+}
+
+/* TOP SOURCES ANALYTICS */
+#top-sources {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.top-source-item {
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.top-source-item:last-child {
+  border-bottom: none;
+}
+
+.top-source-label {
+  color: var(--text);
+}
+
+.top-source-count {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 /* REFRESH TIMER */
@@ -546,31 +629,6 @@ body.compact .news-item h2 {
   margin: 0;
 }
 
-.feed-option::before {
-  content: "";
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.9;
-}
-
-/* FEED ICONS */
-.feed-bbc::before {
-  background-image: linear-gradient(135deg, #bb1919, #e60000);
-}
-
-.feed-reuters::before {
-  background-image: radial-gradient(circle, #ff7a00, #ff9f40);
-}
-
-.feed-aljazeera::before {
-  background-image: linear-gradient(135deg, #c89b3c, #f2c14f);
-}
-
-/* FEED GROUP LABELS */
 .feed-group-label {
   margin-top: 14px;
   margin-bottom: 6px;
@@ -580,6 +638,79 @@ body.compact .news-item h2 {
   letter-spacing: 0.04em;
   color: var(--text-soft);
   opacity: 0.85;
+}
+
+/* READER MODE MODAL */
+.reader-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.reader-modal.open {
+  display: flex;
+}
+
+.reader-modal-content {
+  background: var(--reader-bg);
+  color: var(--reader-text);
+  max-width: 760px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  padding: 30px 32px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  position: relative;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.reader-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--text-soft);
+}
+
+.reader-modal-content h2 {
+  font-size: 1.6rem;
+  margin-bottom: 14px;
+}
+
+.reader-modal-content p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.reader-original-link {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 0.95rem
+}
+
+.reader-original-link {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.reader-original-link:hover {
+  text-decoration: underline;
 }
 
 /* FOOTER */
