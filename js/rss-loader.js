@@ -1,4 +1,4 @@
-/* OdinWire World News — rss-loader.js v0.8.0 */
+/* OdinWire World News — rss-loader.js v0.9.0 */
 
 /* WORLD NEWS FEEDS */
 const FEEDS = {
@@ -10,7 +10,6 @@ const FEEDS = {
   france24: "https://www.france24.com/en/rss",
   sky: "https://feeds.skynews.com/feeds/rss/world.xml",
   npr: "https://feeds.npr.org/1004/rss.xml",
-
   cbc: "https://www.cbc.ca/webfeed/rss/rss-world",
   abc: "https://www.abc.net.au/news/feed/51120/rss.xml",
   japantimes: "https://www.japantimes.co.jp/feed/topstories/",
@@ -19,8 +18,11 @@ const FEEDS = {
 
 /* GLOBAL STATE */
 let allArticles = [];
+let visibleArticles = [];
 let currentSourceFilter = "all";
 let currentSearchTerm = "";
+let batchSize = 20;
+let batchIndex = 0;
 
 /* REFRESH TIMER */
 let refreshInterval = 60;
@@ -62,6 +64,57 @@ function trackArticleClick(link, source) {
   saveAnalytics();
 }
 
+/* BOOKMARK SYSTEM */
+const BOOKMARK_KEY = "ow-world-bookmarks";
+
+function loadBookmarks() {
+  const saved = localStorage.getItem(BOOKMARK_KEY);
+  return saved ? JSON.parse(saved) : [];
+}
+
+let bookmarks = loadBookmarks();
+
+function saveBookmarks() {
+  localStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
+}
+
+function toggleBookmark(article) {
+  const exists = bookmarks.find(b => b.link === article.link);
+
+  if (exists) {
+    bookmarks = bookmarks.filter(b => b.link !== article.link);
+  } else {
+    bookmarks.push({
+      title: article.title,
+      link: article.link,
+      source: article.source
+    });
+  }
+
+  saveBookmarks();
+  renderSavedArticles();
+}
+
+/* RENDER SAVED ARTICLES */
+function renderSavedArticles() {
+  const container = document.getElementById("saved-articles");
+  container.innerHTML = "";
+
+  if (bookmarks.length === 0) {
+    container.innerHTML = `<p class="empty-analytics">No saved articles.</p>`;
+    return;
+  }
+
+  bookmarks.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "saved-article-item";
+    div.innerHTML = `
+      <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>
+    `;
+    container.appendChild(div);
+  });
+}
+
 /* FETCH FEED */
 async function fetchFeed(url) {
   try {
@@ -94,6 +147,32 @@ function formatDate(dateString) {
     minute: "2-digit",
     second: "2-digit"
   });
+}
+
+/* AUTO-SUMMARY GENERATOR */
+function generateSummary(article) {
+  if (!article || !article.title || !article.description) return "";
+
+  const title = article.title;
+  const desc = article.description.replace(/<[^>]+>/g, "");
+
+  const keywords = title
+    .split(" ")
+    .filter(w => w.length > 4)
+    .slice(0, 3)
+    .join(", ");
+
+  return `This story highlights ${keywords}. ${desc.slice(0, 120)}…`;
+}
+
+/* LAZY IMAGE LOADER */
+function loadImage(img, src) {
+  img.src = src;
+  img.onload = () => img.classList.add("loaded");
+  img.onerror = () => {
+    img.src = "/img/fallback.jpg";
+    img.classList.add("loaded");
+  };
 }
 
 /* TOP STORIES — Enhanced Logic */
@@ -179,106 +258,130 @@ function renderTopSources() {
     container.appendChild(div);
   });
 }
+/* RENDER ARTICLE CARD */
+function renderArticleCard(article) {
+  const div = document.createElement("div");
+  div.className = "news-item";
 
-/* TRENDING KEYWORDS */
-function generateTrendingKeywords(articles) {
-  const stopwords = new Set([
-    "the","a","an","of","in","on","for","to","and","or","with","at","by","from",
-    "as","is","are","was","were","be","this","that","it","its","after","over",
-    "into","their","his","her","they","he","she","you","we","our","us"
-  ]);
+  const isSaved = bookmarks.some(b => b.link === article.link);
+  const bookmarkClass = isSaved ? "bookmark-icon saved" : "bookmark-icon";
 
-  const counts = new Map();
+  const summary = generateSummary(article);
 
-  articles.forEach(article => {
-    const words = article.title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, "")
-      .split(/\s+/)
-      .filter(w => w && !stopwords.has(w) && w.length > 2);
+  div.innerHTML = `
+    <h2>
+      <a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a>
+      <span class="${bookmarkClass}" data-link="${article.link}">⭐</span>
+    </h2>
 
-    words.forEach(w => {
-      counts.set(w, (counts.get(w) || 0) + 1);
-    });
+    <div class="news-date">${formatDate(article.pubDate)}</div>
+
+    ${article.thumbnail ? `
+      <img class="news-image" data-src="${article.thumbnail}" alt="">
+    ` : ""}
+
+    <div class="news-desc">${article.description}</div>
+
+    <div class="auto-summary">${summary}</div>
+
+    <button class="reader-btn" data-link="${article.link}">Reader Mode</button>
+  `;
+
+  /* Bookmark click */
+  div.querySelector(".bookmark-icon").addEventListener("click", () => {
+    toggleBookmark(article);
+    div.querySelector(".bookmark-icon").classList.toggle("saved");
   });
 
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6)
-    .map(([word]) => word);
+  /* Reader Mode */
+  div.querySelector(".reader-btn").addEventListener("click", () => {
+    openReaderMode(article);
+  });
+
+  /* Track clicks */
+  div.querySelector("a").addEventListener("click", () => {
+    trackArticleClick(article.link, article.source);
+    renderMostReadToday();
+    renderTopSources();
+  });
+
+  return div;
 }
 
-function renderTrendingKeywords(keywords) {
-  const container = document.getElementById("trending-list");
-  container.innerHTML = "";
+/* RENDER ARTICLES (APPEND MODE FOR INFINITE SCROLL) */
+function renderArticlesAppend(list) {
+  const container = document.getElementById("rss-container");
 
-  const searchInput = document.getElementById("search-input");
+  list.forEach(article => {
+    const card = renderArticleCard(article);
+    container.appendChild(card);
 
-  keywords.forEach(kw => {
-    const span = document.createElement("span");
-    span.className = "trending-chip";
-    span.textContent = kw;
-
-    span.addEventListener("click", () => {
-      if (searchInput) searchInput.value = kw;
-      currentSearchTerm = kw.toLowerCase();
-      applyFilters();
-    });
-
-    container.appendChild(span);
+    /* Lazy-load image */
+    const img = card.querySelector(".news-image");
+    if (img) {
+      const src = img.getAttribute("data-src");
+      loadImage(img, src);
+    }
   });
 }
 
-/* RENDER ARTICLES (WITH READER MODE ICON + ADS) */
-function renderArticles(articles) {
+/* APPLY FILTERS + RESET VISIBLE ARTICLES */
+function applyFilters() {
+  let filtered = [...allArticles];
+
+  if (currentSourceFilter !== "all") {
+    filtered = filtered.filter(a => a.source === currentSourceFilter);
+  }
+
+  if (currentSearchTerm) {
+    const term = currentSearchTerm;
+    filtered = filtered.filter(a =>
+      a.title && a.title.toLowerCase().includes(term)
+    );
+  }
+
+  /* Reset infinite scroll */
+  visibleArticles = filtered;
+  batchIndex = 0;
+
   const container = document.getElementById("rss-container");
   container.innerHTML = "";
 
-  articles.forEach((article, index) => {
-    if (index > 0 && index % 8 === 0) {
-      const adDiv = document.createElement("div");
-      adDiv.className = "news-item ad-card";
-      adDiv.innerHTML = `
-        <div class="ad-label">Advertisement</div>
-        <div class="ad-inline-slot"></div>
-      `;
-      container.appendChild(adDiv);
-    }
-
-    const div = document.createElement("div");
-    div.className = "news-item";
-    div.dataset.source = article.source;
-
-    const imageHtml = article.thumbnail
-      ? `<img src="${article.thumbnail}" alt="" class="news-image">`
-      : "";
-
-    div.innerHTML = `
-      ${imageHtml}
-      <h2>
-        <a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a>
-        <span class="reader-icon" data-link="${article.link}" data-title="${article.title}" data-desc="${article.description}" data-source="${article.source}">📰</span>
-      </h2>
-      <div class="news-date">${formatDate(article.pubDate)}</div>
-      <div class="news-desc">${article.description}</div>
-    `;
-
-    /* Track clicks */
-    div.querySelector("a").addEventListener("click", () => {
-      trackArticleClick(article.link, article.source);
-      renderMostReadToday();
-      renderTopSources();
-    });
-
-    /* Reader Mode icon */
-    div.querySelector(".reader-icon").addEventListener("click", (e) => {
-      e.stopPropagation();
-      openReaderMode(article);
-    });
-
-    container.appendChild(div);
-  });
+  renderNextBatch();
 }
+
+/* INFINITE SCROLL — LOAD NEXT BATCH */
+function renderNextBatch() {
+  const start = batchIndex * batchSize;
+  const end = start + batchSize;
+
+  const slice = visibleArticles.slice(start, end);
+  if (slice.length === 0) return;
+
+  renderArticlesAppend(slice);
+  batchIndex++;
+
+  /* Hide shimmer */
+  document.getElementById("scroll-loading").classList.remove("visible");
+}
+
+/* INFINITE SCROLL CHECK */
+window.owInfiniteScrollCheck = function () {
+  const scrollPos = window.scrollY + window.innerHeight;
+  const docHeight = document.body.offsetHeight;
+
+  if (scrollPos >= docHeight * 0.85) {
+    const loading = document.getElementById("scroll-loading");
+
+    if (!loading.classList.contains("visible")) {
+      loading.classList.add("visible");
+      setTimeout(() => {
+        renderNextBatch();
+      }, 400);
+    }
+  }
+};
+
 /* READER MODE */
 function openReaderMode(article) {
   const modal = document.getElementById("reader-modal");
@@ -295,24 +398,6 @@ function openReaderMode(article) {
 
 function closeReaderMode() {
   document.getElementById("reader-modal").classList.remove("open");
-}
-
-/* FILTERING */
-function applyFilters() {
-  let filtered = [...allArticles];
-
-  if (currentSourceFilter !== "all") {
-    filtered = filtered.filter(a => a.source === currentSourceFilter);
-  }
-
-  if (currentSearchTerm) {
-    const term = currentSearchTerm;
-    filtered = filtered.filter(a =>
-      a.title && a.title.toLowerCase().includes(term)
-    );
-  }
-
-  renderArticles(filtered);
 }
 
 /* REFRESH TIMER */
@@ -373,6 +458,7 @@ async function loadRSS() {
   renderTrendingKeywords(generateTrendingKeywords(allArticles));
   renderMostReadToday();
   renderTopSources();
+  renderSavedArticles();
 
   if (loadingEl) loadingEl.classList.remove("visible");
 
@@ -384,6 +470,44 @@ async function loadRSS() {
       second: "2-digit"
     });
   }
+}
+
+/* TRENDING KEYWORDS */
+function generateTrendingKeywords(articles) {
+  const words = {};
+
+  articles.forEach(a => {
+    const tokens = a.title.toLowerCase().split(/\W+/);
+    tokens.forEach(t => {
+      if (t.length > 4) {
+        words[t] = (words[t] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(words)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([word]) => word);
+}
+
+function renderTrendingKeywords(list) {
+  const container = document.getElementById("trending-list");
+  container.innerHTML = "";
+
+  list.forEach(word => {
+    const span = document.createElement("span");
+    span.className = "trending-chip";
+    span.textContent = word;
+
+    span.addEventListener("click", () => {
+      currentSearchTerm = word;
+      document.getElementById("search-input").value = word;
+      applyFilters();
+    });
+
+    container.appendChild(span);
+  });
 }
 
 /* FEED SELECTION PERSISTENCE */
@@ -416,6 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  /* Select all / clear all */
   const selectAllBtn = document.getElementById("select-all-feeds");
   const clearAllBtn = document.getElementById("clear-all-feeds");
 

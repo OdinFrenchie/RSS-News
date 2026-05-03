@@ -7,6 +7,7 @@
   <meta name="description" content="Latest World News updates from global sources — auto-refreshed via RSS feeds.">
   <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body>
   <header class="site-header">
     <h1 id="page-title">World News</h1>
@@ -37,12 +38,16 @@
 
   <main class="content enhanced">
     <div class="layout-desktop">
+
+      <!-- MAIN FEED -->
       <div class="main-feed">
+
         <div class="feed-meta">
           <span id="main-last-updated">Last updated: —</span>
           <span id="main-loading" class="loading-indicator">Loading…</span>
         </div>
 
+        <!-- SOURCE FILTERS -->
         <div id="source-filters" class="source-filters">
           <button class="source-chip active" data-source="all">All sources</button>
           <button class="source-chip" data-source="bbc">BBC World</button>
@@ -59,17 +64,34 @@
           <button class="source-chip" data-source="voa">VOA</button>
         </div>
 
+        <!-- TRENDING KEYWORDS -->
         <div id="trending-keywords" class="trending-keywords">
           <span class="trending-label">Trending:</span>
           <span id="trending-list"></span>
         </div>
 
-        <div id="rss-container" class="rss-container"></div>
+        <!-- INFINITE SCROLL WRAPPER -->
+        <div id="infinite-scroll-container">
+          <div id="rss-container" class="rss-container"></div>
+
+          <!-- SHIMMER PLACEHOLDERS (shown during infinite scroll load) -->
+          <div id="scroll-loading" class="scroll-loading">
+            <div class="shimmer-card"></div>
+            <div class="shimmer-card"></div>
+            <div class="shimmer-card"></div>
+          </div>
+        </div>
+
       </div>
 
+      <!-- SIDEBAR -->
       <aside class="top-stories-rail">
+
         <h3>Top Stories</h3>
         <div id="top-stories"></div>
+
+        <h3 class="saved-header">Saved Articles</h3>
+        <div id="saved-articles"></div>
 
         <h3 class="analytics-header">Most Read Today</h3>
         <div id="most-read-today"></div>
@@ -86,10 +108,13 @@
           <div class="ad-label">Advertisement</div>
           <div class="ad-slot-vertical" id="ad-vertical"></div>
         </div>
+
       </aside>
+
     </div>
   </main>
 
+  <!-- BOTTOM AD -->
   <div class="bottom-ad-banner">
     <div class="bottom-ad-inner">
       <span class="ad-label">Advertisement</span>
@@ -192,6 +217,7 @@
       </label>
     </section>
   </aside>
+  </aside>
 
   <!-- READER MODE MODAL -->
   <div id="reader-modal" class="reader-modal">
@@ -209,21 +235,24 @@
     <p>© 2026 OdinWire</p>
   </footer>
 
-  <script src="/js/rss-loader.js?v=17"></script>
+  <script src="/js/rss-loader.js?v=18"></script>
+
   <script>
     /* THEME */
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
       document.documentElement.setAttribute("data-theme", savedTheme);
+      const themeToggle = document.getElementById("theme-toggle");
+      themeToggle.textContent = savedTheme === "dark" ? "☀️" : "🌙";
     }
 
-    const themeToggle = document.getElementById("theme-toggle");
-    themeToggle.addEventListener("click", () => {
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    themeToggleBtn.addEventListener("click", () => {
       const current = document.documentElement.getAttribute("data-theme");
       const next = current === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
       localStorage.setItem("theme", next);
-      themeToggle.textContent = next === "dark" ? "☀️" : "🌙";
+      themeToggleBtn.textContent = next === "dark" ? "☀️" : "🌙";
     });
 
     /* COMPACT MODE */
@@ -271,6 +300,14 @@
     settingsToggleBtn.addEventListener("click", openSettings);
     settingsClose.addEventListener("click", closeSettings);
     settingsBackdrop.addEventListener("click", closeSettings);
+
+    /* INFINITE SCROLL HOOK (logic in rss-loader.js) */
+    document.addEventListener("scroll", () => {
+      if (window.owInfiniteScrollCheck) {
+        window.owInfiniteScrollCheck();
+      }
+    });
   </script>
+
 </body>
 </html>

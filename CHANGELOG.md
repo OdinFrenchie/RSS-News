@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.9.0] - 2026-05-03
+
+### Added – 0.9.0
+
+- Infinite scroll with 20-article batches
+- Lazy-loading images with shimmer placeholders
+- Auto-summary generator (local, deterministic)
+- Save for Later system with bookmarks panel
+- Updated article card layout for summaries + lazy images
+
+### Changed – 0.9.0
+
+- Rendering pipeline updated for incremental loading
+- Image handling improved with fallback + fade-in
+- Reader Mode integrated with new card structure
+- Search + filters now reset infinite scroll state
+
+### Notes – 0.9.0
+
+- Infinite scroll triggers at 85% scroll depth
+- Bookmarks stored locally; persist across reloads
+- Auto-summaries generated from title + description
+- Built on stable v0.8.0 baseline
+
 ## [0.8.0] - 2026-05-03
 
 ### Added – 0.8.0
