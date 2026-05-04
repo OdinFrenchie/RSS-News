@@ -7,7 +7,6 @@
   <meta name="description" content="Latest World News updates from global sources — auto-refreshed via RSS feeds.">
   <link rel="stylesheet" href="/css/style.css">
 </head>
-
 <body>
   <header class="site-header">
     <h1 id="page-title">World News</h1>
@@ -38,10 +37,8 @@
 
   <main class="content enhanced">
     <div class="layout-desktop">
-
       <!-- MAIN FEED -->
       <div class="main-feed">
-
         <div class="feed-meta">
           <span id="main-last-updated">Last updated: —</span>
           <span id="main-loading" class="loading-indicator">Loading…</span>
@@ -81,12 +78,10 @@
             <div class="shimmer-card"></div>
           </div>
         </div>
-
       </div>
 
       <!-- SIDEBAR -->
       <aside class="top-stories-rail">
-
         <h3>Top Stories</h3>
         <div id="top-stories"></div>
 
@@ -108,9 +103,7 @@
           <div class="ad-label">Advertisement</div>
           <div class="ad-slot-vertical" id="ad-vertical"></div>
         </div>
-
       </aside>
-
     </div>
   </main>
 
@@ -124,7 +117,6 @@
 
   <!-- SETTINGS PANEL -->
   <div id="settings-backdrop" class="settings-backdrop"></div>
-
   <aside id="settings-panel" class="settings-panel">
     <div class="settings-header">
       <h2>Page Settings</h2>
@@ -209,6 +201,30 @@
       </div>
     </section>
 
+    <!-- THEME SETTINGS (COSMETIC THEMES) -->
+    <section class="settings-section">
+      <h3>Theme</h3>
+      <p class="settings-help">Choose an accent theme. Dark / light is controlled by the moon/sun toggle.</p>
+      <div class="theme-swatches" id="theme-swatches">
+        <button class="theme-swatch theme-swatch-default" type="button" data-theme-accent="default">
+          <span class="theme-swatch-dot"></span>
+          <span class="theme-swatch-label">Default</span>
+        </button>
+        <button class="theme-swatch theme-swatch-sunrise" type="button" data-theme-accent="sunrise">
+          <span class="theme-swatch-dot"></span>
+          <span class="theme-swatch-label">Sunrise</span>
+        </button>
+        <button class="theme-swatch theme-swatch-forest" type="button" data-theme-accent="forest">
+          <span class="theme-swatch-dot"></span>
+          <span class="theme-swatch-label">Forest</span>
+        </button>
+        <button class="theme-swatch theme-swatch-midnight" type="button" data-theme-accent="midnight">
+          <span class="theme-swatch-dot"></span>
+          <span class="theme-swatch-label">Midnight</span>
+        </button>
+      </div>
+    </section>
+
     <section class="settings-section">
       <h3>Display</h3>
       <label class="settings-toggle-row">
@@ -216,7 +232,6 @@
         <button id="settings-compact-toggle" type="button" class="toggle-pill">Toggle</button>
       </label>
     </section>
-  </aside>
   </aside>
 
   <!-- READER MODE MODAL -->
@@ -236,9 +251,8 @@
   </footer>
 
   <script src="/js/rss-loader.js?v=18"></script>
-
   <script>
-    /* THEME */
+    /* THEME (LIGHT/DARK) */
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
       document.documentElement.setAttribute("data-theme", savedTheme);
@@ -248,12 +262,38 @@
 
     const themeToggleBtn = document.getElementById("theme-toggle");
     themeToggleBtn.addEventListener("click", () => {
-      const current = document.documentElement.getAttribute("data-theme");
+      const current = document.documentElement.getAttribute("data-theme") || "light";
       const next = current === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
       localStorage.setItem("theme", next);
       themeToggleBtn.textContent = next === "dark" ? "☀️" : "🌙";
     });
+
+    /* ACCENT THEME SYSTEM (COSMETIC THEMES) */
+    const ACCENT_KEY = "theme-accent";
+    const savedAccent = localStorage.getItem(ACCENT_KEY) || "default";
+    document.documentElement.setAttribute("data-theme-accent", savedAccent);
+
+    function syncAccentSwatches() {
+      const swatches = document.querySelectorAll(".theme-swatch");
+      swatches.forEach(btn => {
+        const val = btn.getAttribute("data-theme-accent");
+        btn.classList.toggle("active", val === savedAccent || val === document.documentElement.getAttribute("data-theme-accent"));
+      });
+    }
+
+    const swatchContainer = document.getElementById("theme-swatches");
+    if (swatchContainer) {
+      swatchContainer.addEventListener("click", (e) => {
+        const btn = e.target.closest(".theme-swatch");
+        if (!btn) return;
+        const accent = btn.getAttribute("data-theme-accent") || "default";
+        document.documentElement.setAttribute("data-theme-accent", accent);
+        localStorage.setItem(ACCENT_KEY, accent);
+        syncAccentSwatches();
+      });
+    }
+    syncAccentSwatches();
 
     /* COMPACT MODE */
     const compactToggle = document.getElementById("compact-toggle");
@@ -308,6 +348,5 @@
       }
     });
   </script>
-
 </body>
 </html>

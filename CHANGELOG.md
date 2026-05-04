@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.9.1] - 2026-05-04
+
+### Added – 0.9.1
+
+- Accent theme system with selectable swatches (Default, Sunrise, Forest, Midnight)
+- Theme persistence using `data-theme-accent` and localStorage
+- Reader Mode button styling improvements
+- Dark-mode search input contrast enhancements
+- Additional bottom padding to ensure advertisement visibility
+
+### Changed – 0.9.1
+
+- Dark-mode accent colours updated for improved readability
+- Trending chip and highlight colours adjusted for dark mode
+- Top Stories bullet styling softened for better contrast
+- Auto-summary (AI highlight) visually removed via CSS
+
+### Notes – 0.9.1
+
+- All updates are strictly additive; no code was removed
+- No structural or functional changes were made
+- `rss-loader.js` remains unchanged from v0.9.0 baseline
+
 ## [0.9.0] - 2026-05-03
 
 ### Added – 0.9.0

@@ -23,14 +23,16 @@
   --shimmer-highlight: #f5f6f7;
 }
 
+/* DARK THEME BASE */
 [data-theme="dark"] {
   --bg: #0f1115;
   --card-bg: rgba(20, 22, 28, 0.96);
   --text: #f3f4f6;
   --text-soft: #cbd5f5;
   --border: #2a2d33;
-  --accent: #5b8dff;
-  --accent-soft: rgba(91, 141, 255, 0.2);
+  /* slightly softer but higher-contrast accent for dark mode */
+  --accent: #7ea6ff;
+  --accent-soft: rgba(126, 166, 255, 0.35);
   --ad-bg: #111827;
 
   --reader-bg: #1a1d24;
@@ -40,13 +42,34 @@
   --shimmer-highlight: #2a2f38;
 }
 
+/* ACCENT THEMES (COSMETIC) */
+[data-theme-accent="default"] {
+  --accent: #2A6CF0;
+  --accent-soft: rgba(42, 108, 240, 0.12);
+}
+
+[data-theme-accent="sunrise"] {
+  --accent: #f97316;
+  --accent-soft: rgba(249, 115, 22, 0.18);
+}
+
+[data-theme-accent="forest"] {
+  --accent: #16a34a;
+  --accent-soft: rgba(22, 163, 74, 0.18);
+}
+
+[data-theme-accent="midnight"] {
+  --accent: #6366f1;
+  --accent-soft: rgba(99, 102, 241, 0.22);
+}
+
 /* BASE */
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   background: radial-gradient(circle at top, #eef2ff 0, var(--bg) 40%);
   color: var(--text);
   line-height: 1.6;
-  padding-bottom: 90px;
+  padding-bottom: 140px; /* extra space so bottom ad is visible */
   transition: background 0.25s ease, color 0.25s ease;
 }
 
@@ -123,6 +146,17 @@ body.compact .news-item h2 {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent-soft);
   background: #fff;
+}
+
+/* Dark-mode specific search contrast */
+[data-theme="dark"] .search-input {
+  background: rgba(15, 17, 21, 0.95);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .search-input::placeholder {
+  color: var(--text-soft);
 }
 
 /* TOGGLES */
@@ -276,6 +310,7 @@ body.compact .news-item h2 {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 20px;
 }
+
 /* NEWS CARDS */
 .news-item {
   background: var(--card-bg);
@@ -317,15 +352,9 @@ body.compact .news-item h2 {
   margin-bottom: 10px;
 }
 
-/* AUTO-SUMMARY */
+/* AUTO-SUMMARY (AI HIGHLIGHT) — visually removed */
 .auto-summary {
-  margin-top: 6px;
-  padding: 8px 10px;
-  background: var(--accent-soft);
-  border-left: 3px solid var(--accent);
-  border-radius: 6px;
-  font-size: 0.85rem;
-  color: var(--text);
+  display: none;
 }
 
 /* BOOKMARK ICON */
@@ -426,21 +455,22 @@ body.compact .news-item h2 {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .top-story-bullet {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   background: var(--accent);
   border-radius: 50%;
   margin-top: 6px;
+  opacity: 0.9;
 }
 
 .top-story-content a {
   color: var(--text);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .top-story-content a:hover {
@@ -537,6 +567,189 @@ body.compact .news-item h2 {
 
 .reader-original-link:hover {
   text-decoration: underline;
+}
+
+/* READER BUTTON ON CARDS */
+.reader-btn {
+  margin-top: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--text-soft);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.reader-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* SETTINGS PANEL */
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 140;
+}
+
+.settings-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  max-width: 100%;
+  height: 100%;
+  background: var(--card-bg);
+  border-left: 1px solid var(--border);
+  box-shadow: -10px 0 30px rgba(15, 23, 42, 0.35);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-panel.open {
+  transform: translateX(0);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-soft);
+}
+
+.settings-section {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-help {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+}
+
+.feed-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.feed-selector-actions button {
+  font-size: 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  padding: 3px 8px;
+  cursor: pointer;
+  color: var(--text-soft);
+}
+
+.feed-selector-actions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.feed-group-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 10px 0 6px;
+  color: var(--text-soft);
+}
+
+.feed-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.feed-label-text {
+  color: var(--text);
+}
+
+/* THEME SWATCHES */
+.theme-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theme-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.theme-swatch-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+/* individual swatch previews */
+.theme-swatch-default .theme-swatch-dot {
+  background: #2A6CF0;
+}
+
+.theme-swatch-sunrise .theme-swatch-dot {
+  background: #f97316;
+}
+
+.theme-swatch-forest .theme-swatch-dot {
+  background: #16a34a;
+}
+
+.theme-swatch-midnight .theme-swatch-dot {
+  background: #6366f1;
+}
+
+.theme-swatch.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* DISPLAY TOGGLE ROW */
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
 }
 
 /* FOOTER */
