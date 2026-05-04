@@ -1,26 +1,5 @@
 # Changelog
 
-## [0.9.4] — 2026-05-04
-
-### Added - 0.9.4
-
-- Full 4‑column layout (20% / 40% / 20% / 20%)
-- Left Rail (Weather, Quick Links, Global Timezones)
-- Weather widget using Open‑Meteo API
-- Quick Links with localStorage persistence
-- Live timezone clocks (London, New York, Tokyo)
-
-### Changed - 0.9.4
-
-- world.html updated with new structural layout
-- style.css updated with left‑rail and layout styling
-- rss-loader.js updated with left‑rail logic
-
-### Notes - 0.9.4
-
-- Right Rail remains empty until v0.9.5 (Batch B)
-- Existing right sidebar remains unchanged
-
 ## [0.9.3] - 2026-05-04
 
 ### Added – 0.9.3
