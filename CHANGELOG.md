@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.9.3] - 2026-05-04
+
+### Added – 0.9.3
+
+- Sticky bottom advertisement restored and anchored using CSS
+
+### Changed – 0.9.3
+
+- Improved dark-mode readability for “Last updated” text
+- Improved dark-mode readability for “Trending:” label
+
+### Notes – 0.9.3
+
+- All updates are strictly additive and cosmetic
+- No structural layout changes were made
+- world.html and rss-loader.js remain unchanged from 0.9.2
+
 ## [0.9.2] - 2026-05-04
 
 ### Added – 0.9.2
