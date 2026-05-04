@@ -1,352 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light" data-theme-accent="default">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>World News | OdinWire</title>
-  <meta name="description" content="Latest World News updates from global sources — auto-refreshed via RSS feeds.">
-  <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World News</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <header class="site-header">
-    <h1 id="page-title">World News</h1>
-  </header>
 
-  <nav class="nav-bar">
-    <a href="/index.html" class="brand">OdinWire</a>
-    <a href="/news/world.html" class="active">World</a>
-    <a href="/news/uk.html">UK</a>
-    <a href="/news/tech.html">Tech</a>
-    <a href="/news/sports.html">Sports</a>
-    <a href="/news/entertainment.html">Entertainment</a>
+<header class="site-header">
+    <h1>World News</h1>
+</header>
 
+<nav class="nav-bar">
+    <a href="index.html">Home</a>
+    <a href="world.html" class="active">World</a>
+    <a href="tech.html">Tech</a>
+    <a href="business.html">Business</a>
     <div class="nav-spacer"></div>
+    <input type="text" id="searchInput" class="search-input" placeholder="Search…">
+    <button class="theme-toggle" id="themeToggle">Theme</button>
+    <button class="compact-toggle" id="compactToggle">Compact</button>
+    <button class="settings-toggle" id="settingsToggle">⚙</button>
+</nav>
 
-    <input
-      id="search-input"
-      class="search-input"
-      type="search"
-      placeholder="Search headlines…"
-      autocomplete="off"
-    >
+<div class="content">
 
-    <button id="settings-toggle" class="settings-toggle" type="button">⚙ Settings</button>
-    <button id="compact-toggle" class="compact-toggle" type="button">Compact</button>
-    <button id="theme-toggle" class="theme-toggle" type="button">🌙</button>
-  </nav>
-
-  <main class="content enhanced">
+    <!-- 4‑COLUMN DESKTOP LAYOUT -->
     <div class="layout-desktop">
-      <!-- MAIN FEED -->
-      <div class="main-feed">
-        <div class="feed-meta">
-          <span id="main-last-updated">Last updated: —</span>
-          <span id="main-loading" class="loading-indicator">Loading…</span>
-        </div>
 
-        <!-- SOURCE FILTERS -->
-        <div id="source-filters" class="source-filters">
-          <button class="source-chip active" data-source="all">All sources</button>
-          <button class="source-chip" data-source="bbc">BBC World</button>
-          <button class="source-chip" data-source="reuters">Reuters</button>
-          <button class="source-chip" data-source="aljazeera">Al Jazeera</button>
-          <button class="source-chip" data-source="dw">DW</button>
-          <button class="source-chip" data-source="euronews">Euronews</button>
-          <button class="source-chip" data-source="france24">France24</button>
-          <button class="source-chip" data-source="sky">Sky News</button>
-          <button class="source-chip" data-source="npr">NPR</button>
-          <button class="source-chip" data-source="cbc">CBC</button>
-          <button class="source-chip" data-source="abc">ABC Australia</button>
-          <button class="source-chip" data-source="japantimes">Japan Times</button>
-          <button class="source-chip" data-source="voa">VOA</button>
-        </div>
+        <!-- LEFT RAIL (20%) -->
+        <aside class="left-rail">
 
-        <!-- TRENDING KEYWORDS -->
-        <div id="trending-keywords" class="trending-keywords">
-          <span class="trending-label">Trending:</span>
-          <span id="trending-list"></span>
-        </div>
+            <!-- WEATHER -->
+            <section class="lr-card" id="weatherWidget">
+                <h3>Weather</h3>
+                <div id="weatherContent">Loading…</div>
+            </section>
 
-        <!-- INFINITE SCROLL WRAPPER -->
-        <div id="infinite-scroll-container">
-          <div id="rss-container" class="rss-container"></div>
+            <!-- QUICK LINKS -->
+            <section class="lr-card">
+                <h3>Quick Links</h3>
+                <div id="quickLinksList"></div>
+                <input id="quickLinkInput" placeholder="Add link…" />
+                <button id="addQuickLinkBtn">Add</button>
+            </section>
 
-          <!-- SHIMMER PLACEHOLDERS (shown during infinite scroll load) -->
-          <div id="scroll-loading" class="scroll-loading">
-            <div class="shimmer-card"></div>
-            <div class="shimmer-card"></div>
-            <div class="shimmer-card"></div>
-          </div>
-        </div>
-      </div>
+            <!-- TIMEZONES -->
+            <section class="lr-card">
+                <h3>Global Timezones</h3>
+                <div id="tzLondon"></div>
+                <div id="tzNewYork"></div>
+                <div id="tzTokyo"></div>
+            </section>
 
-      <!-- SIDEBAR -->
-      <aside class="top-stories-rail">
-        <h3>Top Stories</h3>
-        <div id="top-stories"></div>
+        </aside>
 
-        <h3 class="saved-header">Saved Articles</h3>
-        <div id="saved-articles"></div>
+        <!-- MAIN FEED (40%) -->
+        <main class="main-feed">
+            <div class="feed-meta">
+                <span id="lastUpdated">Last updated: --:--:--</span>
+                <span class="loading-indicator" id="loadingIndicator">Loading…</span>
+            </div>
 
-        <h3 class="analytics-header">Most Read Today</h3>
-        <div id="most-read-today"></div>
+            <div class="source-filters" id="sourceFilters"></div>
+            <div class="trending-keywords" id="trendingKeywords"></div>
 
-        <h3 class="analytics-header">Top Sources</h3>
-        <div id="top-sources"></div>
+            <div class="rss-container" id="rssContainer"></div>
+            <div id="scroll-loading">Loading more…</div>
+        </main>
 
-        <div class="live-refresh">
-          Updated <span id="refresh-time">just now</span><br>
-          Next refresh in <span id="next-refresh">60</span>s
-        </div>
+        <!-- EXISTING RIGHT SIDEBAR (20%) -->
+        <aside class="top-stories-rail">
+            <h3>Top Stories</h3>
+            <div id="topStories"></div>
 
-        <div class="sidebar-ad">
-          <div class="ad-label">Advertisement</div>
-          <div class="ad-slot-vertical" id="ad-vertical"></div>
-        </div>
-      </aside>
+            <h3>Saved Articles</h3>
+            <div id="saved-articles"></div>
+
+            <h3>Most Read Today</h3>
+            <div id="mostRead"></div>
+
+            <h3>Top Sources</h3>
+            <div id="topSources"></div>
+        </aside>
+
+        <!-- NEW RIGHT RAIL (20%) — EMPTY UNTIL v0.9.5 -->
+        <aside class="right-rail">
+            <div class="rr-placeholder">Right rail features coming in v0.9.5…</div>
+        </aside>
+
     </div>
-  </main>
+</div>
 
-  <!-- BOTTOM AD -->
-  <div class="bottom-ad-banner">
+<!-- Sticky Bottom Ad -->
+<div class="bottom-ad-banner">
     <div class="bottom-ad-inner">
-      <span class="ad-label">Advertisement</span>
-      <div class="ad-slot-bottom" id="ad-bottom"></div>
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-card">Your ad here</div>
     </div>
-  </div>
+</div>
 
-  <!-- SETTINGS PANEL -->
-  <div id="settings-backdrop" class="settings-backdrop"></div>
-  <aside id="settings-panel" class="settings-panel">
-    <div class="settings-header">
-      <h2>Page Settings</h2>
-      <button id="settings-close" class="settings-close" type="button">✕</button>
-    </div>
-
-    <section class="settings-section">
-      <h3>News Sources</h3>
-      <p class="settings-help">Choose which sources to include in this feed.</p>
-
-      <div class="feed-selector">
-        <div class="feed-selector-header">
-          <div class="feed-selector-actions">
-            <button id="select-all-feeds" type="button">Select all</button>
-            <button id="clear-all-feeds" type="button">Clear</button>
-          </div>
-        </div>
-
-        <h4 class="feed-group-label">Major Global Outlets</h4>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="bbc" checked>
-          <span class="feed-label-text">BBC World</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="reuters" checked>
-          <span class="feed-label-text">Reuters World</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="aljazeera" checked>
-          <span class="feed-label-text">Al Jazeera Global</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="dw" checked>
-          <span class="feed-label-text">Deutsche Welle (World)</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="euronews" checked>
-          <span class="feed-label-text">Euronews (World)</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="france24" checked>
-          <span class="feed-label-text">France24 (International)</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="sky" checked>
-          <span class="feed-label-text">Sky News (World)</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="npr" checked>
-          <span class="feed-label-text">NPR World</span>
-        </label>
-
-        <h4 class="feed-group-label">Additional Global Sources</h4>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="cbc">
-          <span class="feed-label-text">CBC World</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="abc">
-          <span class="feed-label-text">ABC Australia (World)</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="japantimes">
-          <span class="feed-label-text">Japan Times</span>
-        </label>
-
-        <label class="feed-option">
-          <input type="checkbox" class="feed-check" value="voa">
-          <span class="feed-label-text">VOA News</span>
-        </label>
-      </div>
-    </section>
-
-    <!-- THEME SETTINGS (COSMETIC THEMES) -->
-    <section class="settings-section">
-      <h3>Theme</h3>
-      <p class="settings-help">Choose an accent theme. Dark / light is controlled by the moon/sun toggle.</p>
-      <div class="theme-swatches" id="theme-swatches">
-        <button class="theme-swatch theme-swatch-default" type="button" data-theme-accent="default">
-          <span class="theme-swatch-dot"></span>
-          <span class="theme-swatch-label">Default</span>
-        </button>
-        <button class="theme-swatch theme-swatch-sunrise" type="button" data-theme-accent="sunrise">
-          <span class="theme-swatch-dot"></span>
-          <span class="theme-swatch-label">Sunrise</span>
-        </button>
-        <button class="theme-swatch theme-swatch-forest" type="button" data-theme-accent="forest">
-          <span class="theme-swatch-dot"></span>
-          <span class="theme-swatch-label">Forest</span>
-        </button>
-        <button class="theme-swatch theme-swatch-midnight" type="button" data-theme-accent="midnight">
-          <span class="theme-swatch-dot"></span>
-          <span class="theme-swatch-label">Midnight</span>
-        </button>
-      </div>
-    </section>
-
-    <section class="settings-section">
-      <h3>Display</h3>
-      <label class="settings-toggle-row">
-        <span>Compact mode</span>
-        <button id="settings-compact-toggle" type="button" class="toggle-pill">Toggle</button>
-      </label>
-    </section>
-  </aside>
-
-  <!-- READER MODE MODAL -->
-  <div id="reader-modal" class="reader-modal">
-    <div class="reader-modal-content">
-      <button id="reader-close" class="reader-close">✕</button>
-      <h2 id="reader-title"></h2>
-      <div id="reader-body"></div>
-      <a id="reader-original-link" href="#" target="_blank" rel="noopener noreferrer" class="reader-original-link">
-        View original article →
-      </a>
-    </div>
-  </div>
-
-  <footer class="site-footer">
-    <p>© 2026 OdinWire</p>
-  </footer>
-
-  <script src="/js/rss-loader.js?v=18"></script>
-  <script>
-    /* THEME (LIGHT/DARK) */
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      document.documentElement.setAttribute("data-theme", savedTheme);
-      const themeToggle = document.getElementById("theme-toggle");
-      themeToggle.textContent = savedTheme === "dark" ? "☀️" : "🌙";
-    }
-
-    const themeToggleBtn = document.getElementById("theme-toggle");
-    themeToggleBtn.addEventListener("click", () => {
-      const current = document.documentElement.getAttribute("data-theme") || "light";
-      const next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
-      themeToggleBtn.textContent = next === "dark" ? "☀️" : "🌙";
-    });
-
-    /* ACCENT THEME SYSTEM (COSMETIC THEMES) */
-    const ACCENT_KEY = "theme-accent";
-    const savedAccent = localStorage.getItem(ACCENT_KEY) || "default";
-    document.documentElement.setAttribute("data-theme-accent", savedAccent);
-
-    function syncAccentSwatches() {
-      const swatches = document.querySelectorAll(".theme-swatch");
-      swatches.forEach(btn => {
-        const val = btn.getAttribute("data-theme-accent");
-        btn.classList.toggle("active", val === savedAccent || val === document.documentElement.getAttribute("data-theme-accent"));
-      });
-    }
-
-    const swatchContainer = document.getElementById("theme-swatches");
-    if (swatchContainer) {
-      swatchContainer.addEventListener("click", (e) => {
-        const btn = e.target.closest(".theme-swatch");
-        if (!btn) return;
-        const accent = btn.getAttribute("data-theme-accent") || "default";
-        document.documentElement.setAttribute("data-theme-accent", accent);
-        localStorage.setItem(ACCENT_KEY, accent);
-        syncAccentSwatches();
-      });
-    }
-    syncAccentSwatches();
-
-    /* COMPACT MODE */
-    const compactToggle = document.getElementById("compact-toggle");
-    const settingsCompactToggle = document.getElementById("settings-compact-toggle");
-    const savedCompact = localStorage.getItem("compact-mode");
-
-    if (savedCompact === "on") {
-      document.body.classList.add("compact");
-    }
-
-    function syncCompactLabel() {
-      const isOn = document.body.classList.contains("compact");
-      compactToggle.classList.toggle("active", isOn);
-      settingsCompactToggle.classList.toggle("active", isOn);
-    }
-
-    function toggleCompact() {
-      document.body.classList.toggle("compact");
-      const isOn = document.body.classList.contains("compact");
-      localStorage.setItem("compact-mode", isOn ? "on" : "off");
-      syncCompactLabel();
-    }
-
-    compactToggle.addEventListener("click", toggleCompact);
-    settingsCompactToggle.addEventListener("click", toggleCompact);
-    syncCompactLabel();
-
-    /* SETTINGS PANEL */
-    const settingsToggleBtn = document.getElementById("settings-toggle");
-    const settingsPanel = document.getElementById("settings-panel");
-    const settingsBackdrop = document.getElementById("settings-backdrop");
-    const settingsClose = document.getElementById("settings-close");
-
-    function openSettings() {
-      settingsPanel.classList.add("open");
-      settingsBackdrop.classList.add("visible");
-    }
-
-    function closeSettings() {
-      settingsPanel.classList.remove("open");
-      settingsBackdrop.classList.remove("visible");
-    }
-
-    settingsToggleBtn.addEventListener("click", openSettings);
-    settingsClose.addEventListener("click", closeSettings);
-    settingsBackdrop.addEventListener("click", closeSettings);
-
-    /* INFINITE SCROLL HOOK (logic in rss-loader.js) */
-    document.addEventListener("scroll", () => {
-      if (window.owInfiniteScrollCheck) {
-        window.owInfiniteScrollCheck();
-      }
-    });
-  </script>
+<script src="rss-loader.js"></script>
 </body>
 </html>
