@@ -1,4 +1,4 @@
-/* OdinWire World News — rss-loader.js v0.9.0 */
+/* OdinWire World News — rss-loader.js v0.9.2 */
 
 /* WORLD NEWS FEEDS */
 const FEEDS = {
@@ -23,6 +23,9 @@ let currentSourceFilter = "all";
 let currentSearchTerm = "";
 let batchSize = 20;
 let batchIndex = 0;
+
+/* INLINE AD COUNTER */
+let articleRenderCount = 0;
 
 /* REFRESH TIMER */
 let refreshInterval = 60;
@@ -238,6 +241,17 @@ function renderTopSources() {
   });
 }
 
+/* INLINE AD CARD CREATOR */
+function createInlineAdCard() {
+  const ad = document.createElement("div");
+  ad.className = "ad-inline-card";
+  ad.innerHTML = `
+    <div class="ad-label">Advertisement</div>
+    <div class="ad-slot-inline"></div>
+  `;
+  return ad;
+}
+
 /* RENDER ARTICLE CARD */
 function renderArticleCard(article) {
   const div = document.createElement("div");
@@ -287,11 +301,19 @@ function renderArticlesAppend(list) {
   list.forEach(article => {
     const card = renderArticleCard(article);
     container.appendChild(card);
+
     /* Lazy-load image */
     const img = card.querySelector(".news-image");
     if (img) {
       const src = img.getAttribute("data-src");
       loadImage(img, src);
+    }
+
+    /* Inline ad every 8 articles */
+    articleRenderCount++;
+    if (articleRenderCount % 8 === 0) {
+      const adCard = createInlineAdCard();
+      container.appendChild(adCard);
     }
   });
 }
@@ -311,6 +333,7 @@ function applyFilters() {
   /* Reset infinite scroll */
   visibleArticles = filtered;
   batchIndex = 0;
+  articleRenderCount = 0;
   const container = document.getElementById("rss-container");
   container.innerHTML = "";
   renderNextBatch();

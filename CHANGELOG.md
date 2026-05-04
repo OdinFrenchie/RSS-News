@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.9.2] - 2026-05-04
+
+### Added – 0.9.2
+
+- Inline advertisement tiles inserted after every 8 news items
+- Inline ad styling for in-feed placements
+
+### Changed – 0.9.2
+
+- Reduced spacing between tiles and within news cards to minimise wasted space
+- Adjusted inactive source chip colours for better readability when not highlighted
+- Reduced news image height and applied object-fit cover to tighten tile layout
+- Tweaked shimmer and sidebar spacing for a more compact feel
+- Ensured bottom advertisement area remains visible with adjusted padding and layout
+
+### Notes – 0.9.2
+
+- All updates are strictly additive; no existing logic was removed
+- Inline ads are rendered client-side and do not affect feed parsing
+- world.html structure remains unchanged from 0.9.1
+
 ## [0.9.1] - 2026-05-04
 
 ### Added – 0.9.1
