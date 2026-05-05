@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.9.4 — Left Rail (Batch A) + 4‑Column Layout
+
+## Added - 0.9.4
+
+- New **left rail** introduced as part of the 4‑column newsroom layout.
+- Left rail includes:
+  - **Weather widget** (auto‑refreshing)
+  - **Quick Links** (localStorage‑backed)
+  - **Global Timezones** (London, New York, Tokyo)
+- Added **right rail placeholder** for Batch B (v0.9.5).
+- Added new **sticky positioning** for left rail (mirrors right sidebar).
+- Added new **grid layout**: `260px 1fr 320px 260px`.
+
+## Changed - 0.9.4
+
+- Updated `world.html` to include left rail and right rail containers.
+- Updated `style.css` to support 4‑column layout and left rail styling.
+- Updated `rss-loader.js` with weather, timezones, and quick links logic.
+
+## Fixed - 0.9.4
+
+- No functional fixes; all existing 0.9.3 behaviour preserved.
+
 ## [0.9.3] - 2026-05-04
 
 ### Added – 0.9.3
