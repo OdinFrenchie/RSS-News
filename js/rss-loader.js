@@ -530,7 +530,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* Source filter chips */
+    /* Source filter chips */
   const sourceFilters = document.getElementById("source-filters");
   if (sourceFilters) {
     sourceFilters.addEventListener("click", (e) => {
