@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.9.6 — Right Rail Enhancements (Map, Video, AI Summary)
+
+- Added hybrid live map module to right rail
+- Added BBC + Reuters video rail
+- Added AI Summary panel with ON/OFF toggle
+- Integrated right‑rail refresh cycle with global refresh timer
+- Updated settings panel with AI Summary toggle
+- Minor layout and styling refinements for 4‑column structure
+
+## 0.9.5 — Full‑Width Layout (Grid Expansion)
+
+## Added - 0.9.5
+
+- Introduced **full‑width 4‑column layout**, removing the 1200px content constraint.
+- Left rail, main feed, right sidebar, and right rail now span the **entire viewport width**.
+- Updated `.content` container to allow full‑bleed grid rendering.
+- Improved horizontal spacing and padding for large screens.
+
+## Changed - 0.9.5
+
+- `.content` no longer uses `max-width: 1200px`.
+- Layout now uses the full screen, placing the **left rail on the true left edge** and the **right rail on the true right edge**.
+- Minor responsive adjustments to ensure stability on ultra‑wide displays.
+
+## Fixed - 0.9.5
+
+- Left rail no longer appears centered or offset due to container width limits.
+
 ## 0.9.4 — Left Rail (Batch A) + 4‑Column Layout
 
 ## Added - 0.9.4

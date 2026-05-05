@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,27 +45,24 @@
 <!-- LEFT RAIL (v0.9.4) -->
 <aside class="left-rail">
 
-  <!-- WEATHER -->
-  <section class="lr-card">
-    <h3>Weather</h3>
-    <div id="weatherContent">Loading…</div>
-  </section>
+<section class="lr-card">
+<h3>Weather</h3>
+<div id="weatherContent">Loading…</div>
+</section>
 
-  <!-- QUICK LINKS -->
-  <section class="lr-card">
-    <h3>Quick Links</h3>
-    <div id="quickLinksList"></div>
-    <input id="quickLinkInput" placeholder="Add link…" />
-    <button id="addQuickLinkBtn">Add</button>
-  </section>
+<section class="lr-card">
+<h3>Quick Links</h3>
+<div id="quickLinksList"></div>
+<input id="quickLinkInput" placeholder="Add link…" />
+<button id="addQuickLinkBtn">Add</button>
+</section>
 
-  <!-- TIMEZONES -->
-  <section class="lr-card">
-    <h3>Global Timezones</h3>
-    <div id="tzLondon"></div>
-    <div id="tzNewYork"></div>
-    <div id="tzTokyo"></div>
-  </section>
+<section class="lr-card">
+<h3>Global Timezones</h3>
+<div id="tzLondon"></div>
+<div id="tzNewYork"></div>
+<div id="tzTokyo"></div>
+</section>
 
 </aside>
 
@@ -101,22 +99,18 @@
 
 <!-- INFINITE SCROLL WRAPPER -->
 <div id="infinite-scroll-container">
-
 <div id="rss-container" class="rss-container"></div>
 
-<!-- SHIMMER PLACEHOLDERS -->
 <div id="scroll-loading" class="scroll-loading">
 <div class="shimmer-card"></div>
 <div class="shimmer-card"></div>
 <div class="shimmer-card"></div>
 </div>
-
-</div>
 </div>
 
+</div>
 <!-- RIGHT SIDEBAR (UNCHANGED) -->
 <aside class="top-stories-rail">
-
 <h3>Top Stories</h3>
 <div id="top-stories"></div>
 
@@ -138,12 +132,34 @@ Next refresh in <span id="next-refresh">60</span>s
 <div class="ad-label">Advertisement</div>
 <div class="ad-slot-vertical" id="ad-vertical"></div>
 </div>
-
 </aside>
 
-<!-- RIGHT RAIL (EMPTY FOR v0.9.5) -->
+<!-- RIGHT RAIL (v0.9.6) -->
 <aside class="right-rail">
-<div class="rr-placeholder">Right rail features coming in v0.9.5…</div>
+
+  <!-- LIVE MAP PANEL -->
+  <section class="rr-card" id="rr-map">
+    <h3>Global Map</h3>
+    <div id="mapContainer" class="map-container">
+      <div class="map-loading">Loading map…</div>
+    </div>
+  </section>
+
+  <!-- VIDEO RAIL -->
+  <section class="rr-card" id="rr-videos">
+    <h3>World Video Highlights</h3>
+    <div id="videoList" class="video-list"></div>
+  </section>
+
+  <!-- AI SUMMARY PANEL -->
+  <section class="rr-card" id="rr-ai-summary">
+    <div class="ai-summary-header">
+      <h3>AI Summary</h3>
+      <span id="aiSummaryTimestamp" class="ai-summary-timestamp">—</span>
+    </div>
+    <div id="aiSummaryBody" class="ai-summary-body">Loading summary…</div>
+  </section>
+
 </aside>
 
 </div>
@@ -172,7 +188,6 @@ Next refresh in <span id="next-refresh">60</span>s
 <p class="settings-help">Choose which sources to include in this feed.</p>
 
 <div class="feed-selector">
-
 <div class="feed-selector-header">
 <div class="feed-selector-actions">
 <button id="select-all-feeds" type="button">Select all</button>
@@ -247,13 +262,11 @@ Next refresh in <span id="next-refresh">60</span>s
 </div>
 </section>
 
-<!-- THEME SETTINGS -->
 <section class="settings-section">
 <h3>Theme</h3>
 <p class="settings-help">Choose an accent theme. Dark / light is controlled by the moon/sun toggle.</p>
 
 <div class="theme-swatches" id="theme-swatches">
-
 <button class="theme-swatch theme-swatch-default" type="button" data-theme-accent="default">
 <span class="theme-swatch-dot"></span>
 <span class="theme-swatch-label">Default</span>
@@ -273,16 +286,22 @@ Next refresh in <span id="next-refresh">60</span>s
 <span class="theme-swatch-dot"></span>
 <span class="theme-swatch-label">Midnight</span>
 </button>
-
 </div>
 </section>
 
 <section class="settings-section">
 <h3>Display</h3>
+
 <label class="settings-toggle-row">
 <span>Compact mode</span>
 <button id="settings-compact-toggle" type="button" class="toggle-pill">Toggle</button>
 </label>
+
+<label class="settings-toggle-row">
+<span>AI Summary Panel</span>
+<button id="settings-ai-summary-toggle" type="button" class="toggle-pill">Toggle</button>
+</label>
+
 </section>
 
 </aside>
@@ -303,7 +322,7 @@ View original article →
 <p>© 2026 OdinWire</p>
 </footer>
 
-<script src="/js/rss-loader.js?v=19"></script>
+<script src="/js/rss-loader.js?v=20"></script>
 
 <script>
 /* THEME (LIGHT/DARK) */
