@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.7] - 2026-05-05
+
+### Changed – 0.9.7
+
+- Converted all three rails (left, top-stories, right) into full-height columns
+- Added `.rail-inner` sticky containers for consistent scroll behaviour
+- Removed legacy sticky rules from rail containers
+- Fixed cut-off issues when scrolling past the subheading bar
+- Eliminated empty space under rails by allowing dynamic vertical expansion
+- Improved overall 4-column newsroom layout stability
+
 ## 0.9.6 — Right Rail Enhancements (Map, Video, AI Summary)
 
 - Added hybrid live map module to right rail
