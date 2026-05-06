@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.7b] - 2026-05-06
+
+### Fixed – 0.9.7b
+
+- Corrected Top Stories rail layout by moving card styling into `.rail-inner`
+- Ensured left, right, and top-stories rails use `position: static` to prevent scroll drift
+- Fixed rail height behaviour to eliminate gaps when scrolling
+- Updated mobile layout to apply card styling to `.rail-inner` instead of the rail container
+- Improved sticky behaviour by isolating it to `.rail-inner` only
+- Stabilised full-height newsroom layout across all breakpoints
+
 ## [0.9.7] - 2026-05-05
 
 ### Changed – 0.9.7
