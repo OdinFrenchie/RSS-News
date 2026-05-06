@@ -226,11 +226,17 @@ body.compact .news-item h2 {
 /* Only the inner content is sticky */
 .rail-inner {
   position: sticky;
-  top: 84px;
-  bottom: 84px;
+  top: 72px;
+  bottom: 140px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+/* NEW: Boundary wrapper for sticky bottom limit */
+.rail-boundary {
+    position: relative;
+    height: 100%;
 }
 
 /* LEFT RAIL — v0.9.4 */
@@ -411,7 +417,7 @@ body.compact .news-item h2 {
   .rail-inner {
     top: 70px; /* matches mobile nav height */
   }
-  
+
   .top-stories-rail {
     position: static !important;
     margin-top: 20px;

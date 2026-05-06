@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.7d] - 2026-05-06
+
+### Fixed – 0.9.7d
+
+- Reduced `.rail-inner` sticky offset from 84px to 72px to eliminate top-rail downward shift during scroll
+- Added `.rail-boundary` wrapper to right rail to enforce a proper bottom boundary for sticky behaviour
+- Updated `.rail-inner` with a corrected bottom constraint to prevent the right rail extending below the bottom advertisement banner
+- Improved vertical alignment consistency across all three rails (left, top-stories, right)
+- Stabilised scroll behaviour so rails remain fixed relative to the nav-bar throughout the scroll range
+- Ensured right rail terminates cleanly above the sticky bottom advertisement with correct spacing
+
 ## [0.9.7c] - 2026-05-06
 
 ### Fixed – 0.9.7c
