@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.7c] - 2026-05-06
+
+### Fixed – 0.9.7c
+
+- Corrected sticky offset for all rails by aligning `.rail-inner` to the true nav-bar height (84px)
+- Added bottom boundary to `.rail-inner` to prevent right rail extending past the sticky bottom advertisement
+- Normalised spacing across left, top-stories, and right rails by removing legacy `margin-bottom` rules
+- Improved scroll stability so rails no longer shift vertically after scrolling
+- Ensured consistent vertical alignment between all three rails at page load and during scroll
+
 ## [0.9.7b] - 2026-05-06
 
 ### Fixed – 0.9.7b

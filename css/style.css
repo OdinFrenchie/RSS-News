@@ -226,7 +226,8 @@ body.compact .news-item h2 {
 /* Only the inner content is sticky */
 .rail-inner {
   position: sticky;
-  top: 120px;
+  top: 84px;
+  bottom: 84px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -311,7 +312,6 @@ body.compact .news-item h2 {
   border-radius: 14px;
   padding: 16px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  margin-bottom: 20px;
 }
 
 .rr-card h3 {
@@ -407,6 +407,11 @@ body.compact .news-item h2 {
     display: block;
   }
 
+/* Mobile sticky offset for rails */
+  .rail-inner {
+    top: 70px; /* matches mobile nav height */
+  }
+  
   .top-stories-rail {
     position: static !important;
     margin-top: 20px;
