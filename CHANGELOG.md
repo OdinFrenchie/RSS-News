@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.7e] - 2026-05-07
+
+### Fixed – 0.9.7e
+
+- Corrected right rail grid alignment after introducing the `.rail-boundary` wrapper
+- Updated `.rail-boundary` with proper height and flex rules to restore correct column behaviour
+- Refined `.rail-inner` sticky bottom constraint so the right rail now stops cleanly above the bottom advertisement banner
+- Reduced remaining top-rail movement by adjusting sticky offset and ensuring consistent boundary behaviour
+- Improved overall rail stability during scroll, preventing drift, overlap, or misalignment
+- Ensured all rail components (left, top-stories, right) maintain consistent vertical alignment and spacing
+
 ## [0.9.7d] - 2026-05-06
 
 ### Fixed – 0.9.7d

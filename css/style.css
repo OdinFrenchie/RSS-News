@@ -237,6 +237,8 @@ body.compact .news-item h2 {
 .rail-boundary {
     position: relative;
     height: 100%;
+    display: felx;
+    flex-direction: column;
 }
 
 /* LEFT RAIL — v0.9.4 */
