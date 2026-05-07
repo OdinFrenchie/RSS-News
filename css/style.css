@@ -846,55 +846,80 @@ body.compact .news-item h2 {
   margin-top: 2px;
 }
 
-/* AI SUMMARY - COMPACT FIXED HEIGHT (v0.11.2) */
+/* AI SUMMARY - ABSOLUTE POSITION APPROACH (v0.11.3) */
 #rr-ai-summary {
   max-height: 200px;
-  display: flex;           /* ADD */
-  flex-direction: column;  /* ADD */
-  overflow: hidden;        /* CHANGE from auto */
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  padding-top: 44px;
 }
 
 .ai-summary-header {
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 16px;
+  height: 36px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
-  flex-shrink: 0;          /* ADD - prevent header shrinking */
+  background: var(--card-bg);
 }
 
 .ai-summary-header h3 {
   margin: 0;
   font-size: 0.95rem;
+  line-height: 1;
 }
 
 .ai-summary-timestamp {
   font-size: 0.75rem;
   color: var(--text-soft);
+  line-height: 1;
 }
 
-/* AI SUMMARY BODY - SCROLLABLE (v0.11.2) */
 #rr-ai-summary .ai-summary-body {
-  flex: 1;                 /* ADD - take remaining space */
-  min-height: 0;           /* ADD - crucial for flex scroll */
-  overflow-y: auto;        /* KEEP */
-  margin-top: 0;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+#rr-ai-summary .ai-summary-body p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 #rr-ai-summary .ai-summary-body ul {
-  margin: 8px 0;
+  margin: 0;
   padding-left: 16px;
 }
 
 #rr-ai-summary .ai-summary-body li {
   margin-bottom: 4px;
   font-size: 0.85rem;
-  line-height: 1.4;
+  line-height: 1.3;
+}
+
+/* AI Summary scrollbar styling */
+#rr-ai-summary .ai-summary-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+#rr-ai-summary .ai-summary-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#rr-ai-summary .ai-summary-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
 }
 
 #rr-ai-summary.hidden {
-  display: none;
+  display: none !important;
 }
 
 /* TRENDING IN FEED (v0.9.8) */
@@ -958,11 +983,21 @@ body.compact .news-item h2 {
   /* Mobile: reset AI summary fixed heights */
   #rr-ai-summary {
     max-height: none;
-    overflow-y: visible;
+    height: auto;
+    position: static;
+    padding-top: 0;
+    overflow: visible;
+  }
+
+  .ai-summary-header {
+    position: static;
+    height: auto;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
   }
 
   #rr-ai-summary .ai-summary-body {
-    max-height: none;
+    height: auto;
     overflow-y: visible;
   }
 

@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.11.3] - 2026-05-10
+
+### Fixed – 0.11.3
+
+- **AI Summary scroll**: Complete refactor using absolute positioning approach
+  - Container: `position: relative` with fixed `height: 200px` and `padding-top: 44px`
+  - Header: `position: absolute` with explicit `height: 36px`
+  - Body: `height: 100%` with `overflow-y: auto`
+  - Eliminated flexbox scroll conflicts
+- **Mobile AI Summary**: Reset to natural flow with `position: static`
+
+### Changed – 0.11.3
+
+- Replaced flexbox scroll pattern with absolute positioning for reliable cross-browser support
+- Added explicit scrollbar styling for AI summary body
+- Added `!important` to `.hidden` class for override priority
+
+### Technical – 0.11.3
+
+- Absolute positioning removes element from flex calculations
+- Explicit heights prevent container collapse
+- Mobile breakpoint resets all positioning for touch-friendly scroll
+
 ## [0.11.2] - 2026-05-10
 
 ### Fixed – 0.11.2
