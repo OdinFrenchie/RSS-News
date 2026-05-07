@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.7g] - 2026-05-07
+
+### Fixed – 0.9.7g
+
+- Constrained Top Stories rail to dynamic viewport height (`calc(100vh - 72px - 140px)`)
+- Added internal scrolling to Top Stories rail to prevent overflow beyond bottom ad banner
+- Removed conflicting `bottom: 140px` sticky constraint from Top Stories rail specifically
+- Ensured Top Stories rail maintains consistent positioning between nav bar and ad banner during scroll
+- Applied desktop-only (`min-width: 1024px`) constraints to preserve mobile flow layout
+- Reset Top Stories rail to natural height on mobile (`height: auto; overflow-y: visible`)
+
+### Changed – 0.9.7g
+
+- Updated `style.css` with Top Stories rail dynamic height rules and scrollbar styling
+- Modified mobile breakpoint to disable fixed height constraints for Top Stories rail
+
 ## [0.9.7f] - 2026-05-07
 
 ### Fixed – 0.9.7f

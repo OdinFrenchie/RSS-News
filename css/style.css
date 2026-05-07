@@ -233,6 +233,26 @@ body.compact .news-item h2 {
   gap: 20px;
 }
 
+/* TOP STORIES RAIL - Dynamic height between nav and ad banner (v0.9.7g) */
+@media (min-width: 1024px) {
+  .top-stories-rail .rail-inner {
+    height: calc(100vh - 72px - 140px);
+    max-height: calc(100vh - 72px - 140px);
+    overflow-y: auto;
+    bottom: auto;
+  }
+
+  /* Smooth scrollbar for the rail */
+  .top-stories-rail .rail-inner::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .top-stories-rail .rail-inner::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+}
+
 /* LEFT RAIL — v0.9.4 */
 .left-rail {
   position: static !important;
@@ -423,6 +443,8 @@ body.compact .news-item h2 {
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 14px;
+    height: auto;
+    overflow-y: visible;
   }
 
   .search-input {
