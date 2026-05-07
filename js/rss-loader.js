@@ -2,6 +2,11 @@
 const PAGE_TYPE = document.body.dataset.page || 'world';
 const IS_UK = PAGE_TYPE === 'uk';
 
+/* CACHE CONFIGURATION */
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const STORAGE_PREFIX = `ow-${PAGE_TYPE}-`;
+const CACHE_KEY = `${STORAGE_PREFIX}article-cache`;
+
 /* FEEDS CONFIGURATION */
 const FEEDS_CONFIG = {
   world: {
@@ -41,7 +46,15 @@ const FEEDS_CONFIG = {
     politicshome: "https://rsshub.app/politics-home",
     labourlist: "https://rsshub.app/labourlist",
     conservativehome: "https://rsshub.app/conservativehome"
-  }
+  },
+
+    us: { /* CNN, NYT, WaPo, etc */ },
+    asia: { /* Japan Times, SCMP, etc */ },
+    europe: { /* Euronews, Politico EU, etc */ },
+    australia: { /* ABC, SMH, etc */ },
+    canada: { /* CBC, Global News, etc */ },
+    china: { /* SCMP, Caixin, etc */ },
+    india: { /* Times of India, Hindu, etc */ }
 };
 
 /* ACTIVE FEEDS */
@@ -55,20 +68,173 @@ let currentSearchTerm = "";
 let batchSize = 20;
 let batchIndex = 0;
 
-/* STORAGE KEYS (page-specific) */
-const STORAGE_PREFIX = `ow-${PAGE_TYPE}-`;
-const WEATHER_KEY = `${STORAGE_PREFIX}weather-location`;
-const QUICK_LINKS_KEY = `${STORAGE_PREFIX}quick-links`;
-const BOOKMARK_KEY = `${STORAGE_PREFIX}bookmarks`;
-const ANALYTICS_KEY = `${STORAGE_PREFIX}analytics`;
+/* CACHE FUNCTIONS */
+function getCachedArticles() {
+  const cached = sessionStorage.getItem(CACHE_KEY);
+  if (!cached) return null;
 
-/* WEATHER WIDGET - With Location Selector */
+  const { timestamp, articles } = JSON.parse(cached);
+  if (Date.now() - timestamp > CACHE_DURATION) {
+    sessionStorage.removeItem(CACHE_KEY);
+    return null;
+  }
+  return articles;
+}
+
+function cacheArticles(articles) {
+  sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+    timestamp: Date.now(),
+    articles
+  }));
+}
+
+/* PARALLEL FETCH WITH TIMEOUT */
+async function fetchFeedWithTimeout(url, timeoutMs = 3000) {
+  return Promise.race([
+    fetchFeed(url),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("Timeout")), timeoutMs)
+    )
+  ]).catch(err => {
+    console.log("Feed failed or timed out:", url);
+    return [];
+  });
+}
+
+async function fetchFeed(url) {
+  const directUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+
+  try {
+    const response = await fetch(directUrl);
+    const data = await response.json();
+    if (data.status === "ok" && data.items && data.items.length > 0) {
+      return data.items.map(item => ({
+        title: item.title,
+        link: item.link,
+        pubDate: item.pubDate,
+        description: item.description,
+        thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
+      }));
+    }
+  } catch (e) {
+    // Try proxy fallback
+    try {
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+      const proxyResponse = await fetch(proxyUrl);
+      const xmlText = await proxyResponse.text();
+
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+      const items = xmlDoc.querySelectorAll("item");
+
+      return Array.from(items).slice(0, 20).map(item => ({
+        title: item.querySelector("title")?.textContent || "No title",
+        link: item.querySelector("link")?.textContent || "#",
+        pubDate: item.querySelector("pubDate")?.textContent || new Date().toISOString(),
+        description: item.querySelector("description")?.textContent || "",
+        thumbnail: null
+      }));
+    } catch (proxyErr) {
+      return [];
+    }
+  }
+  return [];
+}
+
+/* SKELETON LOADER */
+function showSkeletonLoader() {
+  const container = document.getElementById("rss-container");
+  container.innerHTML = Array(3).fill(`
+    <div class="news-item" style="opacity: 0.6;">
+      <div style="height: 20px; background: var(--shimmer-bg); border-radius: 4px; margin-bottom: 12px; width: 80%;"></div>
+      <div style="height: 14px; background: var(--shimmer-bg); border-radius: 4px; margin-bottom: 8px; width: 40%;"></div>
+      <div style="height: 60px; background: var(--shimmer-bg); border-radius: 4px;"></div>
+    </div>
+  `).join('');
+}
+
+/* OPTIMIZED LOAD RSS */
+async function loadRSS() {
+  const loadingEl = document.getElementById("main-loading");
+  const navUpdatedEl = document.getElementById("nav-last-updated");
+
+  // Try cache first
+  const cached = getCachedArticles();
+  if (cached && cached.length > 0) {
+    console.log("Cache hit:", cached.length, "articles");
+    allArticles = cached;
+    renderAll();
+    if (navUpdatedEl) navUpdatedEl.textContent = "Updated: " + new Date().toLocaleTimeString("en-GB");
+    // Background refresh
+    setTimeout(() => refreshFeedsSilently(), 500);
+    return;
+  }
+
+  // Show skeleton immediately
+  showSkeletonLoader();
+  if (loadingEl) loadingEl.classList.add("visible");
+
+  await fetchAndRender();
+  cacheArticles(allArticles);
+
+  if (loadingEl) loadingEl.classList.remove("visible");
+}
+
+async function fetchAndRender() {
+  allArticles = [];
+
+  const selectedFeedKeys = Array.from(document.querySelectorAll(".feed-check"))
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  if (selectedFeedKeys.length === 0) {
+    document.getElementById("rss-container").innerHTML = "<p>No sources selected.</p>";
+    return;
+  }
+
+  // PARALLEL fetch all feeds with 3s timeout
+  const feedPromises = selectedFeedKeys.map(async key => {
+    const url = FEEDS[key];
+    if (!url) return [];
+    const articles = await fetchFeedWithTimeout(url, 3000);
+    return articles.map(a => ({ ...a, source: key }));
+  });
+
+  const results = await Promise.all(feedPromises);
+  allArticles = results.flat();
+
+  renderAll();
+}
+
+async function refreshFeedsSilently() {
+  console.log("Background refresh...");
+  await fetchAndRender();
+  cacheArticles(allArticles);
+}
+
+function renderAll() {
+  allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+  applyFilters();
+  renderTopStories(generateTopStories(allArticles));
+  renderTrendingKeywords(generateTrendingKeywords(allArticles));
+  renderTrendingFeed();
+  renderSavedArticles();
+  generateAISummary();
+
+  const navUpdatedEl = document.getElementById("nav-last-updated");
+  if (navUpdatedEl) {
+    navUpdatedEl.textContent = "Updated: " + new Date().toLocaleTimeString("en-GB");
+  }
+}
+
+/* WEATHER WIDGET */
+const WEATHER_KEY = `${STORAGE_PREFIX}weather-location`;
+
 async function loadWeather() {
   const container = document.getElementById("weatherContent");
   const selector = document.getElementById("weatherLocation");
   if (!container) return;
 
-  // Default location based on page type
   const defaultLoc = IS_UK ? "51.5074,-0.1278,London" : "51.5074,-0.1278,London";
   const savedLoc = localStorage.getItem(WEATHER_KEY) || defaultLoc;
 
@@ -165,6 +331,8 @@ function startTimezoneUpdates() {
 }
 
 /* QUICK LINKS */
+const QUICK_LINKS_KEY = `${STORAGE_PREFIX}quick-links`;
+
 function loadQuickLinks() {
   const container = document.getElementById("quickLinksList");
   if (!container) return;
@@ -325,7 +493,6 @@ async function loadVideoRail() {
 
   list.innerHTML = `<div class="map-loading">Loading videos…</div>`;
 
-  // Different video feeds for UK vs World
   const feeds = IS_UK ? [
     "https://feeds.bbci.co.uk/news/video_and_audio/uk/rss.xml",
     "https://www.reutersagency.com/feed/?best-topics=world&post_type=best"
@@ -377,7 +544,7 @@ async function loadVideoRail() {
   }
 }
 
-/* AI SUMMARY GENERATOR - Page specific */
+/* AI SUMMARY GENERATOR */
 function generateAISummary() {
   const panel = document.getElementById("rr-ai-summary");
   if (!panel) return;
@@ -396,7 +563,6 @@ function generateAISummary() {
   const top = allArticles.slice(0, 12);
   const bullets = top.map(a => `<li>${a.title}</li>`).join("");
 
-  // Page-specific summary text
   const summaryText = IS_UK 
     ? "Here's what's happening in the UK right now:"
     : "Here's what's shaping the world right now:";
@@ -442,6 +608,7 @@ let refreshCountdown = refreshInterval;
 let refreshTimerId = null;
 
 /* ANALYTICS STORAGE */
+const ANALYTICS_KEY = `${STORAGE_PREFIX}analytics`;
 const TODAY = new Date().toISOString().slice(0, 10);
 
 function loadAnalytics() {
@@ -469,6 +636,8 @@ function trackArticleClick(link, source) {
 }
 
 /* BOOKMARK SYSTEM */
+const BOOKMARK_KEY = `${STORAGE_PREFIX}bookmarks`;
+
 function loadBookmarks() {
   const saved = localStorage.getItem(BOOKMARK_KEY);
   return saved ? JSON.parse(saved) : [];
@@ -513,48 +682,6 @@ function renderSavedArticles() {
     `;
     container.appendChild(div);
   });
-}
-
-/* FETCH FEED - With proxy fallback */
-async function fetchFeed(url) {
-  const directUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
-
-  try {
-    const response = await fetch(directUrl);
-    const data = await response.json();
-    if (data.status === "ok" && data.items && data.items.length > 0) {
-      return data.items.map(item => ({
-        title: item.title,
-        link: item.link,
-        pubDate: item.pubDate,
-        description: item.description,
-        thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
-      }));
-    }
-  } catch (e) {
-    console.log("Direct fetch failed for:", url);
-  }
-
-  try {
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-    const proxyResponse = await fetch(proxyUrl);
-    const xmlText = await proxyResponse.text();
-
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-    const items = xmlDoc.querySelectorAll("item");
-
-    return Array.from(items).slice(0, 20).map(item => ({
-      title: item.querySelector("title")?.textContent || "No title",
-      link: item.querySelector("link")?.textContent || "#",
-      pubDate: item.querySelector("pubDate")?.textContent || new Date().toISOString(),
-      description: item.querySelector("description")?.textContent || "",
-      thumbnail: null
-    }));
-  } catch (e) {
-    console.error("All fetch methods failed for:", url);
-    return [];
-  }
 }
 
 /* FORMAT DATE */
@@ -802,48 +929,6 @@ function startRefreshTimer() {
       if (updatedEl) updatedEl.textContent = "Updated: " + new Date().toLocaleTimeString("en-GB");
     }
   }, 1000);
-}
-
-/* LOAD RSS */
-async function loadRSS() {
-  const loadingEl = document.getElementById("main-loading");
-  const navUpdatedEl = document.getElementById("nav-last-updated");
-
-  if (loadingEl) loadingEl.classList.add("visible");
-
-  allArticles = [];
-
-  const selectedFeedKeys = Array.from(document.querySelectorAll(".feed-check"))
-    .filter(cb => cb.checked)
-    .map(cb => cb.value);
-
-  if (selectedFeedKeys.length === 0) {
-    document.getElementById("rss-container").innerHTML = "<p>No sources selected.</p>";
-    if (loadingEl) loadingEl.classList.remove("visible");
-    return;
-  }
-
-  for (const key of selectedFeedKeys) {
-    const url = FEEDS[key];
-    if (!url) continue;
-    const feedArticles = await fetchFeed(url);
-    const withSource = feedArticles.map(a => ({ ...a, source: key }));
-    allArticles = allArticles.concat(withSource);
-  }
-
-  allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
-  applyFilters();
-  renderTopStories(generateTopStories(allArticles));
-  renderTrendingKeywords(generateTrendingKeywords(allArticles));
-  renderTrendingFeed();
-  renderSavedArticles();
-
-  if (loadingEl) loadingEl.classList.remove("visible");
-
-  if (navUpdatedEl) {
-    navUpdatedEl.textContent = "Updated: " + new Date().toLocaleTimeString("en-GB");
-  }
 }
 
 /* TRENDING KEYWORDS */

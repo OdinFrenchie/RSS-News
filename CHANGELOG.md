@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.10.5] - 2026-05-09
+
+### Added – 0.10.5
+
+- Regions dropdown navigation (US, Asia, Europe, Australia, Canada, China, India, UK, World)
+- 5-minute sessionStorage cache for instant page switches
+- Parallel feed fetching with 3-second timeout per source
+- Skeleton loader for immediate visual feedback
+- Background silent refresh after cache load
+
+### Changed – 0.10.5
+
+- Reduced default active feeds (World: 6, UK: 5)
+- Consolidated to single rss-loader.js with FEEDS_CONFIG
+- Page-specific storage with prefixed keys
+- Enhanced map placeholder with gradient styling
+
+### Fixed – 0.10.5
+
+- 10-second page switch delay → ~0.5s cached, ~3s first load
+- Sequential fetch blocking → parallel fetch
+- Failed feed stalling → graceful timeout
+
 ## [0.10.4] - 2026-05-09
 
 ### Added – 0.10.4
