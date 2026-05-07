@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.7f] - 2026-05-07
+
+### Fixed – 0.9.7f
+
+- Removed `.rail-boundary` wrapper from right rail HTML to match left rail structure
+- Deleted `.rail-boundary` CSS rule (contained typo `display: felx` and broke layout)
+- Normalized right rail to use `.rail-inner` as direct child of `aside` (consistent with left rail)
+- Fixed vertical alignment drift between left and right rails during scroll
+- Restored identical sticky positioning behavior across both outer rails
+
 ## [0.9.7e] - 2026-05-07
 
 ### Fixed – 0.9.7e
