@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.9.9] - 2026-05-08
+
+### Changed – 0.9.9
+
+- **Navigation bar**: Added "Last Updated" timestamp and refresh countdown timer (moved from rails)
+- **Top Stories rail**: Reordered content - Ad → Top Stories → Trending in Feed → Saved Articles
+- **Top Stories rail**: Now exclusively uses dynamic height calculation (other rails use natural height)
+- **Top Stories rail**: Maintains consistent 16px padding at bottom when scrolled to align with ad banner
+- **Map widget**: Added error fallback for RainViewer iframe loading issues
+- **Timezones**: Improved error handling and immediate initialization
+
+### Removed – 0.9.9
+
+- "Updated just now" timer from Top Stories rail (consolidated to nav bar)
+- "Last updated" from main feed meta (consolidated to nav bar)
+
+### Fixed – 0.9.9
+
+- Global timezones now update immediately on page load and every minute
+- Weather map now shows fallback message if RainViewer fails to load
+- Top Stories rail is now the only rail with dynamic height constraints
+- Nav bar displays live refresh countdown and last update time
+
 ## [0.9.8] - 2026-05-08
 
 ### Added – 0.9.8

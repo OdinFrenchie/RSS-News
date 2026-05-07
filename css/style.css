@@ -125,6 +125,32 @@ body.compact .news-item h2 {
   flex: 1;
 }
 
+/* NAV META (v0.9.9) */
+.nav-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-right: 12px;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+
+.nav-last-updated {
+  font-weight: 500;
+}
+
+.nav-refresh {
+  opacity: 0.8;
+}
+
+/* NAV META RESPONSIVE */
+@media (max-width: 1200px) {
+  .nav-meta {
+    display: none;
+  }
+}
+
 .search-input {
   min-width: 180px;
   max-width: 260px;
@@ -185,7 +211,7 @@ body.compact .news-item h2 {
   padding: 20px;
 }
 
-/* DESKTOP LAYOUT — UPDATED FOR v0.9.4 */
+/* DESKTOP LAYOUT */
 @media (min-width: 1024px) {
   .layout-desktop {
     display: grid;
@@ -202,7 +228,6 @@ body.compact .news-item h2 {
     height: 100%;
   }
 
-  /* Top Stories card styling (desktop) */
   .top-stories-rail .rail-inner {
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -212,7 +237,7 @@ body.compact .news-item h2 {
   }
 }
 
- /* Rails stretch full height */
+/* Rails stretch full height */
 .left-rail,
 .top-stories-rail,
 .right-rail {
@@ -233,16 +258,27 @@ body.compact .news-item h2 {
   gap: 20px;
 }
 
-/* TOP STORIES RAIL - Dynamic height between nav and ad banner (v0.9.7g) */
+/* TOP STORIES RAIL - Exclusive Dynamic Height (v0.9.9) */
 @media (min-width: 1024px) {
   .top-stories-rail .rail-inner {
     height: calc(100vh - 72px - 140px);
     max-height: calc(100vh - 72px - 140px);
     overflow-y: auto;
     bottom: auto;
+    padding-top: 16px;
+    padding-bottom: 16px;
   }
 
-  /* Smooth scrollbar for the rail */
+  /* Other rails maintain natural height */
+  .left-rail .rail-inner,
+  .right-rail .rail-inner {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+    bottom: 140px;
+  }
+
+  /* Smooth scrollbar for top stories only */
   .top-stories-rail .rail-inner::-webkit-scrollbar {
     width: 6px;
   }
@@ -253,23 +289,73 @@ body.compact .news-item h2 {
   }
 }
 
-/* ADJUSTED TOP STORIES RAIL SPACING (v0.9.8) */
+/* Mobile: Reset top stories dynamic height */
+@media (max-width: 1023px) {
+  .top-stories-rail .rail-inner {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .nav-meta {
+    display: none;
+  }
+}
+
+/* TOP STORIES RAIL CONTENT SIZING (v0.9.9) */
 .top-stories-rail .rail-inner {
   gap: 16px;
 }
 
 .top-stories-rail h3 {
   font-size: 0.95rem;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  margin-top: 0;
   color: var(--text);
+  flex-shrink: 0;
 }
 
 .sidebar-ad {
-  order: -1;
+  flex-shrink: 0;
   margin-bottom: 4px;
 }
 
-/* LEFT RAIL — v0.9.8 */
+/* Ensure content sections size properly */
+.top-stories-rail #top-stories,
+.top-stories-rail #trending-feed,
+.top-stories-rail #saved-articles {
+  flex-shrink: 1;
+  min-height: 0;
+}
+
+.top-stories-rail #trending-feed {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.top-stories-rail #saved-articles {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+/* MAP FALLBACK (v0.9.9) */
+.map-fallback {
+  width: 100%;
+  height: 200px;
+  background: var(--ad-bg);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 20px;
+}
+
+/* LEFT RAIL */
 .left-rail {
   position: static !important;
   display: flex;
@@ -323,13 +409,14 @@ body.compact .news-item h2 {
   font-size: 0.85rem;
 }
 
-/* TIMEZONE ROWS (v0.9.8) */
+/* TIMEZONE ROWS (v0.9.9) */
 .tz-row {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--border);
   font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .tz-row:last-child {
@@ -338,29 +425,63 @@ body.compact .news-item h2 {
 
 .tz-city {
   color: var(--text-soft);
+  font-weight: 500;
 }
 
 .tz-time {
   font-weight: 600;
   color: var(--text);
   font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+[data-theme="dark"] .tz-time {
+  color: var(--accent);
 }
 
 /* QUICK LINKS (v0.9.8) */
 .quick-link-input-wrap {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0;
   margin-top: 10px;
 }
 
 .quick-link-input-wrap input {
   width: 100%;
-  padding: 6px;
+  padding: 8px;
   border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 0.85rem;
   background: var(--bg);
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.quick-link-input-wrap input:last-of-type {
+  margin-bottom: 8px;
+}
+
+.quick-link-input-wrap button {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--accent-soft);
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.quick-link-input-wrap button:hover {
+  background: var(--accent);
+  color: white;
+}
+
+[data-theme="dark"] .quick-link-input-wrap input {
+  background: rgba(15, 17, 21, 0.6);
+  border-color: var(--border);
   color: var(--text);
 }
 
@@ -408,7 +529,17 @@ body.compact .news-item h2 {
   color: #ef4444;
 }
 
-/* RIGHT RAIL — v0.9.4 */
+/* Empty state text */
+#quickLinksList p,
+#saved-articles p,
+#trending-feed p {
+  margin: 0;
+  padding: 8px 0;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+}
+
+/* RIGHT RAIL */
 .right-rail {
   position: static !important;
   display: flex;
@@ -425,7 +556,6 @@ body.compact .news-item h2 {
   color: var(--text-soft);
 }
 
-/* RIGHT RAIL — v0.9.6 */
 .rr-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -559,7 +689,6 @@ body.compact .news-item h2 {
     display: block;
   }
 
-/* Mobile sticky offset for rails */
   .rail-inner {
     top: 70px;
   }
@@ -574,8 +703,6 @@ body.compact .news-item h2 {
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 14px;
-    height: auto;
-    overflow-y: visible;
   }
 
   .search-input {
@@ -593,7 +720,6 @@ body.compact .news-item h2 {
   margin-bottom: 8px;
 }
 
-/* v0.9.3 — Dark mode fix */
 [data-theme="dark"] .feed-meta {
   color: #d7dbff;
 }
@@ -655,7 +781,6 @@ body.compact .news-item h2 {
   font-weight: 600;
 }
 
-/* v0.9.3 — Dark mode fix */
 [data-theme="dark"] .trending-label {
   color: #e0e4ff;
 }
@@ -749,7 +874,7 @@ body.compact .news-item h2 {
 
 /* SAVED ARTICLES */
 #saved-articles {
-  margin-bottom: 18px;
+  margin-bottom: 0;
 }
 
 .saved-article-item {
@@ -851,7 +976,7 @@ body.compact .news-item h2 {
   text-decoration: underline;
 }
 
-/* ANALYTICS (DEPRECATED v0.9.8) */
+/* ANALYTICS (DEPRECATED) */
 .analytics-count,
 .top-source-count {
   color: var(--accent);
@@ -890,7 +1015,7 @@ body.compact .news-item h2 {
   font-size: 0.85rem;
 }
 
-/* v0.9.3 — Sticky bottom ad */
+/* Sticky bottom ad */
 .bottom-ad-banner {
   position: sticky;
   bottom: 0;
@@ -1107,7 +1232,6 @@ body.compact .news-item h2 {
   background: var(--accent);
 }
 
-/* individual swatch previews */
 .theme-swatch-default .theme-swatch-dot {
   background: #2A6CF0;
 }
@@ -1151,4 +1275,9 @@ body.compact .news-item h2 {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* LIVE REFRESH REMOVED (v0.9.9) - hide if still present */
+.live-refresh {
+  display: none;
 }

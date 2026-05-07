@@ -1,4 +1,4 @@
-/* OdinWire World News — rss-loader.js v0.9.8 */
+/* OdinWire World News — rss-loader.js v0.9.9 */
 
 /* WORLD NEWS FEEDS */
 const FEEDS = {
@@ -32,8 +32,6 @@ async function loadWeather() {
   if (!container) return;
 
   try {
-    // Using Open-Meteo free API (no key required)
-    // Default to London coordinates
     const lat = 51.5074;
     const lon = -0.1278;
 
@@ -46,7 +44,6 @@ async function loadWeather() {
     const data = await res.json();
     const current = data.current_weather;
 
-    // Map WMO weather codes to descriptions
     const weatherCodes = {
       0: "Clear sky",
       1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
@@ -73,7 +70,7 @@ async function loadWeather() {
 }
 
 /* ----------------------------------------------------
-   TIMEZONES (v0.9.8)
+   TIMEZONES (v0.9.9) - Fixed
 ---------------------------------------------------- */
 function updateTimezones() {
   const cities = [
@@ -89,15 +86,20 @@ function updateTimezones() {
     const timeEl = el.querySelector(".tz-time");
     if (!timeEl) return;
 
-    const now = new Date();
-    const timeString = now.toLocaleTimeString("en-GB", {
-      timeZone: zone,
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
+    try {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString("en-GB", {
+        timeZone: zone,
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
 
-    timeEl.textContent = timeString;
+      timeEl.textContent = timeString;
+    } catch (e) {
+      console.error("Timezone error for", zone, e);
+      timeEl.textContent = "--:--";
+    }
   });
 }
 
@@ -216,7 +218,7 @@ function renderTrendingFeed() {
   if (!container) return;
 
   const words = {};
-  const stopWords = ["about", "after", "before", "being", "could", "should", "their", "there", "where", "would", "while", "those", "these", "them", "than", "then", "that", "this", "with", "from", "have", "been", "were", "said", "each", "which", "will", "also", "into", "just", "more", "over", "such", "take", "than", "only", "some", "time", "very", "what", "know", "take", "year", "good", "come", "make", "well", "work", "life", "even", "back", "after", "first", "never", "other", "right", "think", "where", "being", "every", "great", "might", "shall", "still", "those", "while", "your"];
+  const stopWords = ["about", "after", "before", "being", "could", "should", "their", "there", "where", "would", "while", "those", "these", "them", "than", "then", "that", "this", "with", "from", "have", "been", "were", "said", "each", "which", "will", "also", "into", "just", "more", "over", "such", "take", "only", "some", "time", "very", "what", "know", "year", "good", "come", "make", "well", "work", "life", "even", "back", "first", "never", "other", "right", "think", "every", "great", "might", "shall", "still", "your"];
 
   allArticles.slice(0, 50).forEach(a => {
     const tokens = a.title.toLowerCase().split(/\W+/);
@@ -254,7 +256,7 @@ function renderTrendingFeed() {
 }
 
 /* ----------------------------------------------------
-   HYBRID MAP LOADER (v0.9.6)
+   HYBRID MAP LOADER - Fixed with fallback (v0.9.9)
 ---------------------------------------------------- */
 function loadHybridMap() {
   const container = document.getElementById("mapContainer");
@@ -262,10 +264,15 @@ function loadHybridMap() {
 
   container.innerHTML = `
     <iframe
+      id="weatherMap"
       src="https://www.rainviewer.com/map.html?loc=51.5,-0.1,5&oFa=0&oC=0&oU=0&oCS=1&oF=0&oAP=0&c=3&sm=1&sn=1"
       style="width:100%;height:200px;border:0;border-radius:12px;"
       loading="lazy"
+      onerror="this.style.display='none'; document.getElementById('mapFallback').style.display='flex';"
     ></iframe>
+    <div id="mapFallback" class="map-fallback" style="display: none;">
+      <div>Weather map unavailable<br><small>Check connection</small></div>
+    </div>
   `;
 }
 
@@ -389,7 +396,7 @@ let refreshInterval = 60;
 let refreshCountdown = refreshInterval;
 let refreshTimerId = null;
 
-/* ANALYTICS STORAGE (DEPRECATED v0.9.8 but kept for compatibility) */
+/* ANALYTICS STORAGE */
 const ANALYTICS_KEY = "ow-world-analytics";
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -681,28 +688,33 @@ function closeReaderMode() {
   document.getElementById("reader-modal").classList.remove("open");
 }
 
-/* REFRESH TIMER */
+/* REFRESH TIMER - Updated for Nav Bar (v0.9.9) */
 function startRefreshTimer() {
   const nextEl = document.getElementById("next-refresh");
-  const updatedEl = document.getElementById("refresh-time");
+  const updatedEl = document.getElementById("nav-last-updated");
+
   if (refreshTimerId) clearInterval(refreshTimerId);
   refreshCountdown = refreshInterval;
-  nextEl.textContent = refreshCountdown;
+
+  if (nextEl) nextEl.textContent = refreshCountdown;
+
   refreshTimerId = setInterval(() => {
     refreshCountdown--;
-    nextEl.textContent = refreshCountdown;
+    if (nextEl) nextEl.textContent = refreshCountdown;
+
     if (refreshCountdown <= 0) {
       loadRSS();
       refreshCountdown = refreshInterval;
-      updatedEl.textContent = "just now";
+      if (updatedEl) updatedEl.textContent = "Updated: " + new Date().toLocaleTimeString("en-GB");
     }
   }, 1000);
 }
 
-/* LOAD RSS */
+/* LOAD RSS - Updated for Nav Bar (v0.9.9) */
 async function loadRSS() {
   const loadingEl = document.getElementById("main-loading");
-  const mainUpdatedEl = document.getElementById("main-last-updated");
+  const navUpdatedEl = document.getElementById("nav-last-updated");
+
   if (loadingEl) loadingEl.classList.add("visible");
 
   allArticles = [];
@@ -714,7 +726,6 @@ async function loadRSS() {
   if (selectedFeedKeys.length === 0) {
     document.getElementById("rss-container").innerHTML = "<p>No sources selected.</p>";
     if (loadingEl) loadingEl.classList.remove("visible");
-    if (mainUpdatedEl) mainUpdatedEl.textContent = "Last updated: —";
     return;
   }
 
@@ -731,17 +742,14 @@ async function loadRSS() {
   applyFilters();
   renderTopStories(generateTopStories(allArticles));
   renderTrendingKeywords(generateTrendingKeywords(allArticles));
-  renderTrendingFeed(); // v0.9.8
+  renderTrendingFeed();
   renderSavedArticles();
 
   if (loadingEl) loadingEl.classList.remove("visible");
-  if (mainUpdatedEl) {
-    const now = new Date();
-    mainUpdatedEl.textContent = "Last updated: " + now.toLocaleTimeString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
+
+  // Update nav bar timestamp
+  if (navUpdatedEl) {
+    navUpdatedEl.textContent = "Updated: " + new Date().toLocaleTimeString("en-GB");
   }
 }
 
@@ -862,7 +870,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Escape") closeReaderMode();
   });
 
-  // v0.9.8 Initializations
+  // Initialize features
   loadWeather();
   startTimezoneUpdates();
   initQuickLinks();
