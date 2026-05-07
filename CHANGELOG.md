@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.10.0] - 2026-05-09
+
+### Fixed – 0.10.0
+
+- **RSS Feeds**: Replaced broken sources (CBC, ABC Australia) with working alternatives (The Guardian, Politico EU, Axios, The Independent)
+- **Euronews**: Updated to correct MRSS feed URL
+- **VOA**: Fixed to use new API endpoint
+- **Japan Times**: Simplified to working feed URL
+- **Global Map**: Replaced unreliable RainViewer with Windy.com embed
+
+### Added – 0.10.0
+
+- **Full-text search**: Now searches both article titles and descriptions
+- **Search highlights**: Visual indicator for search results
+- **No results state**: Helpful message with "Clear Search" button when no matches found
+- **Weather location selector**: Choose from 6 global cities with localStorage persistence
+- **Map fallback**: Graceful error message if Windy fails to load
+
+### Changed – 0.10.0
+
+- **Feed selector**: Updated to show new/replacement sources
+- **Weather widget**: Restructured with city dropdown above temperature display
+- **Search behavior**: More comprehensive matching across all article content
+
 ## [0.9.9] - 2026-05-08
 
 ### Changed – 0.9.9

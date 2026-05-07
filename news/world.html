@@ -51,13 +51,23 @@
 <aside class="left-rail">
   <div class="rail-inner">
 
-  <!-- WEATHER -->
-  <section class="lr-card">
-    <h3>Weather</h3>
-    <div id="weatherContent">
-      <div class="weather-loading">Loading…</div>
-    </div>
-  </section>
+  <!-- WEATHER (v0.10.0) -->
+<section class="lr-card">
+  <h3>Weather</h3>
+  <div class="weather-location-selector">
+    <select id="weatherLocation">
+      <option value="51.5074,-0.1278,London">London</option>
+      <option value="40.7128,-74.0060,New York">New York</option>
+      <option value="35.6762,139.6503,Tokyo">Tokyo</option>
+      <option value="48.8566,2.3522,Paris">Paris</option>
+      <option value="52.5200,13.4050,Berlin">Berlin</option>
+      <option value="-33.8688,151.2093,Sydney">Sydney</option>
+    </select>
+  </div>
+  <div id="weatherContent">
+    <div class="weather-loading">Loading…</div>
+  </div>
+</section>
 
   <!-- TIMEZONES (FIXED STRUCTURE) -->
   <section class="lr-card">
@@ -249,11 +259,6 @@
 </label>
 
 <label class="feed-option">
-<input type="checkbox" class="feed-check" value="euronews" checked>
-<span class="feed-label-text">Euronews (World)</span>
-</label>
-
-<label class="feed-option">
 <input type="checkbox" class="feed-check" value="france24" checked>
 <span class="feed-label-text">France24 (International)</span>
 </label>
@@ -271,13 +276,18 @@
 <h4 class="feed-group-label">Additional Global Sources</h4>
 
 <label class="feed-option">
-<input type="checkbox" class="feed-check" value="cbc">
-<span class="feed-label-text">CBC World</span>
+<input type="checkbox" class="feed-check" value="euronews">
+<span class="feed-label-text">Euronews (World)</span>
 </label>
 
 <label class="feed-option">
-<input type="checkbox" class="feed-check" value="abc">
-<span class="feed-label-text">ABC Australia (World)</span>
+<input type="checkbox" class="feed-check" value="guardian">
+<span class="feed-label-text">The Guardian (World)</span>
+</label>
+
+<label class="feed-option">
+<input type="checkbox" class="feed-check" value="politico">
+<span class="feed-label-text">Politico Europe</span>
 </label>
 
 <label class="feed-option">
@@ -288,6 +298,16 @@
 <label class="feed-option">
 <input type="checkbox" class="feed-check" value="voa">
 <span class="feed-label-text">VOA News</span>
+</label>
+
+<label class="feed-option">
+<input type="checkbox" class="feed-check" value="axios">
+<span class="feed-label-text">Axios World</span>
+</label>
+
+<label class="feed-option">
+<input type="checkbox" class="feed-check" value="independent">
+<span class="feed-label-text">The Independent (World)</span>
 </label>
 
 </div>
