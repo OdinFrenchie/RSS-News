@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.10.3] - 2026-05-09
+
+### Fixed – 0.10.3
+
+- **Windy Map**: Removed broken Windy iframe, replaced with placeholder
+- **Video Rail**: Fixed proxy URL (`/proxy` → `api.allorigins.win`)
+- **RSS Feeds**: Added CNN, Washington Post, LA Times as reliable defaults
+- **RSSHub feeds**: Moved to unchecked by default (rate limit protection)
+
+### Changed – 0.10.3
+
+- Default active feeds now: BBC, Al Jazeera, DW, France24, Sky, NPR, CNN, WaPo, LA Times
+- RSSHub feeds available but unchecked (Reuters, Guardian, etc.)
+- Script cache buster updated to v=23
+
 ## [0.10.2] - 2026-05-09
 
 ### Fixed – 0.10.2

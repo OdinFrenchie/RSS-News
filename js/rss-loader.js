@@ -1,8 +1,8 @@
-/* OdinWire World News — rss-loader.js v0.10.2 */
+/* OdinWire World News — rss-loader.js v0.10.3 */
 
-/* WORLD NEWS FEEDS - With RSSHub & Proxy (v0.10.2) */
+/* WORLD NEWS FEEDS - Minimal Working Set (v0.10.3) */
 const FEEDS = {
-  // Tier 1: Direct feeds (reliable)
+  // Tier 1: Direct feeds (reliable) - DEFAULT ACTIVE
   bbc: "https://feeds.bbci.co.uk/news/world/rss.xml",
   aljazeera: "https://www.aljazeera.com/xml/rss/all.xml",
   dw: "https://rss.dw.com/rdf/rss-en-world",
@@ -10,8 +10,10 @@ const FEEDS = {
   sky: "https://feeds.skynews.com/feeds/rss/world.xml",
   npr: "https://feeds.npr.org/1004/rss.xml",
   cnn: "http://rss.cnn.com/rss/edition_world.rss",
+  washingtonpost: "https://feeds.washingtonpost.com/rss/world",
+  latimes: "https://www.latimes.com/world-nation/rss2.0.xml",
 
-  // Tier 2: RSSHub feeds (generates RSS from sites without native RSS)
+  // Tier 2: RSSHub feeds (unchecked by default)
   reuters: "https://rsshub.app/reuters/world",
   guardian: "https://rsshub.app/guardian/world",
   japantimes: "https://rsshub.app/japantimes",
@@ -19,13 +21,7 @@ const FEEDS = {
   politico: "https://rsshub.app/politico",
   independent: "https://rsshub.app/independent",
   voa: "https://rsshub.app/voanews",
-  euronews: "https://rsshub.app/euronews/en/news",
-
-  // Tier 3: Other working sources
-  washingtonpost: "https://feeds.washingtonpost.com/rss/world",
-  latimes: "https://www.latimes.com/world-nation/rss2.0.xml",
-  cbc: "https://www.cbc.ca/webfeed/rss/rss-world",
-  abc: "https://www.abc.net.au/news/feed/51120/rss.xml"
+  euronews: "https://rsshub.app/euronews/en/news"
 };
 
 /* GLOBAL STATE */
@@ -36,7 +32,7 @@ let currentSearchTerm = "";
 let batchSize = 20;
 let batchIndex = 0;
 
-/* WEATHER WIDGET - With Location Selector (v0.10.0) */
+/* WEATHER WIDGET - With Location Selector */
 const WEATHER_KEY = "ow-weather-location";
 
 async function loadWeather() {
@@ -98,7 +94,7 @@ async function fetchWeather(lat, lon, city) {
   }
 }
 
-/* TIMEZONES (v0.9.9) - Fixed */
+/* TIMEZONES */
 function updateTimezones() {
   const cities = [
     { id: "tzLondon", zone: "Europe/London" },
@@ -124,7 +120,6 @@ function updateTimezones() {
 
       timeEl.textContent = timeString;
     } catch (e) {
-      console.error("Timezone error for", zone, e);
       timeEl.textContent = "--:--";
     }
   });
@@ -135,7 +130,7 @@ function startTimezoneUpdates() {
   setInterval(updateTimezones, 60000);
 }
 
-/* QUICK LINKS (v0.9.8) */
+/* QUICK LINKS */
 const QUICK_LINKS_KEY = "ow-quick-links";
 
 function loadQuickLinks() {
@@ -235,7 +230,7 @@ function initQuickLinks() {
   }
 }
 
-/* TRENDING IN FEED (v0.9.8) */
+/* TRENDING IN FEED */
 function renderTrendingFeed() {
   const container = document.getElementById("trending-feed");
   if (!container) return;
@@ -278,34 +273,21 @@ function renderTrendingFeed() {
   }).join("");
 }
 
-/* WEATHER MAP - Replaces RainViewer (v0.10.0) */
+/* WEATHER MAP - REMOVED (v0.10.3) */
 function loadWeatherMap() {
   const container = document.getElementById("mapContainer");
   if (!container) return;
 
+  // Windy map removed - replaced with placeholder
   container.innerHTML = `
-    <iframe
-      width="100%"
-      height="200"
-      src="https://embed.windy.com/embed2.html?lat=51.507&lon=-0.128&detailLat=51.507&detailLon=-0.128&width=650&height=450&zoom=5&level=surface&overlay=wind&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
-      frameborder="0"
-      style="border-radius: 12px;"
-      loading="lazy"
-      onerror="showMapFallback(this)"
-    ></iframe>
-    <div id="mapFallback" class="map-fallback" style="display: none;">
-      <div>🗺️ Weather map unavailable<br><small>Check connection or try again later</small></div>
+    <div class="map-placeholder">
+      <div>🗺️ Weather Map</div>
+      <small>Interactive maps coming soon</small>
     </div>
   `;
 }
 
-function showMapFallback(iframe) {
-  iframe.style.display = 'none';
-  const fallback = document.getElementById('mapFallback');
-  if (fallback) fallback.style.display = 'flex';
-}
-
-/* VIDEO RAIL LOADER (v0.9.6) */
+/* VIDEO RAIL - Fixed proxy (v0.10.3) */
 async function loadVideoRail() {
   const list = document.getElementById("videoList");
   if (!list) return;
@@ -318,8 +300,9 @@ async function loadVideoRail() {
   ];
 
   try {
+    // Use AllOrigins proxy instead of /proxy
     const results = await Promise.all(
-      feeds.map(url => fetch(`/proxy?url=${encodeURIComponent(url)}`).then(r => r.text()).catch(() => ""))
+      feeds.map(url => fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`).then(r => r.text()).catch(() => ""))
     );
 
     const videos = [];
@@ -360,7 +343,7 @@ async function loadVideoRail() {
   }
 }
 
-/* AI SUMMARY GENERATOR (v0.9.6) */
+/* AI SUMMARY GENERATOR */
 function generateAISummary() {
   const panel = document.getElementById("rr-ai-summary");
   if (!panel) return;
@@ -496,7 +479,7 @@ function renderSavedArticles() {
   });
 }
 
-/* FETCH FEED - With CORS proxy fallback (v0.10.2) */
+/* FETCH FEED - With proxy fallback */
 async function fetchFeed(url) {
   // Try direct first
   const directUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
@@ -517,13 +500,12 @@ async function fetchFeed(url) {
     console.log("Direct fetch failed for:", url);
   }
 
-  // Fallback: Try with allorigins proxy
+  // Fallback: AllOrigins proxy
   try {
     const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
     const proxyResponse = await fetch(proxyUrl);
     const xmlText = await proxyResponse.text();
 
-    // Parse XML manually
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, "text/xml");
     const items = xmlDoc.querySelectorAll("item");
@@ -577,7 +559,7 @@ function loadImage(img, src) {
   };
 }
 
-/* TOP STORIES — Reduced to 3 (v0.9.8) */
+/* TOP STORIES — Reduced to 3 */
 function generateTopStories(articles) {
   const newest = [...articles]
     .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
@@ -673,16 +655,14 @@ function renderArticlesAppend(list) {
   });
 }
 
-/* APPLY FILTERS - Now with full-text search (v0.10.0) */
+/* APPLY FILTERS - With full-text search */
 function applyFilters() {
   let filtered = [...allArticles];
 
-  // Source filter
   if (currentSourceFilter !== "all") {
     filtered = filtered.filter(a => a.source === currentSourceFilter);
   }
 
-  // Full-text search (title + description)
   if (currentSearchTerm) {
     const term = currentSearchTerm.toLowerCase();
     filtered = filtered.filter(a => {
@@ -690,12 +670,6 @@ function applyFilters() {
       const descMatch = a.description && a.description.toLowerCase().includes(term);
       return titleMatch || descMatch;
     });
-
-    // Highlight search term in results
-    filtered = filtered.map(a => ({
-      ...a,
-      _highlighted: true
-    }));
   }
 
   visibleArticles = filtered;
@@ -774,7 +748,7 @@ function closeReaderMode() {
   document.getElementById("reader-modal").classList.remove("open");
 }
 
-/* REFRESH TIMER - Updated for Nav Bar (v0.9.9) */
+/* REFRESH TIMER - Updated for Nav Bar */
 function startRefreshTimer() {
   const nextEl = document.getElementById("next-refresh");
   const updatedEl = document.getElementById("nav-last-updated");
@@ -796,7 +770,7 @@ function startRefreshTimer() {
   }, 1000);
 }
 
-/* LOAD RSS - Updated for Nav Bar (v0.9.9) */
+/* LOAD RSS */
 async function loadRSS() {
   const loadingEl = document.getElementById("main-loading");
   const navUpdatedEl = document.getElementById("nav-last-updated");
@@ -833,7 +807,6 @@ async function loadRSS() {
 
   if (loadingEl) loadingEl.classList.remove("visible");
 
-  // Update nav bar timestamp
   if (navUpdatedEl) {
     navUpdatedEl.textContent = "Updated: " + new Date().toLocaleTimeString("en-GB");
   }
