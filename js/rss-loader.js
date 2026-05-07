@@ -95,7 +95,7 @@ const FEEDS_CONFIG = {
     thelocal: "https://rsshub.app/thelocal"
   },
 
-  australia: {
+  australia_nz: {
     // Tier 1: Direct Australia/NZ feeds (reliable) - DEFAULT ACTIVE
     abcau: "https://www.abc.net.au/news/feed/51120/rss.xml",
     smh: "https://www.smh.com.au/rss/feed.xml",
@@ -339,7 +339,7 @@ async function loadWeather() {
     us: "40.7128,-74.0060,New York",
     asia: "35.6762,139.6503,Tokyo",
     europe: "50.8503,4.3517,Brussels",
-    australia: "-33.8688,151.2093,Sydney",
+    australia_nz: "-33.8688,151.2093,Sydney",
     canada: "43.6532,-79.3832,Toronto",
     china: "39.9042,116.4074,Beijing",
     india: "28.6139,77.2090,New Delhi"
@@ -431,7 +431,7 @@ function updateTimezones() {
       { id: "tzBerlin", zone: "Europe/Berlin" },
       { id: "tzRome", zone: "Europe/Rome" }
     ],
-    australia: [
+    australia_nz: [
       { id: "tzSydney", zone: "Australia/Sydney" },
       { id: "tzMelbourne", zone: "Australia/Melbourne" },
       { id: "tzPerth", zone: "Australia/Perth" },
@@ -686,7 +686,7 @@ async function loadVideoRail() {
       "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
       "https://www.reutersagency.com/feed/?best-topics=europe&post_type=best"
     ],
-    australia: [
+    australia_nz: [
       "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
       "https://www.reutersagency.com/feed/?best-topics=asia&post_type=best"
     ],
@@ -774,7 +774,7 @@ function generateAISummary() {
     us: "Here's what's happening across the United States right now:",
     asia: "Here's what's happening across Asia right now:",
     europe: "Here's what's happening across Europe right now:",
-    australia: "Here's what's happening in Australia and New Zealand right now:",
+    australia_nz: "Here's what's happening in Australia and New Zealand right now:",
     canada: "Here's what's happening across Canada right now:",
     china: "Here's the latest from China and the region right now:",
     india: "Here's what's happening across India right now:"

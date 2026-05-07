@@ -285,15 +285,15 @@ body.compact .news-item h2 {
   gap: 20px;
 }
 
-/* TOP STORIES RAIL - Exclusive Dynamic Height (v0.9.9) */
+/* TOP STORIES RAIL - COMPACT FIXED HEIGHT (v0.11.1) */
 @media (min-width: 1024px) {
   .top-stories-rail .rail-inner {
     height: calc(100vh - 72px - 140px);
     max-height: calc(100vh - 72px - 140px);
+    min-height: 400px;
     overflow-y: auto;
     bottom: auto;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding: 16px;
   }
 
   /* Other rails maintain natural height */
@@ -316,55 +316,83 @@ body.compact .news-item h2 {
   }
 }
 
+/* UNIFIED SECTION SIZING - ALL 3 TILES EQUAL (v0.11.1) */
+.top-stories-rail .rail-inner > * {
+  flex-shrink: 0;
+}
+
+/* Top Stories - compact */
+#top-stories {
+  max-height: 120px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+/* Trending in Feed - compact */
+#trending-feed {
+  max-height: 100px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+/* Saved Articles - compact */
+#saved-articles {
+  max-height: 80px;
+  overflow-y: auto;
+  margin-bottom: 0;
+}
+
+/* Consistent scrollbar styling for all 3 sections */
+#top-stories::-webkit-scrollbar,
+#trending-feed::-webkit-scrollbar,
+#saved-articles::-webkit-scrollbar {
+  width: 4px;
+}
+
+#top-stories::-webkit-scrollbar-thumb,
+#trending-feed::-webkit-scrollbar-thumb,
+#saved-articles::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* Section headers - tighter spacing (v0.11.1) */
+.top-stories-rail h3,
+.top-stories-rail .analytics-header,
+.top-stories-rail .saved-header {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  margin-top: 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* First h3 (after ad) no top margin */
+.top-stories-rail .rail-inner > h3:first-of-type {
+  margin-top: 12px;
+}
+
 /* Mobile: Reset top stories dynamic height */
 @media (max-width: 1023px) {
   .top-stories-rail .rail-inner {
     height: auto;
     max-height: none;
+    min-height: auto;
     overflow-y: visible;
     padding-top: 14px;
     padding-bottom: 14px;
   }
 
+  #top-stories,
+  #trending-feed,
+  #saved-articles {
+    max-height: none;
+    overflow-y: visible;
+  }
+
   .nav-meta {
     display: none;
   }
-}
-
-/* TOP STORIES RAIL CONTENT SIZING (v0.9.9) */
-.top-stories-rail .rail-inner {
-  gap: 16px;
-}
-
-.top-stories-rail h3 {
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-  margin-top: 0;
-  color: var(--text);
-  flex-shrink: 0;
-}
-
-.sidebar-ad {
-  flex-shrink: 0;
-  margin-bottom: 4px;
-}
-
-/* Ensure content sections size properly */
-.top-stories-rail #top-stories,
-.top-stories-rail #trending-feed,
-.top-stories-rail #saved-articles {
-  flex-shrink: 1;
-  min-height: 0;
-}
-
-.top-stories-rail #trending-feed {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.top-stories-rail #saved-articles {
-  max-height: 150px;
-  overflow-y: auto;
 }
 
 /* REGIONS DROPDOWN (v0.10.5) */
@@ -704,12 +732,22 @@ body.compact .news-item h2 {
   font-size: 0.85rem;
 }
 
-/* RIGHT RAIL */
+/* RIGHT RAIL - MATCH TOP STORIES PADDING (v0.11.1) */
 .right-rail {
   position: static !important;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.right-rail .rail-inner {
+  position: sticky;
+  top: 72px;
+  bottom: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
 }
 
 .rr-placeholder {
@@ -721,6 +759,7 @@ body.compact .news-item h2 {
   color: var(--text-soft);
 }
 
+/* RIGHT RAIL CARDS - CONSISTENT PADDING (v0.11.1) */
 .rr-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -730,9 +769,11 @@ body.compact .news-item h2 {
 }
 
 .rr-card h3 {
-  font-size: 1rem;
-  margin-bottom: 10px;
-  color: var(--text);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  margin-top: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
 
 /* WEATHER MAP CONTAINER (v0.10.0) */
@@ -742,7 +783,13 @@ body.compact .news-item h2 {
   background: var(--ad-bg);
   border-radius: 12px;
   overflow: hidden;
-  position: relative; /* Add this */
+  position: relative;
+}
+
+/* MAP CONTAINER - FIXED HEIGHT (v0.11.1) */
+#rr-map .map-container {
+  height: 160px;
+  min-height: 160px;
 }
 
 .map-loading {
@@ -760,6 +807,12 @@ body.compact .news-item h2 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* VIDEO RAIL - FIXED HEIGHT (v0.11.1) */
+#rr-videos .video-list {
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 .video-item {
@@ -793,11 +846,24 @@ body.compact .news-item h2 {
   margin-top: 2px;
 }
 
-/* AI SUMMARY */
+/* AI SUMMARY - COMPACT FIXED HEIGHT (v0.11.1) */
+#rr-ai-summary {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
 .ai-summary-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-summary-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
 }
 
 .ai-summary-timestamp {
@@ -810,6 +876,24 @@ body.compact .news-item h2 {
   font-size: 0.9rem;
   color: var(--text-soft);
   line-height: 1.45;
+}
+
+/* AI SUMMARY BODY - SCROLLABLE (v0.11.1) */
+#rr-ai-summary .ai-summary-body {
+  max-height: 140px;
+  overflow-y: auto;
+  margin-top: 0;
+}
+
+#rr-ai-summary .ai-summary-body ul {
+  margin: 8px 0;
+  padding-left: 16px;
+}
+
+#rr-ai-summary .ai-summary-body li {
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
 #rr-ai-summary.hidden {
@@ -868,6 +952,21 @@ body.compact .news-item h2 {
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 14px;
+  }
+
+  .right-rail .rail-inner {
+    padding: 14px;
+  }
+
+  /* Mobile: reset AI summary fixed heights */
+  #rr-ai-summary {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  #rr-ai-summary .ai-summary-body {
+    max-height: none;
+    overflow-y: visible;
   }
 
   .search-input {
