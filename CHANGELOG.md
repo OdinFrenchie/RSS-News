@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.10.4] - 2026-05-09
+
+### Added – 0.10.4
+
+- **Dynamic feed system**: Single JS file supports multiple page types
+- **Page detection**: Uses `data-page` attribute to load correct feeds
+- **Page-specific storage**: Bookmarks, settings, quick links isolated per page
+- **UK-specific content**: Custom video feeds, AI summary text, timezones
+
+### Changed – 0.10.4
+
+- Consolidated `rss-loader.js` to single file with `FEEDS_CONFIG` object
+- World and UK pages use same JS, different configurations
+- Storage keys now prefixed with page type (`ow-world-`, `ow-uk-`)
+
+### Fixed – 0.10.4
+
+- Eliminated duplicate FEEDS object issue
+- Proper separation of World and UK feed sources
+
 ## [0.10.3] - 2026-05-09
 
 ### Fixed – 0.10.3

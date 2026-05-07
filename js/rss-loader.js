@@ -1,28 +1,51 @@
-/* OdinWire World News — rss-loader.js v0.10.3 */
+/* PAGE TYPE DETECTION */
+const PAGE_TYPE = document.body.dataset.page || 'world';
+const IS_UK = PAGE_TYPE === 'uk';
 
-/* WORLD NEWS FEEDS - Minimal Working Set (v0.10.3) */
-const FEEDS = {
-  // Tier 1: Direct feeds (reliable) - DEFAULT ACTIVE
-  bbc: "https://feeds.bbci.co.uk/news/world/rss.xml",
-  aljazeera: "https://www.aljazeera.com/xml/rss/all.xml",
-  dw: "https://rss.dw.com/rdf/rss-en-world",
-  france24: "https://www.france24.com/en/rss",
-  sky: "https://feeds.skynews.com/feeds/rss/world.xml",
-  npr: "https://feeds.npr.org/1004/rss.xml",
-  cnn: "http://rss.cnn.com/rss/edition_world.rss",
-  washingtonpost: "https://feeds.washingtonpost.com/rss/world",
-  latimes: "https://www.latimes.com/world-nation/rss2.0.xml",
+/* FEEDS CONFIGURATION */
+const FEEDS_CONFIG = {
+  world: {
+    // Tier 1: Direct feeds (reliable) - DEFAULT ACTIVE
+    bbc: "https://feeds.bbci.co.uk/news/world/rss.xml",
+    aljazeera: "https://www.aljazeera.com/xml/rss/all.xml",
+    dw: "https://rss.dw.com/rdf/rss-en-world",
+    france24: "https://www.france24.com/en/rss",
+    sky: "https://feeds.skynews.com/feeds/rss/world.xml",
+    npr: "https://feeds.npr.org/1004/rss.xml",
+    cnn: "http://rss.cnn.com/rss/edition_world.rss",
+    washingtonpost: "https://feeds.washingtonpost.com/rss/world",
+    latimes: "https://www.latimes.com/world-nation/rss2.0.xml",
 
-  // Tier 2: RSSHub feeds (unchecked by default)
-  reuters: "https://rsshub.app/reuters/world",
-  guardian: "https://rsshub.app/guardian/world",
-  japantimes: "https://rsshub.app/japantimes",
-  axios: "https://rsshub.app/axios",
-  politico: "https://rsshub.app/politico",
-  independent: "https://rsshub.app/independent",
-  voa: "https://rsshub.app/voanews",
-  euronews: "https://rsshub.app/euronews/en/news"
+    // Tier 2: RSSHub feeds (unchecked by default)
+    reuters: "https://rsshub.app/reuters/world",
+    guardian: "https://rsshub.app/guardian/world",
+    japantimes: "https://rsshub.app/japantimes",
+    axios: "https://rsshub.app/axios",
+    politico: "https://rsshub.app/politico",
+    independent: "https://rsshub.app/independent",
+    voa: "https://rsshub.app/voanews",
+    euronews: "https://rsshub.app/euronews/en/news"
+  },
+
+  uk: {
+    // Tier 1: Direct UK feeds (reliable) - DEFAULT ACTIVE
+    bbc: "https://feeds.bbci.co.uk/news/uk/rss.xml",
+    bbcengland: "https://feeds.bbci.co.uk/news/england/rss.xml",
+    sky: "https://feeds.skynews.com/feeds/rss/uk.xml",
+    guardian: "https://www.theguardian.com/uk/rss",
+    independent: "https://www.independent.co.uk/news/uk/rss",
+    telegraph: "https://www.telegraph.co.uk/news/rss.xml",
+    eveningstandard: "https://www.standard.co.uk/rss.xml",
+
+    // Tier 2: RSSHub feeds (unchecked by default)
+    politicshome: "https://rsshub.app/politics-home",
+    labourlist: "https://rsshub.app/labourlist",
+    conservativehome: "https://rsshub.app/conservativehome"
+  }
 };
+
+/* ACTIVE FEEDS */
+const FEEDS = FEEDS_CONFIG[PAGE_TYPE] || FEEDS_CONFIG.world;
 
 /* GLOBAL STATE */
 let allArticles = [];
@@ -32,15 +55,23 @@ let currentSearchTerm = "";
 let batchSize = 20;
 let batchIndex = 0;
 
-/* WEATHER WIDGET - With Location Selector */
-const WEATHER_KEY = "ow-weather-location";
+/* STORAGE KEYS (page-specific) */
+const STORAGE_PREFIX = `ow-${PAGE_TYPE}-`;
+const WEATHER_KEY = `${STORAGE_PREFIX}weather-location`;
+const QUICK_LINKS_KEY = `${STORAGE_PREFIX}quick-links`;
+const BOOKMARK_KEY = `${STORAGE_PREFIX}bookmarks`;
+const ANALYTICS_KEY = `${STORAGE_PREFIX}analytics`;
 
+/* WEATHER WIDGET - With Location Selector */
 async function loadWeather() {
   const container = document.getElementById("weatherContent");
   const selector = document.getElementById("weatherLocation");
   if (!container) return;
 
-  const savedLoc = localStorage.getItem(WEATHER_KEY) || "51.5074,-0.1278,London";
+  // Default location based on page type
+  const defaultLoc = IS_UK ? "51.5074,-0.1278,London" : "51.5074,-0.1278,London";
+  const savedLoc = localStorage.getItem(WEATHER_KEY) || defaultLoc;
+
   if (selector) selector.value = savedLoc;
 
   const [lat, lon, city] = savedLoc.split(",");
@@ -96,7 +127,10 @@ async function fetchWeather(lat, lon, city) {
 
 /* TIMEZONES */
 function updateTimezones() {
-  const cities = [
+  const cities = IS_UK ? [
+    { id: "tzLondon", zone: "Europe/London" },
+    { id: "tzEdinburgh", zone: "Europe/London" }
+  ] : [
     { id: "tzLondon", zone: "Europe/London" },
     { id: "tzNewYork", zone: "America/New_York" },
     { id: "tzTokyo", zone: "Asia/Tokyo" }
@@ -131,8 +165,6 @@ function startTimezoneUpdates() {
 }
 
 /* QUICK LINKS */
-const QUICK_LINKS_KEY = "ow-quick-links";
-
 function loadQuickLinks() {
   const container = document.getElementById("quickLinksList");
   if (!container) return;
@@ -273,12 +305,11 @@ function renderTrendingFeed() {
   }).join("");
 }
 
-/* WEATHER MAP - REMOVED (v0.10.3) */
+/* WEATHER MAP - PLACEHOLDER */
 function loadWeatherMap() {
   const container = document.getElementById("mapContainer");
   if (!container) return;
 
-  // Windy map removed - replaced with placeholder
   container.innerHTML = `
     <div class="map-placeholder">
       <div>🗺️ Weather Map</div>
@@ -287,20 +318,23 @@ function loadWeatherMap() {
   `;
 }
 
-/* VIDEO RAIL - Fixed proxy (v0.10.3) */
+/* VIDEO RAIL */
 async function loadVideoRail() {
   const list = document.getElementById("videoList");
   if (!list) return;
 
   list.innerHTML = `<div class="map-loading">Loading videos…</div>`;
 
-  const feeds = [
+  // Different video feeds for UK vs World
+  const feeds = IS_UK ? [
+    "https://feeds.bbci.co.uk/news/video_and_audio/uk/rss.xml",
+    "https://www.reutersagency.com/feed/?best-topics=world&post_type=best"
+  ] : [
     "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
     "https://www.reutersagency.com/feed/?best-topics=world&post_type=best"
   ];
 
   try {
-    // Use AllOrigins proxy instead of /proxy
     const results = await Promise.all(
       feeds.map(url => fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`).then(r => r.text()).catch(() => ""))
     );
@@ -343,7 +377,7 @@ async function loadVideoRail() {
   }
 }
 
-/* AI SUMMARY GENERATOR */
+/* AI SUMMARY GENERATOR - Page specific */
 function generateAISummary() {
   const panel = document.getElementById("rr-ai-summary");
   if (!panel) return;
@@ -362,8 +396,13 @@ function generateAISummary() {
   const top = allArticles.slice(0, 12);
   const bullets = top.map(a => `<li>${a.title}</li>`).join("");
 
+  // Page-specific summary text
+  const summaryText = IS_UK 
+    ? "Here's what's happening in the UK right now:"
+    : "Here's what's shaping the world right now:";
+
   body.innerHTML = `
-    <p>Here's what's shaping the world right now:</p>
+    <p>${summaryText}</p>
     <ul>${bullets}</ul>
   `;
 
@@ -403,7 +442,6 @@ let refreshCountdown = refreshInterval;
 let refreshTimerId = null;
 
 /* ANALYTICS STORAGE */
-const ANALYTICS_KEY = "ow-world-analytics";
 const TODAY = new Date().toISOString().slice(0, 10);
 
 function loadAnalytics() {
@@ -431,8 +469,6 @@ function trackArticleClick(link, source) {
 }
 
 /* BOOKMARK SYSTEM */
-const BOOKMARK_KEY = "ow-world-bookmarks";
-
 function loadBookmarks() {
   const saved = localStorage.getItem(BOOKMARK_KEY);
   return saved ? JSON.parse(saved) : [];
@@ -481,7 +517,6 @@ function renderSavedArticles() {
 
 /* FETCH FEED - With proxy fallback */
 async function fetchFeed(url) {
-  // Try direct first
   const directUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
 
   try {
@@ -500,7 +535,6 @@ async function fetchFeed(url) {
     console.log("Direct fetch failed for:", url);
   }
 
-  // Fallback: AllOrigins proxy
   try {
     const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
     const proxyResponse = await fetch(proxyUrl);
@@ -559,7 +593,7 @@ function loadImage(img, src) {
   };
 }
 
-/* TOP STORIES — Reduced to 3 */
+/* TOP STORIES */
 function generateTopStories(articles) {
   const newest = [...articles]
     .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
@@ -634,7 +668,7 @@ function renderArticleCard(article) {
   return div;
 }
 
-/* RENDER ARTICLES (APPEND MODE FOR INFINITE SCROLL) */
+/* RENDER ARTICLES */
 function renderArticlesAppend(list) {
   const container = document.getElementById("rss-container");
   list.forEach(article => {
@@ -655,7 +689,7 @@ function renderArticlesAppend(list) {
   });
 }
 
-/* APPLY FILTERS - With full-text search */
+/* APPLY FILTERS */
 function applyFilters() {
   let filtered = [...allArticles];
 
@@ -704,7 +738,7 @@ function clearSearch() {
   applyFilters();
 }
 
-/* INFINITE SCROLL — LOAD NEXT BATCH */
+/* INFINITE SCROLL */
 function renderNextBatch() {
   const start = batchIndex * batchSize;
   const end = start + batchSize;
@@ -748,7 +782,7 @@ function closeReaderMode() {
   document.getElementById("reader-modal").classList.remove("open");
 }
 
-/* REFRESH TIMER - Updated for Nav Bar */
+/* REFRESH TIMER */
 function startRefreshTimer() {
   const nextEl = document.getElementById("next-refresh");
   const updatedEl = document.getElementById("nav-last-updated");
@@ -849,7 +883,7 @@ function renderTrendingKeywords(list) {
 
 /* FEED SELECTION PERSISTENCE */
 function restoreFeedSelection() {
-  const saved = localStorage.getItem("selected-feeds");
+  const saved = localStorage.getItem(`${STORAGE_PREFIX}selected-feeds`);
   if (!saved) return;
   const selected = new Set(JSON.parse(saved));
   document.querySelectorAll(".feed-check").forEach(cb => {
@@ -861,7 +895,7 @@ function saveFeedSelection() {
   const selected = Array.from(document.querySelectorAll(".feed-check"))
     .filter(cb => cb.checked)
     .map(cb => cb.value);
-  localStorage.setItem("selected-feeds", JSON.stringify(selected));
+  localStorage.setItem(`${STORAGE_PREFIX}selected-feeds`, JSON.stringify(selected));
 }
 
 /* INIT */
