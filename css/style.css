@@ -846,10 +846,12 @@ body.compact .news-item h2 {
   margin-top: 2px;
 }
 
-/* AI SUMMARY - COMPACT FIXED HEIGHT (v0.11.1) */
+/* AI SUMMARY - COMPACT FIXED HEIGHT (v0.11.2) */
 #rr-ai-summary {
   max-height: 200px;
-  overflow-y: auto;
+  display: flex;           /* ADD */
+  flex-direction: column;  /* ADD */
+  overflow: hidden;        /* CHANGE from auto */
 }
 
 .ai-summary-header {
@@ -859,6 +861,7 @@ body.compact .news-item h2 {
   margin-bottom: 8px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;          /* ADD - prevent header shrinking */
 }
 
 .ai-summary-header h3 {
@@ -871,17 +874,11 @@ body.compact .news-item h2 {
   color: var(--text-soft);
 }
 
-.ai-summary-body {
-  margin-top: 10px;
-  font-size: 0.9rem;
-  color: var(--text-soft);
-  line-height: 1.45;
-}
-
-/* AI SUMMARY BODY - SCROLLABLE (v0.11.1) */
+/* AI SUMMARY BODY - SCROLLABLE (v0.11.2) */
 #rr-ai-summary .ai-summary-body {
-  max-height: 140px;
-  overflow-y: auto;
+  flex: 1;                 /* ADD - take remaining space */
+  min-height: 0;           /* ADD - crucial for flex scroll */
+  overflow-y: auto;        /* KEEP */
   margin-top: 0;
 }
 

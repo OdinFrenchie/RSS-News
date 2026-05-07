@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.11.2] - 2026-05-10
+
+### Fixed – 0.11.2
+
+- **Australia page link**: Corrected navigation href from `australia.html` to `australia_nz.html` across all pages
+- **AI Summary scroll**: Fixed flexbox overflow issue preventing internal scrolling
+  - Added `display: flex`, `flex-direction: column`, `overflow: hidden` to container
+  - Added `flex: 1`, `min-height: 0` to body for proper flex scroll behavior
+  - Added `flex-shrink: 0` to header to prevent compression
+
+### Changed – 0.11.2
+
+- Updated `getRegionName()` to use `australia_nz` key for correct region labeling
+- Refactored AI summary CSS for reliable cross-browser scroll behavior
+
+### Technical – 0.11.2
+
+- Flexbox scroll pattern: container `overflow: hidden` + child `overflow-y: auto` with `min-height: 0`
+- Navigation links now consistent with actual filename (`australia_nz.html`)
+
 ## [0.11.1] - 2026-05-10
 
 ### Added – 0.11.1

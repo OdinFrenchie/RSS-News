@@ -650,7 +650,7 @@ function getRegionName() {
     us: "US",
     asia: "Asia",
     europe: "Europe",
-    australia: "Australia & NZ",
+    australia_nz: "Australia & NZ",
     canada: "Canada",
     china: "China",
     india: "India"
