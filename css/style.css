@@ -253,7 +253,23 @@ body.compact .news-item h2 {
   }
 }
 
-/* LEFT RAIL — v0.9.4 */
+/* ADJUSTED TOP STORIES RAIL SPACING (v0.9.8) */
+.top-stories-rail .rail-inner {
+  gap: 16px;
+}
+
+.top-stories-rail h3 {
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.sidebar-ad {
+  order: -1;
+  margin-bottom: 4px;
+}
+
+/* LEFT RAIL — v0.9.8 */
 .left-rail {
   position: static !important;
   display: flex;
@@ -274,39 +290,122 @@ body.compact .news-item h2 {
   font-size: 1rem;
 }
 
-/* QUICK LINKS */
+/* WEATHER WIDGET (v0.9.8) */
+.weather-loading {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.weather-content {
+  text-align: center;
+}
+
+.weather-temp {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.weather-desc {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  text-transform: capitalize;
+  margin-bottom: 8px;
+}
+
+.weather-location {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.weather-error {
+  color: #ef4444;
+  font-size: 0.85rem;
+}
+
+/* TIMEZONE ROWS (v0.9.8) */
+.tz-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.tz-row:last-child {
+  border-bottom: none;
+}
+
+.tz-city {
+  color: var(--text-soft);
+}
+
+.tz-time {
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* QUICK LINKS (v0.9.8) */
+.quick-link-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.quick-link-input-wrap input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
 #quickLinksList {
   margin-bottom: 10px;
 }
 
-#quickLinksList div {
-  margin-bottom: 6px;
+.quick-link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
 }
 
-#quickLinkInput {
-  width: 100%;
-  padding: 6px;
-  margin-bottom: 6px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+.quick-link-item:last-child {
+  border-bottom: none;
 }
 
-#addQuickLinkBtn {
-  width: 100%;
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--accent-soft);
+.quick-link-item a {
   color: var(--accent);
-  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
 }
 
-/* TIMEZONES */
-#tzLondon,
-#tzNewYork,
-#tzTokyo {
-  font-size: 0.9rem;
-  margin-bottom: 6px;
+.quick-link-item a:hover {
+  text-decoration: underline;
+}
+
+.quick-link-delete {
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.quick-link-delete:hover {
+  color: #ef4444;
 }
 
 /* RIGHT RAIL — v0.9.4 */
@@ -422,6 +521,38 @@ body.compact .news-item h2 {
   display: none;
 }
 
+/* TRENDING IN FEED (v0.9.8) */
+.trending-feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.trending-feed-item:last-child {
+  border-bottom: none;
+}
+
+.trending-feed-rank {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 0.85rem;
+  min-width: 20px;
+}
+
+.trending-feed-title {
+  font-size: 0.85rem;
+  color: var(--text);
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.trending-feed-title:hover {
+  text-decoration: underline;
+}
+
 /* MOBILE LAYOUT */
 @media (max-width: 1023px) {
   .layout-desktop {
@@ -430,7 +561,7 @@ body.compact .news-item h2 {
 
 /* Mobile sticky offset for rails */
   .rail-inner {
-    top: 70px; /* matches mobile nav height */
+    top: 70px;
   }
 
   .top-stories-rail {
@@ -720,7 +851,7 @@ body.compact .news-item h2 {
   text-decoration: underline;
 }
 
-/* ANALYTICS */
+/* ANALYTICS (DEPRECATED v0.9.8) */
 .analytics-count,
 .top-source-count {
   color: var(--accent);
@@ -773,6 +904,7 @@ body.compact .news-item h2 {
   max-width: 1200px;
   margin: 0 auto;
 }
+
 /* READER MODE */
 .reader-modal {
   position: fixed;

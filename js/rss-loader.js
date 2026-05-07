@@ -1,4 +1,4 @@
-/* OdinWire World News — rss-loader.js v0.9.2 */
+/* OdinWire World News — rss-loader.js v0.9.8 */
 
 /* WORLD NEWS FEEDS */
 const FEEDS = {
@@ -23,6 +23,235 @@ let currentSourceFilter = "all";
 let currentSearchTerm = "";
 let batchSize = 20;
 let batchIndex = 0;
+
+/* ----------------------------------------------------
+   WEATHER WIDGET (v0.9.8)
+---------------------------------------------------- */
+async function loadWeather() {
+  const container = document.getElementById("weatherContent");
+  if (!container) return;
+
+  try {
+    // Using Open-Meteo free API (no key required)
+    // Default to London coordinates
+    const lat = 51.5074;
+    const lon = -0.1278;
+
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
+    );
+
+    if (!res.ok) throw new Error("Weather fetch failed");
+
+    const data = await res.json();
+    const current = data.current_weather;
+
+    // Map WMO weather codes to descriptions
+    const weatherCodes = {
+      0: "Clear sky",
+      1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+      45: "Fog", 48: "Depositing rime fog",
+      51: "Light drizzle", 53: "Moderate drizzle", 55: "Dense drizzle",
+      61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
+      71: "Slight snow", 73: "Moderate snow", 75: "Heavy snow",
+      95: "Thunderstorm"
+    };
+
+    const desc = weatherCodes[current.weathercode] || "Unknown";
+
+    container.innerHTML = `
+      <div class="weather-content">
+        <div class="weather-temp">${Math.round(current.temperature)}°C</div>
+        <div class="weather-desc">${desc}</div>
+        <div class="weather-location">London, UK</div>
+      </div>
+    `;
+  } catch (err) {
+    container.innerHTML = `<div class="weather-error">Weather unavailable</div>`;
+    console.error("Weather error:", err);
+  }
+}
+
+/* ----------------------------------------------------
+   TIMEZONES (v0.9.8)
+---------------------------------------------------- */
+function updateTimezones() {
+  const cities = [
+    { id: "tzLondon", zone: "Europe/London" },
+    { id: "tzNewYork", zone: "America/New_York" },
+    { id: "tzTokyo", zone: "Asia/Tokyo" }
+  ];
+
+  cities.forEach(({ id, zone }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const timeEl = el.querySelector(".tz-time");
+    if (!timeEl) return;
+
+    const now = new Date();
+    const timeString = now.toLocaleTimeString("en-GB", {
+      timeZone: zone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+
+    timeEl.textContent = timeString;
+  });
+}
+
+function startTimezoneUpdates() {
+  updateTimezones();
+  setInterval(updateTimezones, 60000);
+}
+
+/* ----------------------------------------------------
+   QUICK LINKS (v0.9.8)
+---------------------------------------------------- */
+const QUICK_LINKS_KEY = "ow-quick-links";
+
+function loadQuickLinks() {
+  const container = document.getElementById("quickLinksList");
+  if (!container) return;
+
+  const saved = localStorage.getItem(QUICK_LINKS_KEY);
+  const links = saved ? JSON.parse(saved) : [];
+
+  container.innerHTML = "";
+
+  if (links.length === 0) {
+    container.innerHTML = `<p style="color: var(--text-soft); font-size: 0.85rem;">No links added.</p>`;
+    return;
+  }
+
+  links.forEach((link, index) => {
+    const div = document.createElement("div");
+    div.className = "quick-link-item";
+    div.innerHTML = `
+      <a href="${link.url}" target="_blank" rel="noopener noreferrer" title="${link.url}">
+        ${link.title || link.url}
+      </a>
+      <button class="quick-link-delete" data-index="${index}" title="Remove">×</button>
+    `;
+    container.appendChild(div);
+  });
+
+  container.querySelectorAll(".quick-link-delete").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const idx = parseInt(e.target.dataset.index);
+      deleteQuickLink(idx);
+    });
+  });
+}
+
+function saveQuickLinks(links) {
+  localStorage.setItem(QUICK_LINKS_KEY, JSON.stringify(links));
+}
+
+function addQuickLink() {
+  const urlInput = document.getElementById("quickLinkInput");
+  const titleInput = document.getElementById("quickLinkTitle");
+
+  if (!urlInput) return;
+
+  let url = urlInput.value.trim();
+  const title = titleInput ? titleInput.value.trim() : "";
+
+  if (!url) return;
+
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    url = "https://" + url;
+  }
+
+  try {
+    new URL(url);
+
+    const saved = localStorage.getItem(QUICK_LINKS_KEY);
+    const links = saved ? JSON.parse(saved) : [];
+
+    links.push({ url, title, added: Date.now() });
+    saveQuickLinks(links);
+
+    urlInput.value = "";
+    if (titleInput) titleInput.value = "";
+
+    loadQuickLinks();
+  } catch (err) {
+    alert("Please enter a valid URL");
+  }
+}
+
+function deleteQuickLink(index) {
+  const saved = localStorage.getItem(QUICK_LINKS_KEY);
+  if (!saved) return;
+
+  const links = JSON.parse(saved);
+  links.splice(index, 1);
+  saveQuickLinks(links);
+  loadQuickLinks();
+}
+
+function initQuickLinks() {
+  loadQuickLinks();
+
+  const btn = document.getElementById("addQuickLinkBtn");
+  if (btn) {
+    btn.addEventListener("click", addQuickLink);
+  }
+
+  const urlInput = document.getElementById("quickLinkInput");
+  if (urlInput) {
+    urlInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") addQuickLink();
+    });
+  }
+}
+
+/* ----------------------------------------------------
+   TRENDING IN FEED (v0.9.8)
+---------------------------------------------------- */
+function renderTrendingFeed() {
+  const container = document.getElementById("trending-feed");
+  if (!container) return;
+
+  const words = {};
+  const stopWords = ["about", "after", "before", "being", "could", "should", "their", "there", "where", "would", "while", "those", "these", "them", "than", "then", "that", "this", "with", "from", "have", "been", "were", "said", "each", "which", "will", "also", "into", "just", "more", "over", "such", "take", "than", "only", "some", "time", "very", "what", "know", "take", "year", "good", "come", "make", "well", "work", "life", "even", "back", "after", "first", "never", "other", "right", "think", "where", "being", "every", "great", "might", "shall", "still", "those", "while", "your"];
+
+  allArticles.slice(0, 50).forEach(a => {
+    const tokens = a.title.toLowerCase().split(/\W+/);
+    tokens.forEach(t => {
+      if (t.length > 4 && !stopWords.includes(t)) {
+        words[t] = (words[t] || 0) + 1;
+      }
+    });
+  });
+
+  const topWords = Object.entries(words)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  if (topWords.length === 0) {
+    container.innerHTML = `<p style="color: var(--text-soft); font-size: 0.85rem;">No trending topics.</p>`;
+    return;
+  }
+
+  container.innerHTML = topWords.map(([word, count], i) => {
+    const article = allArticles.find(a => 
+      a.title.toLowerCase().includes(word)
+    );
+
+    return `
+      <div class="trending-feed-item">
+        <span class="trending-feed-rank">${i + 1}</span>
+        ${article ? 
+          `<a href="${article.link}" target="_blank" class="trending-feed-title">${article.title}</a>` :
+          `<span class="trending-feed-title" style="text-transform: capitalize;">${word}</span>`
+        }
+      </div>
+    `;
+  }).join("");
+}
 
 /* ----------------------------------------------------
    HYBRID MAP LOADER (v0.9.6)
@@ -54,37 +283,47 @@ async function loadVideoRail() {
     "https://www.reutersagency.com/feed/?best-topics=world&post_type=best"
   ];
 
-  const results = await Promise.all(
-    feeds.map(url => fetch(`/proxy?url=${encodeURIComponent(url)}`).then(r => r.text()))
-  );
+  try {
+    const results = await Promise.all(
+      feeds.map(url => fetch(`/proxy?url=${encodeURIComponent(url)}`).then(r => r.text()).catch(() => ""))
+    );
 
-  const videos = [];
+    const videos = [];
 
-  results.forEach((xmlText, i) => {
-    const xml = new DOMParser().parseFromString(xmlText, "text/xml");
-    const items = [...xml.querySelectorAll("item")].slice(0, 6);
+    results.forEach((xmlText, i) => {
+      if (!xmlText) return;
+      const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+      const items = [...xml.querySelectorAll("item")].slice(0, 6);
 
-    items.forEach(item => {
-      videos.push({
-        title: item.querySelector("title")?.textContent || "",
-        link: item.querySelector("link")?.textContent || "",
-        thumb: item.querySelector("media\\:content")?.getAttribute("url") || null,
-        source: i === 0 ? "BBC" : "Reuters"
+      items.forEach(item => {
+        videos.push({
+          title: item.querySelector("title")?.textContent || "",
+          link: item.querySelector("link")?.textContent || "",
+          thumb: item.querySelector("media\\:content")?.getAttribute("url") || null,
+          source: i === 0 ? "BBC" : "Reuters"
+        });
       });
     });
-  });
 
-  list.innerHTML = videos
-    .map(v => `
-      <div class="video-item">
-        <img class="video-thumb" src="${v.thumb || "/img/placeholder-video.png"}">
-        <div class="video-info">
-          <a href="${v.link}" target="_blank">${v.title}</a>
-          <div class="video-source">${v.source}</div>
+    if (videos.length === 0) {
+      list.innerHTML = `<div class="map-loading">No videos available</div>`;
+      return;
+    }
+
+    list.innerHTML = videos
+      .map(v => `
+        <div class="video-item">
+          <img class="video-thumb" src="${v.thumb || "/img/placeholder-video.png"}" onerror="this.src='/img/placeholder-video.png'">
+          <div class="video-info">
+            <a href="${v.link}" target="_blank">${v.title}</a>
+            <div class="video-source">${v.source}</div>
+          </div>
         </div>
-      </div>
-    `)
-    .join("");
+      `)
+      .join("");
+  } catch (err) {
+    list.innerHTML = `<div class="map-loading">Error loading videos</div>`;
+  }
 }
 
 /* ----------------------------------------------------
@@ -109,7 +348,7 @@ function generateAISummary() {
   const bullets = top.map(a => `<li>${a.title}</li>`).join("");
 
   body.innerHTML = `
-    <p>Here’s what’s shaping the world right now:</p>
+    <p>Here's what's shaping the world right now:</p>
     <ul>${bullets}</ul>
   `;
 
@@ -150,18 +389,16 @@ let refreshInterval = 60;
 let refreshCountdown = refreshInterval;
 let refreshTimerId = null;
 
-/* ANALYTICS STORAGE */
+/* ANALYTICS STORAGE (DEPRECATED v0.9.8 but kept for compatibility) */
 const ANALYTICS_KEY = "ow-world-analytics";
 const TODAY = new Date().toISOString().slice(0, 10);
 
-/* Load or initialize analytics */
 function loadAnalytics() {
   const saved = localStorage.getItem(ANALYTICS_KEY);
   if (!saved) {
     return { date: TODAY, clicks: {}, sources: {} };
   }
   const parsed = JSON.parse(saved);
-  /* Reset if date changed */
   if (parsed.date !== TODAY) {
     return { date: TODAY, clicks: {}, sources: {} };
   }
@@ -170,12 +407,10 @@ function loadAnalytics() {
 
 let analytics = loadAnalytics();
 
-/* Save analytics */
 function saveAnalytics() {
   localStorage.setItem(ANALYTICS_KEY, JSON.stringify(analytics));
 }
 
-/* Track article click */
 function trackArticleClick(link, source) {
   analytics.clicks[link] = (analytics.clicks[link] || 0) + 1;
   analytics.sources[source] = (analytics.sources[source] || 0) + 1;
@@ -214,9 +449,11 @@ function toggleBookmark(article) {
 /* RENDER SAVED ARTICLES */
 function renderSavedArticles() {
   const container = document.getElementById("saved-articles");
+  if (!container) return;
+
   container.innerHTML = "";
   if (bookmarks.length === 0) {
-    container.innerHTML = `<p class="empty-analytics">No saved articles.</p>`;
+    container.innerHTML = `<p style="color: var(--text-soft); font-size: 0.85rem;">No saved articles.</p>`;
     return;
   }
   bookmarks.forEach(item => {
@@ -257,8 +494,7 @@ function formatDate(dateString) {
     month: "short",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
+    minute: "2-digit"
   });
 }
 
@@ -285,20 +521,18 @@ function loadImage(img, src) {
   };
 }
 
-/* TOP STORIES — Enhanced Logic */
+/* TOP STORIES — Reduced to 3 (v0.9.8) */
 function generateTopStories(articles) {
   const newest = [...articles]
     .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
     .slice(0, 3);
-  const longest = [...articles]
-    .sort((a, b) => b.title.length - a.title.length)
-    .slice(0, 2);
-  const mixed = [...new Set([...newest, ...longest])];
-  return mixed.slice(0, 5);
+  return newest;
 }
 
 function renderTopStories(stories) {
   const container = document.getElementById("top-stories");
+  if (!container) return;
+
   container.innerHTML = "";
   stories.forEach(story => {
     const div = document.createElement("div");
@@ -308,52 +542,6 @@ function renderTopStories(stories) {
       <div class="top-story-content">
         <a href="${story.link}" target="_blank" rel="noopener noreferrer">${story.title}</a>
       </div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-/* MOST READ TODAY */
-function renderMostReadToday() {
-  const container = document.getElementById("most-read-today");
-  container.innerHTML = "";
-  const entries = Object.entries(analytics.clicks)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-  if (entries.length === 0) {
-    container.innerHTML = `<p class="empty-analytics">No data yet.</p>`;
-    return;
-  }
-  entries.forEach(([link, count]) => {
-    const article = allArticles.find(a => a.link === link);
-    if (!article) return;
-    const div = document.createElement("div");
-    div.className = "most-read-item";
-    div.innerHTML = `
-      <a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a>
-      <span class="analytics-count">(${count})</span>
-    `;
-    container.appendChild(div);
-  });
-}
-
-/* TOP SOURCES */
-function renderTopSources() {
-  const container = document.getElementById("top-sources");
-  container.innerHTML = "";
-  const entries = Object.entries(analytics.sources)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-  if (entries.length === 0) {
-    container.innerHTML = `<p class="empty-analytics">No data yet.</p>`;
-    return;
-  }
-  entries.forEach(([source, count]) => {
-    const div = document.createElement("div");
-    div.className = "top-source-item";
-    div.innerHTML = `
-      <span class="top-source-label">${source.toUpperCase()}</span>
-      <span class="top-source-count">${count}</span>
     `;
     container.appendChild(div);
   });
@@ -392,22 +580,17 @@ function renderArticleCard(article) {
     <button class="reader-btn" data-link="${article.link}">Reader Mode</button>
   `;
 
-  /* Bookmark click */
   div.querySelector(".bookmark-icon").addEventListener("click", () => {
     toggleBookmark(article);
     div.querySelector(".bookmark-icon").classList.toggle("saved");
   });
 
-  /* Reader Mode */
   div.querySelector(".reader-btn").addEventListener("click", () => {
     openReaderMode(article);
   });
 
-  /* Track clicks */
   div.querySelector("a").addEventListener("click", () => {
     trackArticleClick(article.link, article.source);
-    renderMostReadToday();
-    renderTopSources();
   });
 
   return div;
@@ -420,14 +603,12 @@ function renderArticlesAppend(list) {
     const card = renderArticleCard(article);
     container.appendChild(card);
 
-    /* Lazy-load image */
     const img = card.querySelector(".news-image");
     if (img) {
       const src = img.getAttribute("data-src");
       loadImage(img, src);
     }
 
-    /* Inline ad every 8 articles */
     articleRenderCount++;
     if (articleRenderCount % 8 === 0) {
       const adCard = createInlineAdCard();
@@ -448,7 +629,6 @@ function applyFilters() {
       a.title && a.title.toLowerCase().includes(term)
     );
   }
-  /* Reset infinite scroll */
   visibleArticles = filtered;
   batchIndex = 0;
   articleRenderCount = 0;
@@ -465,7 +645,6 @@ function renderNextBatch() {
   if (slice.length === 0) return;
   renderArticlesAppend(slice);
   batchIndex++;
-  /* Hide shimmer */
   document.getElementById("scroll-loading").classList.remove("visible");
 }
 
@@ -552,8 +731,7 @@ async function loadRSS() {
   applyFilters();
   renderTopStories(generateTopStories(allArticles));
   renderTrendingKeywords(generateTrendingKeywords(allArticles));
-  renderMostReadToday();
-  renderTopSources();
+  renderTrendingFeed(); // v0.9.8
   renderSavedArticles();
 
   if (loadingEl) loadingEl.classList.remove("visible");
@@ -586,6 +764,8 @@ function generateTrendingKeywords(articles) {
 
 function renderTrendingKeywords(list) {
   const container = document.getElementById("trending-list");
+  if (!container) return;
+
   container.innerHTML = "";
   list.forEach(word => {
     const span = document.createElement("span");
@@ -628,7 +808,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* Select all / clear all */
   const selectAllBtn = document.getElementById("select-all-feeds");
   const clearAllBtn = document.getElementById("clear-all-feeds");
 
@@ -648,7 +827,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-    /* Source filter chips */
   const sourceFilters = document.getElementById("source-filters");
   if (sourceFilters) {
     sourceFilters.addEventListener("click", (e) => {
@@ -663,7 +841,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* Search input */
   const searchInput = document.getElementById("search-input");
   if (searchInput) {
     let searchTimeout = null;
@@ -677,7 +854,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* Reader Mode close */
   document.getElementById("reader-close").addEventListener("click", closeReaderMode);
   document.getElementById("reader-modal").addEventListener("click", (e) => {
     if (e.target.id === "reader-modal") closeReaderMode();
@@ -685,6 +861,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeReaderMode();
   });
+
+  // v0.9.8 Initializations
+  loadWeather();
+  startTimezoneUpdates();
+  initQuickLinks();
 
   loadRSS();
   loadHybridMap();

@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.9.8] - 2026-05-08
+
+### Added – 0.9.8
+
+- **Weather widget**: Live temperature and conditions using Open-Meteo API (London default)
+- **Live timezones**: Real-time clocks for London, New York, Tokyo with minute updates
+- **Quick Links**: Full CRUD functionality with localStorage persistence and delete buttons
+- **Trending in Feed**: Dynamic trending topics based on current feed content (replaces analytics)
+- New CSS styling for all functional widgets
+
+### Changed – 0.9.8
+
+- **Top Stories rail**: Advertisement moved to top position for better visibility
+- **Top Stories**: Reduced from 5 to 3 stories for cleaner layout
+- **Left rail**: Removed non-functional placeholders, replaced with working widgets
+- **Right rail**: Replaced "Most Read Today" and "Top Sources" analytics with "Trending in Feed"
+- Enhanced error handling for video rail loading
+
+### Removed – 0.9.8
+
+- "Most Read Today" analytics panel (unreliable without significant traffic)
+- "Top Sources" analytics panel (replaced with trending topics)
+- Weather placeholder text and loading states
+- Timezone placeholder divs
+
+### Fixed – 0.9.8
+
+- All left rail widgets now fully functional with live data
+- Top Stories rail ordering prioritizes monetization (ad at top)
+- Improved mobile compatibility for new widgets
+
 ## [0.9.7g] - 2026-05-07
 
 ### Fixed – 0.9.7g
