@@ -1,6 +1,13 @@
 /* PAGE TYPE DETECTION */
 const PAGE_TYPE = document.body.dataset.page || 'world';
 const IS_UK = PAGE_TYPE === 'uk';
+const IS_US = PAGE_TYPE === 'us';
+const IS_ASIA = PAGE_TYPE === 'asia';
+const IS_EUROPE = PAGE_TYPE === 'europe';
+const IS_AUSTRALIA = PAGE_TYPE === 'australia';
+const IS_CANADA = PAGE_TYPE === 'canada';
+const IS_CHINA = PAGE_TYPE === 'china';
+const IS_INDIA = PAGE_TYPE === 'india';
 
 /* CACHE CONFIGURATION */
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -48,13 +55,103 @@ const FEEDS_CONFIG = {
     conservativehome: "https://rsshub.app/conservativehome"
   },
 
-    us: { /* CNN, NYT, WaPo, etc */ },
-    asia: { /* Japan Times, SCMP, etc */ },
-    europe: { /* Euronews, Politico EU, etc */ },
-    australia: { /* ABC, SMH, etc */ },
-    canada: { /* CBC, Global News, etc */ },
-    china: { /* SCMP, Caixin, etc */ },
-    india: { /* Times of India, Hindu, etc */ }
+  us: {
+    // Tier 1: Direct US feeds (reliable) - DEFAULT ACTIVE
+    cnn: "http://rss.cnn.com/rss/edition_us.rss",
+    nyt: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+    washingtonpost: "https://feeds.washingtonpost.com/rss/politics",
+    npr: "https://feeds.npr.org/1003/rss.xml",
+    reuters: "https://rsshub.app/reuters/us",
+    ap: "https://rsshub.app/apnews/topics/apf-topnews",
+
+    // Tier 2: RSSHub feeds (unchecked by default)
+    wsj: "https://rsshub.app/wsj/us",
+    usatoday: "https://rsshub.app/usatoday/news"
+  },
+
+  asia: {
+    // Tier 1: Direct Asia feeds (reliable) - DEFAULT ACTIVE
+    japantimes: "https://www.japantimes.co.jp/feed/",
+    scmp: "https://rsshub.app/scmp/91",
+    straitstimes: "https://www.straitstimes.com/news/asia/rss.xml",
+    koreaherald: "http://www.koreaherald.com/rss.php",
+    bangkokpost: "https://www.bangkokpost.com/rss/data/breakingnews.xml",
+    channelnewsasia: "https://www.channelnewsasia.com/rss",
+
+    // Tier 2: RSSHub feeds (unchecked by default)
+    indianexpress: "https://rsshub.app/indianexpress"
+  },
+
+  europe: {
+    // Tier 1: Direct Europe feeds (reliable) - DEFAULT ACTIVE
+    euronews: "https://www.euronews.com/rss",
+    france24: "https://www.france24.com/en/europe/rss",
+    dw: "https://rss.dw.com/rdf/rss-en-eu",
+    bbceurope: "https://feeds.bbci.co.uk/news/world/europe/rss.xml",
+
+    // Tier 2: RSSHub feeds (unchecked by default)
+    politicoeu: "https://rsshub.app/politico/eu",
+    euobserver: "https://rsshub.app/euobserver",
+    thelocal: "https://rsshub.app/thelocal"
+  },
+
+  australia: {
+    // Tier 1: Direct Australia/NZ feeds (reliable) - DEFAULT ACTIVE
+    abcau: "https://www.abc.net.au/news/feed/51120/rss.xml",
+    smh: "https://www.smh.com.au/rss/feed.xml",
+    theaustralian: "https://www.theaustralian.com.au/feed",
+    theage: "https://www.theage.com.au/rss/feed.xml",
+    newscomau: "https://www.news.com.au/feed",
+
+    // Tier 2: RSSHub feeds (unchecked by default)
+    nzherald: "https://rsshub.app/nzherald"
+  },
+
+  canada: {
+    // Tier 1: Direct Canada feeds (reliable) - DEFAULT ACTIVE
+    cbc: "https://www.cbc.ca/cmlink/rss-world",
+    globalnews: "https://globalnews.ca/feed/",
+    ctv: "https://www.ctvnews.ca/rss/ctvnews-ca-top-stories-public-rss-1.822009",
+
+    // Tier 2: RSSHub feeds (unchecked by default)
+    torontostar: "https://rsshub.app/torontostar",
+    nationalpost: "https://rsshub.app/nationalpost"
+  },
+
+  china: {
+    // Tier 1: International China coverage (reliable) - DEFAULT ACTIVE
+    scmp: "https://rsshub.app/scmp/91",
+    caixin: "https://rsshub.app/caixin/latest",
+    sixthtone: "https://rsshub.app/sixthtone/news",
+
+    // Tier 2: State media (unchecked by default)
+    chinadaily: "https://rsshub.app/chinadaily/english",
+    globaltimes: "https://rsshub.app/globaltimes/hu-sijin"
+  },
+
+  india: {
+    // Tier 1: Direct India feeds (reliable) - DEFAULT ACTIVE
+    timesofindia: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+    thehindu: "https://www.thehindu.com/news/?service=rss",
+    indianexpress: "https://indianexpress.com/feed/",
+    ndtv: "https://feeds.feedburner.com/ndtvnews-latest",
+
+    // Tier 2: RSSHub feeds (unchecked by default)
+    hindustantimes: "https://rsshub.app/hindustantimes/news",
+    businessstandard: "https://rsshub.app/businessstandard/latest"
+  },
+
+  tech: {
+    // To be implemented
+  },
+
+  sports: {
+    // To be implemented
+  },
+
+  entertainment: {
+    // To be implemented
+  }
 };
 
 /* ACTIVE FEEDS */
@@ -235,7 +332,20 @@ async function loadWeather() {
   const selector = document.getElementById("weatherLocation");
   if (!container) return;
 
-  const defaultLoc = IS_UK ? "51.5074,-0.1278,London" : "51.5074,-0.1278,London";
+  // Default locations per region
+  const defaultLocs = {
+    world: "51.5074,-0.1278,London",
+    uk: "51.5074,-0.1278,London",
+    us: "40.7128,-74.0060,New York",
+    asia: "35.6762,139.6503,Tokyo",
+    europe: "50.8503,4.3517,Brussels",
+    australia: "-33.8688,151.2093,Sydney",
+    canada: "43.6532,-79.3832,Toronto",
+    china: "39.9042,116.4074,Beijing",
+    india: "28.6139,77.2090,New Delhi"
+  };
+
+  const defaultLoc = defaultLocs[PAGE_TYPE] || defaultLocs.world;
   const savedLoc = localStorage.getItem(WEATHER_KEY) || defaultLoc;
 
   if (selector) selector.value = savedLoc;
@@ -293,14 +403,61 @@ async function fetchWeather(lat, lon, city) {
 
 /* TIMEZONES */
 function updateTimezones() {
-  const cities = IS_UK ? [
-    { id: "tzLondon", zone: "Europe/London" },
-    { id: "tzEdinburgh", zone: "Europe/London" }
-  ] : [
-    { id: "tzLondon", zone: "Europe/London" },
-    { id: "tzNewYork", zone: "America/New_York" },
-    { id: "tzTokyo", zone: "Asia/Tokyo" }
-  ];
+  const timezoneConfigs = {
+    world: [
+      { id: "tzLondon", zone: "Europe/London" },
+      { id: "tzNewYork", zone: "America/New_York" },
+      { id: "tzTokyo", zone: "Asia/Tokyo" }
+    ],
+    uk: [
+      { id: "tzLondon", zone: "Europe/London" },
+      { id: "tzEdinburgh", zone: "Europe/London" }
+    ],
+    us: [
+      { id: "tzNewYork", zone: "America/New_York" },
+      { id: "tzChicago", zone: "America/Chicago" },
+      { id: "tzDenver", zone: "America/Denver" },
+      { id: "tzLosAngeles", zone: "America/Los_Angeles" }
+    ],
+    asia: [
+      { id: "tzTokyo", zone: "Asia/Tokyo" },
+      { id: "tzSingapore", zone: "Asia/Singapore" },
+      { id: "tzHongKong", zone: "Asia/Hong_Kong" },
+      { id: "tzSeoul", zone: "Asia/Seoul" }
+    ],
+    europe: [
+      { id: "tzLondon", zone: "Europe/London" },
+      { id: "tzParis", zone: "Europe/Paris" },
+      { id: "tzBerlin", zone: "Europe/Berlin" },
+      { id: "tzRome", zone: "Europe/Rome" }
+    ],
+    australia: [
+      { id: "tzSydney", zone: "Australia/Sydney" },
+      { id: "tzMelbourne", zone: "Australia/Melbourne" },
+      { id: "tzPerth", zone: "Australia/Perth" },
+      { id: "tzAuckland", zone: "Pacific/Auckland" }
+    ],
+    canada: [
+      { id: "tzToronto", zone: "America/Toronto" },
+      { id: "tzVancouver", zone: "America/Vancouver" },
+      { id: "tzMontreal", zone: "America/Montreal" },
+      { id: "tzCalgary", zone: "America/Edmonton" }
+    ],
+    china: [
+      { id: "tzBeijing", zone: "Asia/Shanghai" },
+      { id: "tzShanghai", zone: "Asia/Shanghai" },
+      { id: "tzHongKong", zone: "Asia/Hong_Kong" },
+      { id: "tzShenzhen", zone: "Asia/Shanghai" }
+    ],
+    india: [
+      { id: "tzDelhi", zone: "Asia/Kolkata" },
+      { id: "tzMumbai", zone: "Asia/Kolkata" },
+      { id: "tzBangalore", zone: "Asia/Kolkata" },
+      { id: "tzKolkata", zone: "Asia/Kolkata" }
+    ]
+  };
+
+  const cities = timezoneConfigs[PAGE_TYPE] || timezoneConfigs.world;
 
   cities.forEach(({ id, zone }) => {
     const el = document.getElementById(id);
@@ -480,10 +637,25 @@ function loadWeatherMap() {
 
   container.innerHTML = `
     <div class="map-placeholder">
-      <div>🗺️ Weather Map</div>
+      <div>🗺️ ${getRegionName()} Map</div>
       <small>Interactive maps coming soon</small>
     </div>
   `;
+}
+
+function getRegionName() {
+  const names = {
+    world: "Global",
+    uk: "UK",
+    us: "US",
+    asia: "Asia",
+    europe: "Europe",
+    australia: "Australia & NZ",
+    canada: "Canada",
+    china: "China",
+    india: "India"
+  };
+  return names[PAGE_TYPE] || "Global";
 }
 
 /* VIDEO RAIL */
@@ -493,13 +665,46 @@ async function loadVideoRail() {
 
   list.innerHTML = `<div class="map-loading">Loading videos…</div>`;
 
-  const feeds = IS_UK ? [
-    "https://feeds.bbci.co.uk/news/video_and_audio/uk/rss.xml",
-    "https://www.reutersagency.com/feed/?best-topics=world&post_type=best"
-  ] : [
-    "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
-    "https://www.reutersagency.com/feed/?best-topics=world&post_type=best"
-  ];
+  const videoFeeds = {
+    world: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=world&post_type=best"
+    ],
+    uk: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/uk/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=world&post_type=best"
+    ],
+    us: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=us&post_type=best"
+    ],
+    asia: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=asia&post_type=best"
+    ],
+    europe: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=europe&post_type=best"
+    ],
+    australia: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=asia&post_type=best"
+    ],
+    canada: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=americas&post_type=best"
+    ],
+    china: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=asia&post_type=best"
+    ],
+    india: [
+      "https://feeds.bbci.co.uk/news/video_and_audio/world/rss.xml",
+      "https://www.reutersagency.com/feed/?best-topics=asia&post_type=best"
+    ]
+  };
+
+  const feeds = videoFeeds[PAGE_TYPE] || videoFeeds.world;
 
   try {
     const results = await Promise.all(
@@ -563,9 +768,19 @@ function generateAISummary() {
   const top = allArticles.slice(0, 12);
   const bullets = top.map(a => `<li>${a.title}</li>`).join("");
 
-  const summaryText = IS_UK 
-    ? "Here's what's happening in the UK right now:"
-    : "Here's what's shaping the world right now:";
+  const summaryTexts = {
+    world: "Here's what's shaping the world right now:",
+    uk: "Here's what's happening in the UK right now:",
+    us: "Here's what's happening across the United States right now:",
+    asia: "Here's what's happening across Asia right now:",
+    europe: "Here's what's happening across Europe right now:",
+    australia: "Here's what's happening in Australia and New Zealand right now:",
+    canada: "Here's what's happening across Canada right now:",
+    china: "Here's the latest from China and the region right now:",
+    india: "Here's what's happening across India right now:"
+  };
+
+  const summaryText = summaryTexts[PAGE_TYPE] || summaryTexts.world;
 
   body.innerHTML = `
     <p>${summaryText}</p>

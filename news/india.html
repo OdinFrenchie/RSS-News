@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>World News | OdinWire</title>
+<title>India News | OdinWire</title>
 <meta name="description" content="Latest World News updates from global sources — auto-refreshed via RSS feeds.">
 <link rel="stylesheet" href="/css/style.css">
 </head>
 
-<body data-page="world">
+<body data-page="india">
 
 <header class="site-header">
-<h1 id="page-title">World News</h1>
+<h1 id="page-title">India News</h1>
 </header>
 
 <nav class="nav-bar">
@@ -68,12 +68,12 @@
     <h3>Weather</h3>
     <div class="weather-location-selector">
       <select id="weatherLocation">
-        <option value="51.5074,-0.1278,London">London</option>
-        <option value="40.7128,-74.0060,New York">New York</option>
-        <option value="35.6762,139.6503,Tokyo">Tokyo</option>
-        <option value="48.8566,2.3522,Paris">Paris</option>
-        <option value="52.5200,13.4050,Berlin">Berlin</option>
-        <option value="-33.8688,151.2093,Sydney">Sydney</option>
+        <option value="28.6139,77.2090,New Delhi">New Delhi</option>
+        <option value="19.0760,72.8777,Mumbai">Mumbai</option>
+        <option value="12.9716,77.5946,Bangalore">Bangalore</option>
+        <option value="13.0827,80.2707,Chennai">Chennai</option>
+        <option value="22.5726,88.3639,Kolkata">Kolkata</option>
+        <option value="17.3850,78.4867,Hyderabad">Hyderabad</option>
       </select>
     </div>
     <div id="weatherContent">
@@ -82,17 +82,21 @@
   </section>
 
   <section class="lr-card">
-    <h3>Global Time</h3>
-    <div id="tzLondon" class="tz-row">
-      <span class="tz-city">London</span>
+    <h3>India Time</h3>
+    <div id="tzDelhi" class="tz-row">
+      <span class="tz-city">New Delhi</span>
       <span class="tz-time">--:--</span>
     </div>
-    <div id="tzNewYork" class="tz-row">
-      <span class="tz-city">New York</span>
+    <div id="tzMumbai" class="tz-row">
+      <span class="tz-city">Mumbai</span>
       <span class="tz-time">--:--</span>
     </div>
-    <div id="tzTokyo" class="tz-row">
-      <span class="tz-city">Tokyo</span>
+    <div id="tzBangalore" class="tz-row">
+      <span class="tz-city">Bangalore</span>
+      <span class="tz-time">--:--</span>
+    </div>
+    <div id="tzKolkata" class="tz-row">
+      <span class="tz-city">Kolkata</span>
       <span class="tz-time">--:--</span>
     </div>
   </section>
@@ -118,15 +122,12 @@
 
 <div id="source-filters" class="source-filters">
   <button class="source-chip active" data-source="all">All sources</button>
-  <button class="source-chip" data-source="bbc">BBC World</button>
-  <button class="source-chip" data-source="aljazeera">Al Jazeera</button>
-  <button class="source-chip" data-source="dw">DW</button>
-  <button class="source-chip" data-source="france24">France24</button>
-  <button class="source-chip" data-source="sky">Sky News</button>
-  <button class="source-chip" data-source="npr">NPR</button>
-  <button class="source-chip" data-source="cnn">CNN</button>
-  <button class="source-chip" data-source="washingtonpost">Washington Post</button>
-  <button class="source-chip" data-source="latimes">LA Times</button>
+  <button class="source-chip" data-source="timesofindia">Times of India</button>
+  <button class="source-chip" data-source="thehindu">The Hindu</button>
+  <button class="source-chip" data-source="indianexpress">Indian Express</button>
+  <button class="source-chip" data-source="ndtv">NDTV</button>
+  <button class="source-chip" data-source="hindustantimes">Hindustan Times</button>
+  <button class="source-chip" data-source="businessstandard">Business Standard</button>
 </div>
 
 <div id="trending-keywords" class="trending-keywords">
@@ -171,14 +172,14 @@
   <div class="rail-inner">
 
     <section class="rr-card" id="rr-map">
-      <h3>Global Map</h3>
+      <h3>India Map</h3>
       <div id="mapContainer" class="map-container">
         <div class="map-loading">Loading map…</div>
       </div>
     </section>
 
     <section class="rr-card" id="rr-videos">
-      <h3>World Video Highlights</h3>
+      <h3>India Video Highlights</h3>
       <div id="videoList" class="video-list"></div>
     </section>
 
@@ -225,95 +226,38 @@
 </div>
 </div>
 
-<h4 class="feed-group-label">Major Global Outlets</h4>
+<h4 class="feed-group-label">Major National Outlets</h4>
 
 <label class="feed-option">
-<input type="checkbox" class="feed-check" value="bbc" checked>
-<span class="feed-label-text">BBC World</span>
+<input type="checkbox" class="feed-check" value="timesofindia" checked>
+<span class="feed-label-text">Times of India</span>
 </label>
 
 <label class="feed-option">
-<input type="checkbox" class="feed-check" value="aljazeera" checked>
-<span class="feed-label-text">Al Jazeera Global</span>
+<input type="checkbox" class="feed-check" value="thehindu" checked>
+<span class="feed-label-text">The Hindu</span>
 </label>
 
 <label class="feed-option">
-<input type="checkbox" class="feed-check" value="dw" checked>
-<span class="feed-label-text">Deutsche Welle (World)</span>
+<input type="checkbox" class="feed-check" value="indianexpress" checked>
+<span class="feed-label-text">Indian Express</span>
+</label>
+
+<h4 class="feed-group-label">Broadcast & Business</h4>
+
+<label class="feed-option">
+<input type="checkbox" class="feed-check" value="ndtv" checked>
+<span class="feed-label-text">NDTV</span>
 </label>
 
 <label class="feed-option">
-<input type="checkbox" class="feed-check" value="france24" checked>
-<span class="feed-label-text">France24 (International)</span>
+<input type="checkbox" class="feed-check" value="hindustantimes" checked>
+<span class="feed-label-text">Hindustan Times</span>
 </label>
 
 <label class="feed-option">
-<input type="checkbox" class="feed-check" value="sky" checked>
-<span class="feed-label-text">Sky News (World)</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="npr" checked>
-<span class="feed-label-text">NPR World</span>
-</label>
-
-<h4 class="feed-group-label">North American Sources</h4>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="cnn" checked>
-<span class="feed-label-text">CNN (World)</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="washingtonpost" checked>
-<span class="feed-label-text">Washington Post (World)</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="latimes" checked>
-<span class="feed-label-text">LA Times (World)</span>
-</label>
-
-<h4 class="feed-group-label">Additional Global Sources (RSSHub)</h4>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="reuters">
-<span class="feed-label-text">Reuters World (via RSSHub)</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="guardian">
-<span class="feed-label-text">The Guardian (World)</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="japantimes">
-<span class="feed-label-text">Japan Times</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="axios">
-<span class="feed-label-text">Axios World</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="politico">
-<span class="feed-label-text">Politico</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="independent">
-<span class="feed-label-text">The Independent (World)</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="voa">
-<span class="feed-label-text">VOA News</span>
-</label>
-
-<label class="feed-option">
-<input type="checkbox" class="feed-check" value="euronews">
-<span class="feed-label-text">Euronews (World)</span>
+<input type="checkbox" class="feed-check" value="businessstandard">
+<span class="feed-label-text">Business Standard</span>
 </label>
 
 </div>

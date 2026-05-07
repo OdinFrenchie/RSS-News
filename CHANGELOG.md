@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.11.0] - 2026-05-10
+
+### Added – 0.11.0
+
+- **7 new regional news pages**: US, Asia, Europe, Australia & NZ, Canada, China, India
+- **Region-specific RSS feed configurations** in `FEEDS_CONFIG`:
+  - US: CNN, NYT, WaPo, NPR, Reuters, AP, WSJ, USA Today
+  - Asia: Japan Times, SCMP, Straits Times, Korea Herald, Bangkok Post, Channel NewsAsia
+  - Europe: Euronews, Politico EU, BBC Europe, France24, DW, EUobserver, The Local
+  - Australia & NZ: ABC, SMH, The Australian, The Age, News.com.au, NZ Herald
+  - Canada: CBC, Global News, CTV, Toronto Star, National Post
+  - China: SCMP, Caixin, Sixth Tone, China Daily, Global Times
+  - India: Times of India, The Hindu, Indian Express, NDTV, Hindustan Times, Business Standard
+- **Dynamic weather defaults** per region with localized city options
+- **Regional timezone displays** with proper IANA timezone support
+- **Region-aware AI summary text** contextualized for each market
+- **Video rail topic routing** via Reuters API regional parameters
+- **Weather map titles** dynamically generated per region
+- **Page-specific storage isolation** for all regional pages (`ow-{region}-` prefixes)
+
+### Changed – 0.11.0
+
+- Refactored `updateTimezones()` to use `timezoneConfigs` object with regional arrays
+- Refactored `loadWeather()` to use `defaultLocs` object for regional defaults
+- Refactored `generateAISummary()` to use `summaryTexts` object for regional intros
+- Refactored `loadVideoRail()` to use `videoFeeds` object with Reuters topic routing
+- Added `getRegionName()` helper for dynamic regional labeling
+- Extended `FEEDS_CONFIG` from 2 to 9 page configurations
+
+### Technical – 0.11.0
+
+- All RSS feeds categorized as Tier 1 (direct/reliable) or Tier 2 (RSSHub/unchecked)
+- Parallel fetch with 3-second timeout maintained across all regions
+- 5-minute sessionStorage cache applies per-region
+- RSSHub rate limit protection: Tier 2 feeds unchecked by default
+
 ## [0.10.5] - 2026-05-09
 
 ### Added – 0.10.5
