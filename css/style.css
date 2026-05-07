@@ -630,12 +630,13 @@ body.compact .news-item h2 {
 }
 
 /* WEATHER MAP CONTAINER (v0.10.0) */
-.map-container iframe {
+.map-container {
   width: 100%;
   height: 200px;
-  border: 0;
-  border-radius: 12px;
   background: var(--ad-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative; /* Add this */
 }
 
 .map-loading {

@@ -950,7 +950,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initQuickLinks();
 
   loadRSS();
-  loadHybridMap();
+  loadWeatherMap();
   loadVideoRail();
   generateAISummary();
   initAISummaryToggle();

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.1] - 2026-05-09
+
+### Fixed – 0.10.1
+
+- Fixed map loader function name mismatch (`loadWeatherMap` vs `loadHybridMap`)
+- Updated source filter chips to match new feed list (removed CBC, ABC; added Guardian, Politico, Axios, Independent)
+- Added `position: relative` to map container for proper loading overlay positioning
+
+### Changed – 0.10.1
+
+- Source filter chips now reflect actual available feeds in v0.10.0
+
 ## [0.10.0] - 2026-05-09
 
 ### Fixed – 0.10.0
