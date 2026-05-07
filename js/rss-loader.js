@@ -1,27 +1,31 @@
-/* OdinWire World News — rss-loader.js v0.9.9 */
+/* OdinWire World News — rss-loader.js v0.10.2 */
 
-/* WORLD NEWS FEEDS - Verified Working (v0.10.0) */
+/* WORLD NEWS FEEDS - With RSSHub & Proxy (v0.10.2) */
 const FEEDS = {
-  // Tier 1: Confirmed Working
+  // Tier 1: Direct feeds (reliable)
   bbc: "https://feeds.bbci.co.uk/news/world/rss.xml",
-  reuters: "https://feeds.reuters.com/reuters/worldNews",
   aljazeera: "https://www.aljazeera.com/xml/rss/all.xml",
   dw: "https://rss.dw.com/rdf/rss-en-world",
   france24: "https://www.france24.com/en/rss",
   sky: "https://feeds.skynews.com/feeds/rss/world.xml",
   npr: "https://feeds.npr.org/1004/rss.xml",
+  cnn: "http://rss.cnn.com/rss/edition_world.rss",
 
-  // Tier 2: Fixed/Replacement Sources
-  euronews: "https://www.euronews.com/rss?format=mrss&level=theme&name=news", // Fixed URL
-  guardian: "https://www.theguardian.com/world/rss", // Replaces CBC
-  politico: "https://www.politico.eu/feed/", // Replaces ABC Australia
-  japantimes: "https://www.japantimes.co.jp/feed/", // Fixed - simpler URL
-  voa: "https://www.voanews.com/api/", // Fixed - VOA changed to API endpoint
+  // Tier 2: RSSHub feeds (generates RSS from sites without native RSS)
+  reuters: "https://rsshub.app/reuters/world",
+  guardian: "https://rsshub.app/guardian/world",
+  japantimes: "https://rsshub.app/japantimes",
+  axios: "https://rsshub.app/axios",
+  politico: "https://rsshub.app/politico",
+  independent: "https://rsshub.app/independent",
+  voa: "https://rsshub.app/voanews",
+  euronews: "https://rsshub.app/euronews/en/news",
 
-  // Tier 3: New Reliable Sources
-  axios: "https://api.axios.com/feed/world/", // New - fast, reliable
-  independent: "https://www.independent.co.uk/news/world/rss", // New
-  cnn: "http://rss.cnn.com/rss/edition_world.rss" // New - backup source
+  // Tier 3: Other working sources
+  washingtonpost: "https://feeds.washingtonpost.com/rss/world",
+  latimes: "https://www.latimes.com/world-nation/rss2.0.xml",
+  cbc: "https://www.cbc.ca/webfeed/rss/rss-world",
+  abc: "https://www.abc.net.au/news/feed/51120/rss.xml"
 };
 
 /* GLOBAL STATE */
@@ -40,14 +44,12 @@ async function loadWeather() {
   const selector = document.getElementById("weatherLocation");
   if (!container) return;
 
-  // Load saved location or default to London
   const savedLoc = localStorage.getItem(WEATHER_KEY) || "51.5074,-0.1278,London";
   if (selector) selector.value = savedLoc;
 
   const [lat, lon, city] = savedLoc.split(",");
   await fetchWeather(lat, lon, city);
 
-  // Setup change handler
   if (selector) {
     selector.addEventListener("change", (e) => {
       localStorage.setItem(WEATHER_KEY, e.target.value);
@@ -96,9 +98,7 @@ async function fetchWeather(lat, lon, city) {
   }
 }
 
-/* ----------------------------------------------------
-   TIMEZONES (v0.9.9) - Fixed
----------------------------------------------------- */
+/* TIMEZONES (v0.9.9) - Fixed */
 function updateTimezones() {
   const cities = [
     { id: "tzLondon", zone: "Europe/London" },
@@ -135,9 +135,7 @@ function startTimezoneUpdates() {
   setInterval(updateTimezones, 60000);
 }
 
-/* ----------------------------------------------------
-   QUICK LINKS (v0.9.8)
----------------------------------------------------- */
+/* QUICK LINKS (v0.9.8) */
 const QUICK_LINKS_KEY = "ow-quick-links";
 
 function loadQuickLinks() {
@@ -237,9 +235,7 @@ function initQuickLinks() {
   }
 }
 
-/* ----------------------------------------------------
-   TRENDING IN FEED (v0.9.8)
----------------------------------------------------- */
+/* TRENDING IN FEED (v0.9.8) */
 function renderTrendingFeed() {
   const container = document.getElementById("trending-feed");
   if (!container) return;
@@ -282,15 +278,11 @@ function renderTrendingFeed() {
   }).join("");
 }
 
-/* ----------------------------------------------------
-   WEATHER MAP - Replaces RainViewer (v0.10.0)
----------------------------------------------------- */
+/* WEATHER MAP - Replaces RainViewer (v0.10.0) */
 function loadWeatherMap() {
   const container = document.getElementById("mapContainer");
   if (!container) return;
 
-  // Use Windy.com embed or OpenWeatherMap static
-  // Windy is more reliable than RainViewer
   container.innerHTML = `
     <iframe
       width="100%"
@@ -313,9 +305,7 @@ function showMapFallback(iframe) {
   if (fallback) fallback.style.display = 'flex';
 }
 
-/* ----------------------------------------------------
-   VIDEO RAIL LOADER (v0.9.6)
----------------------------------------------------- */
+/* VIDEO RAIL LOADER (v0.9.6) */
 async function loadVideoRail() {
   const list = document.getElementById("videoList");
   if (!list) return;
@@ -370,9 +360,7 @@ async function loadVideoRail() {
   }
 }
 
-/* ----------------------------------------------------
-   AI SUMMARY GENERATOR (v0.9.6)
----------------------------------------------------- */
+/* AI SUMMARY GENERATOR (v0.9.6) */
 function generateAISummary() {
   const panel = document.getElementById("rr-ai-summary");
   if (!panel) return;
@@ -399,9 +387,7 @@ function generateAISummary() {
   ts.textContent = new Date().toLocaleTimeString();
 }
 
-/* ----------------------------------------------------
-   AI SUMMARY TOGGLE
----------------------------------------------------- */
+/* AI SUMMARY TOGGLE */
 function initAISummaryToggle() {
   const btn = document.getElementById("settings-ai-summary-toggle");
   if (!btn) return;
@@ -510,21 +496,47 @@ function renderSavedArticles() {
   });
 }
 
-/* FETCH FEED */
+/* FETCH FEED - With CORS proxy fallback (v0.10.2) */
 async function fetchFeed(url) {
+  // Try direct first
+  const directUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+
   try {
-    const apiURL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
-    const response = await fetch(apiURL);
+    const response = await fetch(directUrl);
     const data = await response.json();
-    if (data.status !== "ok") return [];
-    return data.items.map(item => ({
-      title: item.title,
-      link: item.link,
-      pubDate: item.pubDate,
-      description: item.description,
-      thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
+    if (data.status === "ok" && data.items && data.items.length > 0) {
+      return data.items.map(item => ({
+        title: item.title,
+        link: item.link,
+        pubDate: item.pubDate,
+        description: item.description,
+        thumbnail: item.thumbnail || (item.enclosure && item.enclosure.link) || null
+      }));
+    }
+  } catch (e) {
+    console.log("Direct fetch failed for:", url);
+  }
+
+  // Fallback: Try with allorigins proxy
+  try {
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+    const proxyResponse = await fetch(proxyUrl);
+    const xmlText = await proxyResponse.text();
+
+    // Parse XML manually
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+    const items = xmlDoc.querySelectorAll("item");
+
+    return Array.from(items).slice(0, 20).map(item => ({
+      title: item.querySelector("title")?.textContent || "No title",
+      link: item.querySelector("link")?.textContent || "#",
+      pubDate: item.querySelector("pubDate")?.textContent || new Date().toISOString(),
+      description: item.querySelector("description")?.textContent || "",
+      thumbnail: null
     }));
-  } catch {
+  } catch (e) {
+    console.error("All fetch methods failed for:", url);
     return [];
   }
 }

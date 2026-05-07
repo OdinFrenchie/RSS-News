@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.2] - 2026-05-09
+
+### Fixed – 0.10.2
+
+- **RSS Feeds**: Replaced broken sources with RSSHub alternatives:
+  - Reuters → RSSHub Reuters
+  - Guardian → RSSHub Guardian
+  - Euronews → RSSHub Euronews
+  - Politico EU → RSSHub Politico
+  - Japan Times → RSSHub Japan Times
+  - VOA → RSSHub VOA
+  - Axios → RSSHub Axios
+  - Independent → RSSHub Independent
+- **Feed Fetching**: Added AllOrigins proxy fallback for CORS-blocked feeds
+- **New Direct Feeds**: Added CNN, Washington Post, LA Times as reliable direct sources
+
+### Added – 0.10.2
+
+- Dual-layer feed fetching (direct → RSSHub → proxy fallback)
+- Manual XML parsing fallback for proxy responses
+- Console logging for failed feed attempts (debugging)
+
+### Changed – 0.10.2
+
+- Default feed selection now prioritizes Tier 1 reliable sources
+- RSSHub provides RSS generation for sites without native feeds
+- Improved error resilience - individual feed failures don't break entire load
+
 ## [0.10.1] - 2026-05-09
 
 ### Fixed – 0.10.1
